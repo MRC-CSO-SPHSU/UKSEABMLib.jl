@@ -10,11 +10,11 @@ from REPL execute it using
 
 include("mainMAHelpers.jl")
 
-mainConfig = Light()    # no input files, logging or flags (REPL Exec.) 
+const mainConfig = Light()    # no input files, logging or flags (REPL Exec.) 
 # mainConfig = WithInputFiles()
 
-# lpmExample = LPMUKDemography()    # remove deads
-lpmExample = LPMUKDemographyOpt()   # don't remove deads 
+const lpmExample = LPMUKDemography()    # remove deads
+# lpmExample = LPMUKDemographyOpt()   # don't remove deads 
 
 const simPars, pars = loadParameters(mainConfig) 
 
