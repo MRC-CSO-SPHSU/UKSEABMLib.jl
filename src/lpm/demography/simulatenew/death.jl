@@ -96,11 +96,11 @@ function death!(person, currstep, model, parameters)
 
     agep = age(person)             
 
-    #=assumption() do
+    assumption() do
         @assert alive(person)       
         @assert isMale(person) || isFemale(person) # Assumption 
         @assert typeof(agep) == Rational{Int}
-    end=#
+    end
  
     if curryear >= 1950 
                         
@@ -139,10 +139,10 @@ function death!(person, currstep, model, parameters)
     =# 
                                 
     if rand() < p_yearly2monthly(deathProb)
-       #= delayedVerbose() do
+        delayedVerbose() do
             y, m = age2yearsmonths(agep)
             println("person $(person.id) died year $(curryear) with age of $y")
-        end =# 
+        end  
         setDead!(person) 
         return true 
         # person.deadYear = self.year  
@@ -165,11 +165,11 @@ function doDeaths_!(people, time, model, parameters)
         end 
     end # for livingPeople
     
-    #= delayedVerbose() do
+    delayedVerbose() do
         count = length([person for person in people if alive(person)] )
         numDeaths = length(deads)
         println("# living people : $(count+numDeaths), # people died in curr iteration : $(numDeaths)") 
-    end  =#
+    end 
 
     deads   
 end  # function doDeaths_!               
