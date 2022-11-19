@@ -9,8 +9,8 @@ using XAgents: Person, isFemale, alive, age
 using MultiAgents: ABM, AbstractMABM, AbstractABMSimulation
 using MultiAgents: allagents, add_agent!, currstep, verbose 
 using MALPM.Demography.Population: removeDead!
-using MALPM.Demography: DemographyExample, LPMUKDemography, LPMUKDemographyOpt, 
-                            houses, towns, allPeople, populationParameters
+using MALPM.Demography: DemographyExample, LPMUKDemography, LPMUKDemographyOpt
+using MALPM.Models:  houses, towns, allPeople, populationParameters
 import MALPM.Demography: allPeople  
 using LPM
 import LPM.Demography.SimulateNew: doDeaths!#, doBirths!, doDivorces!
