@@ -10,7 +10,7 @@ using MultiAgents: ABM, AbstractMABM, AbstractABMSimulation
 using MultiAgents: allagents, add_agent!, currstep, verbose 
 using MALPM.Demography.Population: removeDead!
 using MALPM.Demography: DemographyExample, LPMUKDemography, LPMUKDemographyOpt
-using MALPM.Models:  houses, towns, allPeople, populationParameters
+using MALPM.Models # no need for explicit listing anything(model) is from there
 import MALPM.Demography: allPeople  
 using LPM
 import LPM.Demography.SimulateNew: doDeaths!#, doBirths!, doDivorces!
