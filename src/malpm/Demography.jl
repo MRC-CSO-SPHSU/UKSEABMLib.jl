@@ -1,6 +1,6 @@
 module Demography
 
-using XAgents: Town, PersonHouse, Person 
+using XAgents: Town, PersonHouse, Person, alive  
 using MultiAgents: AbstractMABM, ABM
 # using LPM.Demography.Create: createTowns
 
@@ -8,7 +8,12 @@ export MAModel
  
 import MultiAgents.Util: AbstractExample
 import MultiAgents: allagents
-export allagents, population
+
+import LPM.ModelAPI: alivePeople, dataOf 
+import LPM.ParamTypes: populationParameters
+
+export allagents, allPeople, alivePeople, dataOf, houses, towns # TODO is this needed?
+export populationParameters
 export DemographyExample, LPMUKDemography, LPMUKDemographyOpt
 
 ### Example Names 
@@ -39,10 +44,15 @@ mutable struct MAModel <: AbstractMABM
 end
 
 allagents(model::MAModel) = allagents(model.pop)
-population(model::MAModel) = allagents(model.pop)
+allPeople(model::MAModel) = allagents(model.pop)
+alivePeople(model::MAModel) = 
+    [ person for person in allPeople(model)  if alive(person) ]
+    # Iterators.filter(person->alive(person),people) # Iterators did not show significant value sofar
 houses(model::MAModel) = allagents(model.houses)
 towns(model::MAModel) = allagents(model.towns) 
+dataOf(model) = model.pop.data
 
+populationParameters(model::MAModel) = model.pop.parameters
 
 include("./demography/Population.jl") 
 include("./demography/Simulate.jl")
