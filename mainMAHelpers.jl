@@ -16,7 +16,8 @@ initMultiAgents()             # reset agents counter
 using LPM.ParamTypes: seed!
 using MultiAgents: AbstractMABM, ABMSimulationP 
 using MultiAgents: run!
-using MALPM.Demography: MAModel, LPMUKDemography, LPMUKDemographyOpt 
+using MALPM.Models: MAModel
+using MALPM.Demography: LPMUKDemography, LPMUKDemographyOpt 
 using MALPM.Demography.SimSetup: setup! 
 
 """

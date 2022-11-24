@@ -4,50 +4,44 @@
 
 module Simulate
 
-# using MultiAgents.Util: getproperty
-
 using XAgents: Person, isFemale, alive, age
 
 using MultiAgents: ABM, AbstractMABM, AbstractABMSimulation
 using MultiAgents: allagents, add_agent!, currstep, verbose 
 using MALPM.Demography.Population: removeDead!
-using MALPM.Demography: DemographyExample, LPMUKDemography, LPMUKDemographyOpt, 
-                    houses, towns 
+using MALPM.Demography: DemographyExample, LPMUKDemography, LPMUKDemographyOpt
+using MALPM.Models # no need for explicit listing anything(model) is from there
+import MALPM.Demography: allPeople  
 using LPM
-import LPM.Demography.Simulate: doDeaths!, doBirths!, doDivorces!
+import LPM.Demography.SimulateNew: doDeaths!#, doBirths!, doDivorces!
 # export doDeaths!,doBirths!
 
-alivePeople(population::ABM{Person},::LPMUKDemography) = allagents(population)
+alivePeople(model,::LPMUKDemography) = allPeople(model)
+alivePeople(model,::LPMUKDemographyOpt) = alivePeople(model)
+       
 
-alivePeople(population::ABM{Person},::LPMUKDemographyOpt) = 
-               # Iterators.filter(person->alive(person),allagents(population))
-                [ person for person in allagents(population)  if alive(person) ]
-
-function removeDeads!(deadpeople,population,::LPMUKDemography)    
+function removeDeads!(deadpeople,pop,::LPMUKDemography)    
     for deadperson in deadpeople
-        removeDead!(deadperson,population)
+        removeDead!(deadperson,pop)
     end
     
     nothing 
 end
 
-removeDeads!(deadpeople,population,::LPMUKDemographyOpt) = nothing 
+removeDeads!(deadpeople,pop,::LPMUKDemographyOpt) = nothing 
 
 function doDeaths!(model::AbstractMABM, sim::AbstractABMSimulation, example::DemographyExample) # argument simulation or simulation properties ? 
 
-    population = model.pop 
-
-    (deadpeople) = LPM.Demography.Simulate.doDeaths!(
-            alivePeople(population,example),
-            currstep(sim),
-            population.data,
-            population.parameters.poppars)
+    (deadpeople) = doDeaths!(
+            model,
+            currstep(sim))
     
-    removeDeads!(deadpeople,population,example)
+    # ToDo separate step? 
+    removeDeads!(deadpeople,model.pop,example)
     nothing 
 end # function doDeaths!
 
-
+#=
 function doBirths!(model::AbstractMABM, sim::AbstractABMSimulation, example::DemographyExample) 
 
     population = model.pop 
@@ -72,8 +66,9 @@ function doDivorces!(model::AbstractMABM, sim::AbstractABMSimulation, example::D
 
     population = model.pop 
 
-    divorced = LPM.Demography.Simulate.doDivorces!(
-                        allagents(population),
+    LPM.Demography.Simulate.doDivorces!(
+                        #allagents(population),
+                        alivePeople(population,example),
                         currstep(sim),
                         houses(model),
                         towns(model),
@@ -83,6 +78,6 @@ function doDivorces!(model::AbstractMABM, sim::AbstractABMSimulation, example::D
 end
 
 
-
+=# 
 
 end # Simulate 
