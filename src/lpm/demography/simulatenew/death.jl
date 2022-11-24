@@ -5,7 +5,7 @@ using XAgents#: Person
 using XAgents#: age, isMale, isFemale, alive, resetHouse!, isSingle, partner,
              #   setAsIndependent!, setAsSelfproviding!, providees, provider!
 using LPM.ModelAPI
-using LPM.ParamTypes: populationParameters
+using LPM.ParamTypes: populationParameters, allParameters
 
 export doDeaths!, setDead!
 
@@ -179,4 +179,4 @@ doDeaths!(model,time,parameters) =
     doDeaths_!(alivePeople(model),time,model,populationParameters(parameters))
 
 doDeaths!(model,time) = 
-    doDeaths!(model,time,populationParameters(model))
+    doDeaths!(model,time,allParameters(model))

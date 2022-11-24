@@ -10,11 +10,11 @@ using XAgents: Town, PersonHouse, Person, alive
 using MultiAgents: AbstractMABM, ABM
 
 import LPM.ModelAPI: alivePeople, dataOf # Functions has to be listed explicitly ? 
-import LPM.ParamTypes: populationParameters
+import LPM.ParamTypes: populationParameters, allParameters
 import MultiAgents: allagents
 
 export allagents, allPeople, alivePeople, dataOf, houses, towns # TODO is this needed?
-export populationParameters
+export populationParameters, allParameters
 
 export MAModel 
 
@@ -28,7 +28,7 @@ mutable struct MAModel <: AbstractMABM
         ukHouses = ABM{PersonHouse}(model.houses)
         parameters = (poppars = pars.poppars, birthpars = pars.birthpars, 
                         divorcepars = pars.divorcepars, workpars = pars.workpars)   
-        ukPopulation = ABM{Person}(model.pop,parameters=pars,data=data)
+        ukPopulation = ABM{Person}(model.pop,parameters=parameters,data=data)
         new(ukTowns,ukHouses,ukPopulation)
     end
 end
@@ -42,6 +42,9 @@ houses(model::MAModel) = allagents(model.houses)
 towns(model::MAModel) = allagents(model.towns) 
 dataOf(model) = model.pop.data
 
-populationParameters(model::MAModel) = model.pop.parameters  
+allParameters(model::MAModel) = 
+    merge(model.pop.parameters, (mappars = model.towns.parameters,))
+
+populationParameters(model::MAModel) = model.pop.parameters.poppars  
 
 end # module Models 

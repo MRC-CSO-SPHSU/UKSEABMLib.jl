@@ -1,7 +1,7 @@
 using  Parameters
 
 export MapPars, PopulationPars, DemographyPars, DivorcePars, WorkPars
-export populationParameters # @todo cehck if an export is needed at all?
+export populationParameters, allParameters # @todo cehck if an export is needed at all?
 
 "Parameters describing map properties"
 @with_kw mutable struct MapPars 
@@ -209,7 +209,8 @@ end
 DemographyPars() = DemographyPars(MapPars(), PopulationPars(), BirthPars(), WorkPars(), 
                                   DivorcePars(), MarriagePars(), DataPars())
 
-populationParameters(pars::DemographyPars) = pars.poppars
+populationParameters(pars) = pars.poppars
+allParameters(pars) = pars
 
 # TODO .. could make sense to have a parameter interface here 
 #         so that models can 
