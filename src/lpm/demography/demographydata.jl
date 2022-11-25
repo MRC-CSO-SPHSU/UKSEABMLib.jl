@@ -18,8 +18,13 @@ function loadDemographyData(fertFName, deathFFName, deathMFName)
     DemographyData(fert,deathFemale,deathMale)
 end
 
-function loadDemographyData(datapars)
-    dir = datapars.datadir
+"""
+load demography data from the data directory
+    datapars :: DataPars 
+    sepath :: Path of Socio Economic Library 
+"""
+function loadDemographyData(datapars,sepath=".")
+    dir = sepath * "/" * datapars.datadir
     ukDemoData   = loadDemographyData(dir * "/" * datapars.fertFName, 
                                       dir * "/" * datapars.deathFFName,
                                       dir * "/" * datapars.deathMFName)
