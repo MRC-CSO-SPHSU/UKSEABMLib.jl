@@ -75,7 +75,8 @@ end
 
 selectDivorce(person, pars) = alive(person) && isMale(person) && !isSingle(person)
 
-
+# Atiyah: 
+# @todo: the interface to be placed doDivorces(model,time,parameters)
 function doDivorces!(people, time, allHouses, allTowns, parameters)
 
     marriedMen = [ man for man in people if selectDivorce(man, parameters) ]

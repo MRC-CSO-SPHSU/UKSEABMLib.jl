@@ -1,7 +1,7 @@
 """
 Parameter types and values 
 
-This module is within the LPM module 
+This module is within the SocioEconomics module 
 """
 
 module ParamTypes
