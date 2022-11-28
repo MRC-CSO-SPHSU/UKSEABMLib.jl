@@ -1,11 +1,14 @@
+"""
+SocioEconomics Library dependent on MultiAgents.jl 
+"""
 module SocioEconomics
 
-    const SESRCPATH = @__DIR__ 
-    const SEPATH    = SESRCPATH * "/.." 
-    const SEVERSION = v"0.1.0"
+    include("seconstants.jl")
 
-    include("./socioeconomics/ParamTypes.jl")
-    include("./socioeconomics/ModelAPI.jl")
-    include("./socioeconomics/Demography.jl")
+    if ! (XAGENTS_MA_PATH in LOAD_PATH) 
+        push!(LOAD_PATH, XAGENTS_MA_PATH)
+    end 
+
+    include("semodules.jl")
 
 end  # module SocioEconomics 
