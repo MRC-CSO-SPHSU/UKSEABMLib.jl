@@ -1,9 +1,6 @@
 
 using Utilities: age2yearsmonths, date2yearsmonths
 
-using XAgents: Person, isMale, isFemale, alive 
-using XAgents: age
-
 export doDeaths!, setDead!
 
 function deathProbability(baseRate,person,parameters) 

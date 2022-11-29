@@ -6,8 +6,6 @@ An initial design for findNewHouse*(*) interfaces (subject to incremental
 
 using Memoization
 
-using XAgents
-
 export findEmptyHouseInTown, findEmptyHouseInOrdAdjacentTown, 
         findEmptyHouseAnywhere, movePeopleToEmptyHouse!, movePeopleToHouse!
 

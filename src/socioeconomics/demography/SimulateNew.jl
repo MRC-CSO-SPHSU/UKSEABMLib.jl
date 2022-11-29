@@ -6,9 +6,9 @@ Functions used for demography simulation
 module SimulateNew 
 
 # API for accessory functions 
-using SocioEconomics.ModelAPI    # Here it is does not make sense anymore to 
-                                 # employ explicit using statements 
-                                 # anything(model) comes from there 
+using ....ModelAPI  # Here it is does not make sense anymore to 
+                    #     employ explicit using statements 
+                    #     anything(model) comes from there 
 
 using Utilities
 

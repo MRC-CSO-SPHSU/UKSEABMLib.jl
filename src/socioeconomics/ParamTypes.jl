@@ -1,7 +1,7 @@
 """
 Parameter types and values 
 
-This module is within the SocioEconomics module 
+This module is within the SocioEconomics[X] modules 
 """
 
 module ParamTypes

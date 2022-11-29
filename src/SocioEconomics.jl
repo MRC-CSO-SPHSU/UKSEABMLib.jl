@@ -1,11 +1,19 @@
+"""
+SocioEconomics Library dependent on MultiAgents.jl 
+
+pre-request: MultiAgents.jl should be loadable or within LOAD_PATH 
+"""
+
 module SocioEconomics
 
-    const SESRCPATH = @__DIR__ 
-    const SEPATH    = SESRCPATH * "/.." 
-    const SEVERSION = v"0.1.0"
+    # ensuring consistent version of MultiAgents.jl library
+    using MultiAgents: MAVERSION
+    @assert MAVERSION == v"0.3.1"  
 
-    include("./socioeconomics/ParamTypes.jl")
-    include("./socioeconomics/ModelAPI.jl")
-    include("./socioeconomics/Demography.jl")
+    include("seconstants.jl")
+
+    include("multiagents/XAgents.jl")
+
+    include("semodules.jl")
 
 end  # module SocioEconomics 

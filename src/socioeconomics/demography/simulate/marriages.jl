@@ -1,7 +1,5 @@
 export resetCacheMarriages, marriage!, selectMarriage
 
-using XAgents
-
 ageClass(person) = trunc(Int, age(person)/10)
 
 

@@ -3,11 +3,11 @@
     be employed within simulation functions in any 
     *Simulate module
     
-    This module is within the SocioEconomics module 
+    This module is within the SocioEconomics[X] modules 
 """
 module ModelAPI
 
-#import SocioEconomics.ParamTypes: populationParameters ?
+#import ..ParamTypes: populationParameters ?
 
 export allPeople, alivePeople, dataOf
 #export populationParameters    # This one implies that parameters are part of the model definition
