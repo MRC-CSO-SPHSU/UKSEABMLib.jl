@@ -1,5 +1,5 @@
 """
-SocioEconomics library independent from MultiAgents.jl
+SocioEconomicsX library independent from MultiAgents.jl
 """
 module SocioEconomicsX
 

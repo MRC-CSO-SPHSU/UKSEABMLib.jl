@@ -1,7 +1,9 @@
 """
-Constants indicated paths and constants included within the SocioEconomics Library 
+Constants indicated paths and constants included within the SocioEconomics[X] Libraries 
 
 Temporary simple solution till more standard ways are followed
+
+This file is included within the SocioEconomics[X] libraries  
 """ 
 
 const SESRCPATH = @__DIR__ 

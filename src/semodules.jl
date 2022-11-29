@@ -1,7 +1,7 @@
 """
-Submodules within the SocioEconomics library  
+Submodules within the SocioEconomics[X] libraries  
 
-This file is included within the SocioEconomics library 
+This file is included within the SocioEconomics[X] libraries  
 """
 
 include("./SE.jl")

@@ -4,8 +4,8 @@ using Utilities: age2yearsmonths, date2yearsmonths
 using XAgents#: Person
 using XAgents#: age, isMale, isFemale, alive, resetHouse!, isSingle, partner,
              #   setAsIndependent!, setAsSelfproviding!, providees, provider!
-using SocioEconomics.ModelAPI
-using SocioEconomics.ParamTypes: populationParameters, allParameters
+
+using ....ParamTypes: populationParameters, allParameters
 
 export doDeaths!, setDead!
 
