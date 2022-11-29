@@ -1,7 +1,5 @@
 using Utilities
 
-using XAgents
-
 export selectBirth, doBirths!, birth!
 
 function computeBirthProb(rWoman,parameters,data,currstep)

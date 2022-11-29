@@ -2,8 +2,6 @@ using Distributions: Normal, LogNormal
 
 export socialTransition!, selectSocialTransition
 
-using XAgents 
-
 
 function selectSocialTransition(p, pars)
     alive(p) && hasBirthday(p) && 
