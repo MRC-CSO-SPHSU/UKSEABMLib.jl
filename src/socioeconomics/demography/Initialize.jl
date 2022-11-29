@@ -2,7 +2,7 @@ module Initialize
 
 using Distributions: Normal
 using Random:  shuffle 
-using XAgents 
+using ....XAgents 
 
 export initializeHousesInTowns, assignCouplesToHouses!, initClass!, initWork!
 

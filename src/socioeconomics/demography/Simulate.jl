@@ -4,6 +4,8 @@ Functions used for demography simulation
 
 module Simulate
 
+using ....XAgents
+
 include("simulate/allocate.jl")
 include("simulate/death.jl")
 include("simulate/birth.jl")  

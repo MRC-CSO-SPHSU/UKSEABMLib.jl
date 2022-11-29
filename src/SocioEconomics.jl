@@ -12,9 +12,7 @@ module SocioEconomics
 
     include("seconstants.jl")
 
-    if ! (XAGENTS_MA_PATH in LOAD_PATH) 
-        push!(LOAD_PATH, XAGENTS_MA_PATH)
-    end 
+    include("multiagents/XAgents.jl")
 
     include("semodules.jl")
 

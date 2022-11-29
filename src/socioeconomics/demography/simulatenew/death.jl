@@ -1,9 +1,7 @@
 
 using Utilities: age2yearsmonths, date2yearsmonths
 
-using XAgents#: Person
-using XAgents#: age, isMale, isFemale, alive, resetHouse!, isSingle, partner,
-             #   setAsIndependent!, setAsSelfproviding!, providees, provider!
+using ....XAgents
 
 using ....ParamTypes: populationParameters, allParameters
 
