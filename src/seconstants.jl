@@ -9,6 +9,6 @@ This file is included within the SocioEconomics[X] libraries
 const SESRCPATH = @__DIR__ 
 const SEPATH    = SESRCPATH * "/.." 
 # const MAPATH    = SEPATH * "/../MultiAgents.jl"
-const SEVERSION = v"0.1.1"
+const SEVERSION = v"0.1.2"
 const XAGENTS_GENERIC_PATH = SESRCPATH * "/generic" 
 const XAGENTS_MA_PATH      = SESRCPATH * "/multiagents"
