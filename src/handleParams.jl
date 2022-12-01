@@ -6,10 +6,14 @@ using YAML
 nameOfParType(t) = replace(String(nameof(t)), "Pars" => "") |> Symbol
 
 
-function saveParametersToFile(simPars::SimulationPars, pars::DemographyPars, fname)
+function saveParametersToFile(simPars::SimulationPars, 
+                                dataPars::DataPars, 
+                                pars::DemographyPars, fname)
     dict = Dict{Symbol, Any}()
 
     dict[:Simulation] = parToYaml(simPars)
+
+    dict[:Data] = parToYaml(dataPars)
 
     for f in fieldnames(DemographyPars)
         name = nameOfParType(fieldtype(DemographyPars, f))
@@ -26,9 +30,11 @@ function loadParametersFromFile(fname)
 
     simpars = parFromYaml(yaml, SimulationPars, :Simulation)
 
+    datapars = parFromYaml(yaml, DataPars, :Data)
+
     pars = [ parFromYaml(yaml, ft, nameOfParType(ft)) 
             for ft in fieldtypes(DemographyPars) ]
-    simpars, DemographyPars(pars...)
+    simpars, datapars, DemographyPars(pars...)
 end
 
 
@@ -53,6 +59,9 @@ function loadParameters(argv, cmdl...)
 	add_arg_group!(arg_settings, "Simulation Parameters")
 	fieldsAsArgs!(arg_settings, SimulationPars)
 
+    add_arg_group!(arg_settings, "Data Parameters")
+	fieldsAsArgs!(arg_settings, DataPars)
+
     for t in fieldtypes(DemographyPars)
         groupName =  String(nameOfParType(t)) * " Parameters"
         add_arg_group!(arg_settings, groupName)
@@ -63,11 +72,13 @@ function loadParameters(argv, cmdl...)
 	args = parse_args(argv, arg_settings, as_symbols=true)
 
     # read parameters from file if provided or set to default
-    simpars, pars = loadParametersFromFile(args[:par_file])
+    simpars, datapars, pars = loadParametersFromFile(args[:par_file])
 
     # override values that were provided on command line
 
     overrideParsCmdl!(simpars, args)
+
+    overrideParsCmdl!(datapars, args)
 
     @assert typeof(pars) == DemographyPars
     for f in fieldnames(DemographyPars)
@@ -83,9 +94,9 @@ function loadParameters(argv, cmdl...)
     end
 
     # keep a record of parameters used (including seed!)
-    saveParametersToFile(simpars, pars, args[:par_out_file])
+    saveParametersToFile(simpars, datapars, pars, args[:par_out_file])
 
-    simpars, pars, args
+    simpars, datapars, pars, args
 end
 
 
