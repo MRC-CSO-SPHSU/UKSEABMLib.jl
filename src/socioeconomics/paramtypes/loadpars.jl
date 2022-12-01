@@ -1,6 +1,12 @@
+"""
+This file is within ParamTypes module
+"""
+
+using ArgParse
 using ParamUtils
 using YAML
 
+export loadParameters
 
 "extract name of parameter category from struct type name"
 nameOfParType(t) = replace(String(nameof(t)), "Pars" => "") |> Symbol
