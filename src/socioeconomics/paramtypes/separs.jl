@@ -1,4 +1,6 @@
-using  Parameters
+"""
+This file is included within the Module ParamTypes 
+"""
 
 export MapPars, PopulationPars, DemographyPars, DivorcePars, WorkPars
 export populationParameters, allParameters # @todo cehck if an export is needed at all?
@@ -186,7 +188,7 @@ end
     bridesChildrenExp :: Float64                = 0.5
 end
 
-
+#=
 "Data files"
 @with_kw mutable struct DataPars
     datadir     :: String = "data"
@@ -194,6 +196,7 @@ end
     deathFFName :: String = "deathrate.fem.csv"
     deathMFName :: String = "deathrate.male.csv"
 end
+=#
 
 struct DemographyPars 
     mappars     ::  MapPars
@@ -202,12 +205,12 @@ struct DemographyPars
     workpars    ::  WorkPars
     divorcepars ::  DivorcePars 
     marriagepars :: MarriagePars
-    datapars    :: DataPars
+    #datapars    :: DataPars
 end 
 
 
 DemographyPars() = DemographyPars(MapPars(), PopulationPars(), BirthPars(), WorkPars(), 
-                                  DivorcePars(), MarriagePars(), DataPars())
+                                  DivorcePars(), MarriagePars())#, DataPars())
 
 populationParameters(pars) = pars.poppars
 allParameters(pars) = pars
