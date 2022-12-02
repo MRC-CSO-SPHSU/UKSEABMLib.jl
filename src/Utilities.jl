@@ -6,7 +6,7 @@ module Utilities
 
 
 # Functions
-export createTimeStampedFolder, p_yearly2monthly, applyTransition!, remove_unsorted! 
+export createTimeStampedFolder, p_yearly2monthly, remove_unsorted! 
 export removefirst!, date2yearsmonths, age2yearsmonths
 export checkAssumptions!, ignoreAssumptions!, assumption, setDelay!, delay
 export setVerbose!, unsetVerbose!, verbose, verbosePrint, delayedVerbose
@@ -38,22 +38,6 @@ function remove_unsorted!(list, index)
     list[index] = list[end]
     pop!(list)
 end
-
-"Apply a transition function to an iterator."
-function applyTransition!(people, transition, name, args...)
-    count = 0
-    for p in people 
-        transition(p, args...)
-        count += 1
-    end
-
-    verbose() do 
-        if name != ""
-            println(count, " agents processed in ", name)
-        end
-    end
-end
-
  
 mutable struct Debug
     checkAssumptions :: Bool
