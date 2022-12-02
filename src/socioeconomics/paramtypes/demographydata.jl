@@ -1,8 +1,17 @@
 using CSV
 using Tables
 
+using ....Constants: SEPATH
 
-export loadDemographyData, DemographyData
+export loadDemographyData, DemographyData, DataPars 
+
+"Data files"
+@with_kw mutable struct DataPars
+    datadir     :: String = SEPATH * "/data"
+    fertFName   :: String = "babyrate.txt.csv"
+    deathFFName :: String = "deathrate.fem.csv"
+    deathMFName :: String = "deathrate.male.csv"
+end
 
 struct DemographyData
     fertility   :: Matrix{Float64}
@@ -23,8 +32,8 @@ load demography data from the data directory
     datapars :: DataPars 
     sepath :: Path of Socio Economic Library 
 """
-function loadDemographyData(datapars,sepath=".")
-    dir = sepath * "/" * datapars.datadir
+function loadDemographyData(datapars)
+    dir = datapars.datadir 
     ukDemoData   = loadDemographyData(dir * "/" * datapars.fertFName, 
                                       dir * "/" * datapars.deathFFName,
                                       dir * "/" * datapars.deathMFName)
