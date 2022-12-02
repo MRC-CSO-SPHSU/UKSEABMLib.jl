@@ -2,7 +2,7 @@ export  House, HouseLocation
 
 export getHomeTown, getHouseLocation, undefined, isEmpty, town 
 
-using Utilities: removefirst!
+using ....Utilities: removefirst!
 
 
 const HouseLocation  = NTuple{2,Int}

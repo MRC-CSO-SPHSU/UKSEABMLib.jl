@@ -6,7 +6,7 @@ module Create
 
 using Distributions
 
-using Utilities
+using ....Utilities
 using ....XAgents
 
 export createTowns, createPopulation, createPyramidPopulation

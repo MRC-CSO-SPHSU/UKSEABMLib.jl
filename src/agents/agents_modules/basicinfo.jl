@@ -1,7 +1,4 @@
-#using Utilities: Gender, unknown, female, male, age2yearsmonths
-
-using Utilities: age2yearsmonths
-
+using ....Utilities: age2yearsmonths
 
 export isFemale, isMale, agestep!, agestepAlive!, hasBirthday, yearsold
 export Gender, male, female, unknown
