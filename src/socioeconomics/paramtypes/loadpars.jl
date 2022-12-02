@@ -3,7 +3,7 @@ This file is within ParamTypes module
 """
 
 using ArgParse
-using ParamUtils
+using ....Utilities.ParamUtils
 using YAML
 
 export loadParameters
