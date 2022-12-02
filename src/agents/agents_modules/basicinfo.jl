@@ -1,6 +1,13 @@
-using Utilities: Gender, unknown, female, male, age2yearsmonths
+#using Utilities: Gender, unknown, female, male, age2yearsmonths
+
+using Utilities: age2yearsmonths
+
 
 export isFemale, isMale, agestep!, agestepAlive!, hasBirthday, yearsold
+export Gender, male, female, unknown
+
+#"Gender type enumeration"
+@enum Gender unknown female male 
 
 
 # TODO think about whether to make this immutable

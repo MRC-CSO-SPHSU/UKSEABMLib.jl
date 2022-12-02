@@ -3,11 +3,7 @@ Diverse useful functions and types
 """
 module Utilities
 
-# Types 
-export Gender, male, female, unknown
 
-# Constants 
-export SimulationFolderPrefix
 
 # Functions
 export createTimeStampedFolder, p_yearly2monthly, applyTransition!, remove_unsorted! 
@@ -16,28 +12,6 @@ export checkAssumptions!, ignoreAssumptions!, assumption, setDelay!, delay
 export setVerbose!, unsetVerbose!, verbose, verbosePrint, delayedVerbose
 export fuse
 
-
-# list of types 
-
-"Gender type enumeration"
-@enum Gender unknown female male 
-
-# constants 
-
-"Folder in which simulation results are stored"
-const SimulationFolderPrefix = "Simulations_Folder"
-    
-# timeStamp ... 
-
-"create a folder in which simulation results are stored"
-function createTimeStampedFolder() 
-    #timeStamp = datetime.datetime.today().strftime('%Y_%m_%d-%H_%M_%S')
-    #folder = os.path.join('Simulations_Folder', timeStamp)
-    #if not os.path.exists(folder):
-    #    os.makedirs(folder)
-    # folder
-    "" 
-end
 
 "remove first occurance of e in list"
 function removefirst!(list, e)
@@ -58,23 +32,6 @@ end
 age2yearsmonths(age) = date2yearsmonths(age)
 
 p_yearly2monthly(p) = 1 - (1-p)^(1/12)
-
-# constants 
-
-"Folder in which simulation results are stored"
-const SimulationFolderPrefix = "Simulations_Folder"
-
-# timeStamp ... 
-
-"create a folder in which simulation results are stored"
-function createTimeStampedFolder() 
-    #timeStamp = datetime.datetime.today().strftime('%Y_%m_%d-%H_%M_%S')
-    #folder = os.path.join('Simulations_Folder', timeStamp)
-    #if not os.path.exists(folder):
-    #    os.makedirs(folder)
-    # folder
-    "" 
-end
 
 "Very efficiently remove element `index` from `list`. Does not preserve ordering of `list`."
 function remove_unsorted!(list, index)
