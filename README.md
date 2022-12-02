@@ -7,3 +7,4 @@ A library of types, components and simulation functions for establishing socio-e
 - **V0.1**  (28.11.2022) : removing simulation programs to another package, first draft of a model API 
    - V0.1.1 (29.11) : Two libraries one of which MA independent, XAgents is a submodule in the library   
    - V0.1.2 (1.12)  : re-organizing Constants within a module (to make them internally accessible with relative paths), reorganzing data parameters & adjusting reading and loading parameters within ParamTypes module
+   - V0.1.3 (2.12)  : Cleaning Utilities module (removing unused code, moving Gender type to XAgents, moving applyTransition! to LPM package), Utilities is a submodule of SE[*] libraries, ParamUtils and DeclUtils are a submodule of the SE*.Utilities modules 
