@@ -1,8 +1,6 @@
 # SocioEconomics.jl 
 
-A library of types, components and simulation functions for establishing socio-economic studies. It is based on the LoneParentsModel.jl. 
-
-Current aim is to transform the lpm-specific implementation to a more generic code. 
+A library of types, components and simulation functions for establishing socio-economic studies. The initial code is based on the LoneParentsModel.jl package initially implemented by Atiyah Elsheikh and Martin Hinsch.  
 
 ### Releases of the Lone 
 - **V0**     (22.11.2022) : the state of the Lone parents model package in release V0.6.1
