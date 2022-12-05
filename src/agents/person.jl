@@ -1,6 +1,6 @@
 using TypedDelegation
 
-using DeclUtils
+using ....Utilities.DeclUtils
 
 export Person
 export PersonHouse, undefinedHouse

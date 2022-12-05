@@ -5,7 +5,7 @@
     
     This module is within the SocioEconomics[X] modules 
 """
-module ModelAPI
+module ModelFunc
 
 #import ..ParamTypes: populationParameters ?
 
@@ -29,4 +29,4 @@ alivePeople(model)   = Iterators.filter(a->alive(a), population(model))
 populationPars(pars) = pars.poppars        
 =# 
 
-end # ModelAPI 
+end # ModelFunc

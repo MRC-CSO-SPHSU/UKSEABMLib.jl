@@ -3,7 +3,8 @@ This file is included within the Module ParamTypes
 """
 
 export MapPars, PopulationPars, DemographyPars, DivorcePars, WorkPars
-export populationParameters, allParameters # @todo cehck if an export is needed at all?
+export populationParameters, mapParameters, workParameters, 
+        allParameters 
 
 "Parameters describing map properties"
 @with_kw mutable struct MapPars 
@@ -212,8 +213,10 @@ end
 DemographyPars() = DemographyPars(MapPars(), PopulationPars(), BirthPars(), WorkPars(), 
                                   DivorcePars(), MarriagePars())#, DataPars())
 
-populationParameters(pars) = pars.poppars
-allParameters(pars) = pars
+populationParameters(pars)  = pars.poppars
+mapParameters(pars)			= pars.mappars
+workParameters(pars)        = pars.workpars
+allParameters(pars)         = pars  # This is needed due to the method allParameters(model)
 
 # TODO .. could make sense to have a parameter interface here 
 #         so that models can 

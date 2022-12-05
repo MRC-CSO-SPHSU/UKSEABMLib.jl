@@ -4,8 +4,9 @@ SocioEconomicsX library independent from MultiAgents.jl
 module SocioEconomicsX
 
 include("Constants.jl")
-using .Constants: SESRCPATH, SEPATH, SEVERSION, 
-                    XAGENTS_GENERIC_PATH, XAGENTS_MA_PATH
+using .Constants: SESRCPATH, SEPATH, SEVERSION
+
+include("./socioeconomics/Utilities.jl")
 
 include("generic/XAgents.jl")
 

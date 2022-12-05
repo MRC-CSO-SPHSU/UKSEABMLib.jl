@@ -6,19 +6,22 @@ module Create
 
 using Distributions
 
-using Utilities
+using ....Utilities
 using ....XAgents
+using ....ParamTypes 
 
 export createTowns, createPopulation, createPyramidPopulation
 ### 
 
-function createTowns(pars) 
+createTowns(pars::DemographyPars) = createTowns(mapParameters(pars))
+
+function createTowns(mappars) 
 
     uktowns = Town[] 
     
-    for y in 1:pars.mapGridYDimension
-        for x in 1:pars.mapGridXDimension 
-            town = Town((x,y),density=pars.map[y,x])
+    for y in 1:mappars.mapGridYDimension
+        for x in 1:mappars.mapGridXDimension 
+            town = Town((x,y),density=mappars.map[y,x])
             push!(uktowns,town)
         end
     end
@@ -51,8 +54,10 @@ function ageInterval(pop, minAge, maxAge)
     idx_start, idx_end
 end
 
+createPyramidPopulation(pars::DemographyPars) = 
+	createPyramidPopulation_(populationParameters(pars))
 
-function createPyramidPopulation(pars)
+function createPyramidPopulation_(pars)
     population = Person[]
     men = Person[]
     women = Person[]
@@ -149,7 +154,10 @@ function createPyramidPopulation(pars)
     population
 end
 
-function createPopulation(pars) 
+createPopulation(pars::DemographyPars) = 
+	createPopulation_(populationParameters(pars))
+
+function createPopulation_(pars) 
 
     population = Person[] 
 

@@ -1,43 +1,16 @@
 """
-Diverse useful functions and types 
-"""
-module Utilities
+various utilities employed accross the library 
 
-# Types 
-export Gender, male, female, unknown
-
-# Constants 
-export SimulationFolderPrefix
+This source file is included within the Utilities module 
+""" 
 
 # Functions
-export createTimeStampedFolder, p_yearly2monthly, applyTransition!, remove_unsorted! 
+export createTimeStampedFolder, p_yearly2monthly, remove_unsorted! 
 export removefirst!, date2yearsmonths, age2yearsmonths
 export checkAssumptions!, ignoreAssumptions!, assumption, setDelay!, delay
 export setVerbose!, unsetVerbose!, verbose, verbosePrint, delayedVerbose
 export fuse
 
-
-# list of types 
-
-"Gender type enumeration"
-@enum Gender unknown female male 
-
-# constants 
-
-"Folder in which simulation results are stored"
-const SimulationFolderPrefix = "Simulations_Folder"
-    
-# timeStamp ... 
-
-"create a folder in which simulation results are stored"
-function createTimeStampedFolder() 
-    #timeStamp = datetime.datetime.today().strftime('%Y_%m_%d-%H_%M_%S')
-    #folder = os.path.join('Simulations_Folder', timeStamp)
-    #if not os.path.exists(folder):
-    #    os.makedirs(folder)
-    # folder
-    "" 
-end
 
 "remove first occurance of e in list"
 function removefirst!(list, e)
@@ -59,44 +32,11 @@ age2yearsmonths(age) = date2yearsmonths(age)
 
 p_yearly2monthly(p) = 1 - (1-p)^(1/12)
 
-# constants 
-
-"Folder in which simulation results are stored"
-const SimulationFolderPrefix = "Simulations_Folder"
-
-# timeStamp ... 
-
-"create a folder in which simulation results are stored"
-function createTimeStampedFolder() 
-    #timeStamp = datetime.datetime.today().strftime('%Y_%m_%d-%H_%M_%S')
-    #folder = os.path.join('Simulations_Folder', timeStamp)
-    #if not os.path.exists(folder):
-    #    os.makedirs(folder)
-    # folder
-    "" 
-end
-
 "Very efficiently remove element `index` from `list`. Does not preserve ordering of `list`."
 function remove_unsorted!(list, index)
     list[index] = list[end]
     pop!(list)
 end
-
-"Apply a transition function to an iterator."
-function applyTransition!(people, transition, name, args...)
-    count = 0
-    for p in people 
-        transition(p, args...)
-        count += 1
-    end
-
-    verbose() do 
-        if name != ""
-            println(count, " agents processed in ", name)
-        end
-    end
-end
-
  
 mutable struct Debug
     checkAssumptions :: Bool
@@ -161,4 +101,3 @@ end
 	# both put together
 	:($tuptyp($tup))
 end
-end # module Utilities  
