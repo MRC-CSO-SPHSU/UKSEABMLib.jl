@@ -5,5 +5,5 @@ This file is included within the SocioEconomics[X] libraries
 """
 
 include("./socioeconomics/ParamTypes.jl")
-include("./socioeconomics/ModelAPI.jl")
+include("./socioeconomics/API.jl")
 include("./socioeconomics/Demography.jl")
