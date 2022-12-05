@@ -8,4 +8,6 @@
 module API
 
     include("api/ModelFunc.jl")
+    include("api/Connection.jl")
+    
 end # API 

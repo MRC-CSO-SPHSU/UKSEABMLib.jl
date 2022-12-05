@@ -4,18 +4,18 @@ using Distributions: Normal
 using Random:  shuffle 
 using ....XAgents 
 using ....ParamTypes
-import ..Demography: AbsPort, AbsProcess, initialConnect! 
+import ....API.Connection: AbsInitPort, AbsInitProcess, 
+                            initialConnect!, init! 
 
 
-export AbsInitPort, InitHousesInTownsPort, InitCouplesToHousesPort
+export InitHousesInTownsPort, InitCouplesToHousesPort
 export AbsInitProcess, InitClassesProcess, InitWorkProcess
 export initialConnect!, init!
 
-abstract type AbsInitPort <: AbsPort end 
+
 struct InitHousesInTownsPort <: AbsInitPort end
 struct InitCouplesToHousesPort <: AbsInitPort end  
 
-abstract type AbsInitProcess <: AbsProcess end 
 struct InitClassesProcess <: AbsInitProcess end 
 struct InitWorkProcess <: AbsInitProcess end 
 
