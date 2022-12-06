@@ -1,13 +1,10 @@
 
-using ....Utilities: age2yearsmonths, date2yearsmonths
+#using ....Utilities: age2yearsmonths, date2yearsmonths
+#using ....ParamTypes: populationParameters, allParameters
 
-using ....XAgents
+export doDeaths!, setDead!, death! 
 
-using ....ParamTypes: populationParameters, allParameters
-
-export doDeaths!, setDead!
-
-function deathProbability(baseRate,person,parameters) 
+function deathProbability_(baseRate,person,parameters) 
     #=
         Not realized yet  / to be realized in another module? 
         classRank = person.classRank
@@ -128,7 +125,7 @@ function death!(person, currstep, model, parameters)
         Classes to be considered in a different module 
     =#
                         
-    deathProb = min(1.0, deathProbability(rawRate,person,parameters))
+    deathProb = min(1.0, deathProbability_(rawRate,person,parameters))
                         
     #=
         The following is uncommented code in the original code < 1950
@@ -177,4 +174,4 @@ doDeaths!(model,time,parameters) =
     doDeaths_!(alivePeople(model),time,model,populationParameters(parameters))
 
 doDeaths!(model,time) = 
-    doDeaths!(model,time,allParameters(model))
+    doDeaths_!(alivePeople(model),time,model,populationParameters(model))
