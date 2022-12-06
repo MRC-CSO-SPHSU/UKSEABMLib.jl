@@ -3,7 +3,7 @@ This file is included within the Module ParamTypes
 """
 
 export MapPars, PopulationPars, DemographyPars, DivorcePars, WorkPars
-export populationParameters, mapParameters, workParameters, 
+export populationParameters, birthParameters, mapParameters, workParameters, 
         allParameters 
 
 "Parameters describing map properties"
@@ -214,6 +214,7 @@ DemographyPars() = DemographyPars(MapPars(), PopulationPars(), BirthPars(), Work
                                   DivorcePars(), MarriagePars())#, DataPars())
 
 populationParameters(pars)  = pars.poppars
+birthParameters(pars)       = pars.birthpars
 mapParameters(pars)			= pars.mappars
 workParameters(pars)        = pars.workpars
 allParameters(pars)         = pars  # This is needed due to the method allParameters(model)
