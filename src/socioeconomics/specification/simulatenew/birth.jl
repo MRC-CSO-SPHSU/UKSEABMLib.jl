@@ -292,7 +292,8 @@ doBirths!(model,time,parameters) =
     doBirths_!(alivePeople(model),time,model,birthParameters(parameters))
 
 doBirths!(model,time) =
-    doBirths!(model,time,allParameters(model))
+	doBirths_!(alivePeople(model),time,model,birthParameters(model))
+    #doBirths!(model,time,allParameters(model))
 
 
 
