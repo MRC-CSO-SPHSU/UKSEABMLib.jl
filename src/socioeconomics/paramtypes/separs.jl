@@ -2,9 +2,12 @@
 This file is included within the Module ParamTypes 
 """
 
+import ..API.ParamFunc: allParameters, populationParameters, birthParameters, 
+							divorceParameters, mapParameters, workParameters 
+
 export MapPars, PopulationPars, DemographyPars, DivorcePars, WorkPars
-export populationParameters, mapParameters, workParameters, 
-        allParameters 
+export populationParameters, birthParameters, divorceParameters,
+		 mapParameters, workParameters, allParameters 
 
 "Parameters describing map properties"
 @with_kw mutable struct MapPars 
@@ -214,6 +217,8 @@ DemographyPars() = DemographyPars(MapPars(), PopulationPars(), BirthPars(), Work
                                   DivorcePars(), MarriagePars())#, DataPars())
 
 populationParameters(pars)  = pars.poppars
+birthParameters(pars)       = pars.birthpars
+divorceParameters(pars)		= pars.divorcepars 
 mapParameters(pars)			= pars.mappars
 workParameters(pars)        = pars.workpars
 allParameters(pars)         = pars  # This is needed due to the method allParameters(model)

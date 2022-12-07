@@ -11,13 +11,14 @@ using ....API.ModelFunc  # Here it is does not make sense anymore to
                     #     anything(model) comes from there 
 
 using ....Utilities
+using ....XAgents
+using ....ParamTypes
 
-#include("simulate/allocate.jl")
-
+include("simulatenew/allocate.jl")
 include("simulatenew/death.jl")
+include("simulatenew/birth.jl")  
+include("simulatenew/divorce.jl")       
 
-#include("simulate/birth.jl")  
-#include("simulatenew/divorce.jl")       
 #include("simulatenew/ageTransition.jl")
 #include("simulatenew/socialTransition.jl")
 #include("simulatenew/marriages.jl")
