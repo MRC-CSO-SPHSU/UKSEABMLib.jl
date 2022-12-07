@@ -2,6 +2,9 @@
 This file is included within the Module ParamTypes 
 """
 
+import ..API.ParamFunc: allParameters, populationParameters, birthParameters, 
+							divorceParameters, mapParameters, workParameters 
+
 export MapPars, PopulationPars, DemographyPars, DivorcePars, WorkPars
 export populationParameters, birthParameters, divorceParameters,
 		 mapParameters, workParameters, allParameters 
