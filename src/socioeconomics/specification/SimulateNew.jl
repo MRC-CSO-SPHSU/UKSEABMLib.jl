@@ -14,12 +14,11 @@ using ....Utilities
 using ....XAgents
 using ....ParamTypes
 
-#include("simulate/allocate.jl")
-
+include("simulatenew/allocate.jl")
 include("simulatenew/death.jl")
 include("simulatenew/birth.jl")  
+include("simulatenew/divorce.jl")       
 
-#include("simulatenew/divorce.jl")       
 #include("simulatenew/ageTransition.jl")
 #include("simulatenew/socialTransition.jl")
 #include("simulatenew/marriages.jl")
