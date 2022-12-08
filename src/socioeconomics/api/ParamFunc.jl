@@ -7,13 +7,14 @@ This moduel specifies access function interfaces for parameters
 
 module ParamFunc 
 
-export allParameters, populationParameters, birthParameters, 
+export allParameters, populationParameters, birthParameters, marriageParameters,
 		divorceParameters, mapParameters, workParameters
 
 allParameters(arg)         	= error("allParameters not implemented")  
 populationParameters(arg)  	= error("populationParameters not implemented") 
 birthParameters(arg)       	= error("birthParameters not implemented") 
 divorceParameters(arg)		= error("divorceParameters not implemented") 
+marriageParameters(arg)     = error("marriageParameters not implemented")
 mapParameters(arg)			= error("mapParameters not implemented") 
 workParameters(arg)         = error("workParameters not implemented") 
 
