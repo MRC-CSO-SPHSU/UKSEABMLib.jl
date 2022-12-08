@@ -1,15 +1,17 @@
-export resetCacheMarriages, marriage!, selectMarriage, doMarriages
-
+using Memoization
 using ....XAgents
 
-ageClass(person) = trunc(Int, age(person)/10)
+export resetCacheMarriages, marriage!, selectMarriage, doMarriages!
 
 
-@memoize Dict function shareMenNoChildren(model, ageclass :: Int)
+ageClass_(person) = trunc(Int, age(person)/10)
+
+
+@memoize Dict function shareMenNoChildren_(model, ageclass :: Int)
     nAll = 0
     nNoC = 0
 
-    for p in Iterators.filter(x->isMale(x) && ageClass(x) == ageclass, model.pop)
+    for p in Iterators.filter(x->alive(x) && isMale(x) && ageClass_(x) == ageclass, allPeople(model))
         nAll += 1
         # only looks at legally dependent persons (which usually are underage and 
         # living in the same household)
@@ -22,18 +24,18 @@ ageClass(person) = trunc(Int, age(person)/10)
 end
 
 
-@memoize eligibleWomen(model, pars) = [f for f in model.pop if isFemale(f) && alive(f) &&
+@memoize eligibleWomen_(model, pars) = [f for f in allPeople(model) if isFemale(f) && alive(f) &&
                                        isSingle(f) && age(f) > pars.minPregnancyAge]
 
 # reset memoization caches
 # needs to be done on every time step
 function resetCacheMarriages()
-    Memoization.empty_cache!(shareMenNoChildren)
-    Memoization.empty_cache!(eligibleWomen)
+    Memoization.empty_cache!(shareMenNoChildren_)
+    Memoization.empty_cache!(eligibleWomen_)
 end
 
 
-function deltaAge(delta)
+function deltaAge_(delta)
     if delta <= -10
         0
     elseif -10 < delta < -2
@@ -50,8 +52,8 @@ function deltaAge(delta)
 end
 
 
-function marryWeight(man, woman, pars)
-    geoFactor = 1/exp(pars.betaGeoExp * geoDistance(man, woman, pars))
+function marryWeight_(man, woman, pars)
+    geoFactor = 1/exp(pars.betaGeoExp * geoDistance_(man, woman, pars))
 
     if status(woman) == WorkStatus.student 
         studentFactor = pars.studentFactorParam
@@ -67,7 +69,7 @@ function marryWeight(man, woman, pars)
 
     socFactor = 1/exp(betaExponent * statusDistance)
 
-    ageFactor = pars.deltaAgeProb[deltaAge(age(man) - age(woman))]
+    ageFactor = pars.deltaAgeProb[deltaAge_(age(man) - age(woman))]
 
     # legal dependents (i.e. usually underage persons living at the same house)
     numChildrenWithWoman = length(dependents(woman))
@@ -77,118 +79,15 @@ function marryWeight(man, woman, pars)
     geoFactor * socFactor * ageFactor * childrenFactor * studentFactor
 end
 
-geoDistance(m, w, pars) = manhattanDistance(getHomeTown(m), getHomeTown(w))/
+geoDistance_(m, w, pars) = manhattanDistance(getHomeTown(m), getHomeTown(w))/
     (pars.mapGridXDimension + pars.mapGridYDimension)
 
 # Atiyah: I thing alive(p) should be included? 
-selectMarriage(p, pars) = isMale(p) && isSingle(p) && age(p) > pars.ageOfAdulthood &&
+selectMarriage(p, pars) = alive(p) & isMale(p) && isSingle(p) && age(p) > pars.ageOfAdulthood &&
     careNeedLevel(p) < 4
 
 
-function marriage!(man, time, model, pars)
-    ageclass = ageClass(man) 
-
-    manMarriageProb = pars.basicMaleMarriageProb * pars.maleMarriageModifierByDecade[ageclass]
-
-    if status(man) != WorkStatus.worker || careNeedLevel(man) > 1
-        manMarriageProb *= pars.notWorkingMarriageBias
-    end
-
-    snc = shareMenNoChildren(model, ageclass)
-    den = snc + (1-snc) * pars.manWithChildrenBias
-
-    prob = manMarriageProb / den * (hasDependents(man) ? pars.manWithChildrenBias : 1)
-
-    if rand() >= p_yearly2monthly(prob) 
-        return nothing
-    end
-
-    # get cached list
-    # note: this is getting updated as we go
-    women = eligibleWomen(model, pars)
-
-    # we store candidates as indices, so that we can efficiently remove married women 
-    candidates = [i for (i,w) in enumerate(women) if (age(man)-10 < age(w) < age(man)+5)  &&
-                                                # exclude siblings as well
-                          !livingTogether(man, w) && !related1stDegree(man, w) ]
-    
-    if length(candidates) == 0
-        return nothing
-    end
-
-    weights = [marryWeight(man, women[idx], pars) for idx in candidates]
-
-    cumsum!(weights, weights)
-    if weights[end] == 0
-        selected = rand(1:length(weights))
-    else
-        r = rand() * weights[end]
-        selected = findfirst(>(r), weights)
-        @assert selected != nothing
-    end
-
-    selectedIdx = candidates[selected]
-    selectedWoman = women[selectedIdx]
-
-    setAsPartners!(man, selectedWoman)
-    # remove from cached list
-    remove_unsorted!(women, selectedIdx)
-
-    joinCouple!(man, selectedWoman, model, pars)
-
-    dep_man = dependents(man)
-    dep_woman = dependents(selectedWoman)
-    # all dependents become joint dependents
-    for child in dep_man
-        setAsGuardianDependent!(selectedWoman, child)
-    end
-    for child in dep_woman
-        setAsGuardianDependent!(man, child)
-    end
-
-    nothing
-end
-
-# Atiyah: 
-# @todo the API to be placed 
-# doMarraiges(model,time,parameters)
-function doMarriages(people,time,parameters) 
-    singleMens = [ man for man in people if selectMarriage(man, parameters) ]
-
-    married = Person[] 
-    
-    for man in singleMens 
-        if applyMarraige!(man, time, parameters)
-            wife = partner(man)  
-            append!(married,[man, wife]) 
-        end 
-    end 
-
-    delayedVerbose() do
-        println("# of married in current iteration $(length(married))")
-    end
-    
-    married 
-end # doMarriages 
-
-
-end # doMarraiges 
-
-# for now simply all dependents
-function gatherDependentsSingle(person)
-    assumption() do
-        for p in dependents(person)
-            @assert p.pos == person.pos
-            @assert length(guardians(p)) == 1
-            @assert guardians(p)[1] == person
-        end
-    end
-
-    dependents(person)
-end
-
-    
-function joinCouple!(man, woman, model, pars)
+function joinCouple_!(man, woman, model, pars)
     # they stay apart
     if rand() >= pars.probApartWillMoveTogether
         return false
@@ -206,7 +105,7 @@ function joinCouple!(man, woman, model, pars)
         movePeopleToHouse!(targetHouse, peopleToMove)
     else
         distance = rand([:here, :near])
-        movePeopleToEmptyHouse!(peopleToMove, distance, model.houses, model.towns)
+        movePeopleToEmptyHouse!(peopleToMove, distance, houses(model), towns(model))
     end
 
     # TODO movedThisYear
@@ -214,3 +113,113 @@ function joinCouple!(man, woman, model, pars)
     
     true
 end
+
+function marriage!(man, time, model, parameters) 
+
+    pars = fuse(populationParameters(parameters), marriageParameters(parameters), 
+                    birthParameters(parameters), mapParameters(parameters))
+
+    ageclass = ageClass_(man) 
+
+    manMarriageProb = pars.basicMaleMarriageProb * pars.maleMarriageModifierByDecade[ageclass]
+
+    if status(man) != WorkStatus.worker || careNeedLevel(man) > 1
+        manMarriageProb *= pars.notWorkingMarriageBias
+    end
+
+    snc = shareMenNoChildren_(model, ageclass)
+    den = snc + (1-snc) * pars.manWithChildrenBias
+
+    prob = manMarriageProb / den * (hasDependents(man) ? pars.manWithChildrenBias : 1)
+
+    if rand() >= p_yearly2monthly(prob) 
+        return false 
+    end
+
+    # get cached list
+    # note: this is getting updated as we go
+    women = eligibleWomen_(model, pars)
+
+    # we store candidates as indices, so that we can efficiently remove married women 
+    candidates = [i for (i,w) in enumerate(women) if (age(man)-10 < age(w) < age(man)+5)  &&
+                                                # exclude siblings as well
+                          !livingTogether(man, w) && !related1stDegree(man, w) ]
+    
+    if length(candidates) == 0
+        return false 
+    end
+
+    weights = [marryWeight_(man, women[idx], pars) for idx in candidates]
+
+    cumsum!(weights, weights)
+    if weights[end] == 0
+        selected = rand(1:length(weights))
+    else
+        r = rand() * weights[end]
+        selected = findfirst(>(r), weights)
+        @assert selected != nothing
+    end
+
+    selectedIdx = candidates[selected]
+    selectedWoman = women[selectedIdx]
+
+    setAsPartners!(man, selectedWoman)
+    # remove from cached list
+    remove_unsorted!(women, selectedIdx)
+
+    joinCouple_!(man, selectedWoman, model, pars)
+
+    dep_man = dependents(man)
+    dep_woman = dependents(selectedWoman)
+    # all dependents become joint dependents
+    for child in dep_man
+        setAsGuardianDependent!(selectedWoman, child)
+    end
+    for child in dep_woman
+        setAsGuardianDependent!(man, child)
+    end
+
+    true 
+end
+
+function doMarriages!(model,time)
+    
+    parameters = allParameters(model)
+    people = allPeople(model)
+
+    resetCacheMarriages()
+
+    singleMens = [ man for man in people if selectMarriage(man, workParameters(model)) ]
+
+    married = Person[] 
+    
+    for man in singleMens 
+        if marriage!(man, time, model, parameters)
+            wife = partner(man)  
+            append!(married,[man, wife]) 
+        end 
+    end 
+
+    delayedVerbose() do
+        println("# of married in current iteration $(length(married))")
+    end
+    
+    married 
+end # doMarriages 
+
+
+# for now simply all dependents
+function gatherDependentsSingle(person)
+    assumption() do
+        for p in dependents(person)
+            @assert p.pos == person.pos
+            @assert length(guardians(p)) == 1
+            @assert guardians(p)[1] == person
+        end
+    end
+
+    dependents(person)
+end
+
+    
+
