@@ -21,7 +21,7 @@ include("simulatenew/divorce.jl")
 
 #include("simulatenew/ageTransition.jl")
 #include("simulatenew/socialTransition.jl")
-#include("simulatenew/marriages.jl")
+include("simulatenew/marriages.jl")
 #include("simulatenew/dependencies.jl")
 
 end # module Simulate 

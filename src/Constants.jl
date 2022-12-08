@@ -11,7 +11,7 @@ module Constants
 
 const SESRCPATH = @__DIR__ 
 const SEPATH    = SESRCPATH * "/.." 
-const SEVERSION = v"0.2.1"
+const SEVERSION = v"0.2.2"
 const XAGENTS_GENERIC_PATH = SESRCPATH * "/generic" 
 const XAGENTS_MA_PATH      = SESRCPATH * "/multiagents"
 
