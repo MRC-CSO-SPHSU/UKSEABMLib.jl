@@ -13,12 +13,12 @@ function divorceProbability(rawRate, pars) # ,classRank)
     rawRate * pars.divorceBias 
 end 
 
-function divorce!(man, time, model, parameters)
-    applyDivorce!(man, time, model.houses, model.towns, parameters)
+function divorce!(man, time, model)
+    applyDivorce_!(man, time, houses(model), houses(model), divorceParameters(model))
 end
 
 
-function applyDivorce!(man, time, allHouses, allTowns, parameters)
+function applyDivorce_!(man, time, allHouses, allTowns, parameters)
         
     agem = age(man) 
     assumption() do
@@ -77,15 +77,17 @@ selectDivorce(person, pars) = alive(person) && isMale(person) && !isSingle(perso
 
 # Atiyah: 
 # @todo: the interface to be placed doDivorces(model,time,parameters)
-function doDivorces_!(people, time, allHouses, allTowns, parameters)
+function doDivorces!(model, time)
 
-    marriedMen = [ man for man in people if selectDivorce(man, parameters) ]
+    people = allPeople(model)
+
+    marriedMen = [ man for man in people if selectDivorce(man, nothing) ]
 
     divorced = Person[] 
     
     for man in marriedMen 
         wife = partner(man) 
-        if applyDivorce!(man, time, allHouses, allTowns, parameters) 
+        if divorce!(man, time, model) 
             append!(divorced,[man, wife]) 
         end 
     end 
@@ -98,9 +100,6 @@ function doDivorces_!(people, time, allHouses, allTowns, parameters)
 end
 
 doDivorces!(model,time,parameters) = error("no reason to implement this")
-
-doDivorces!(model, time) = 
-	doDivorces_!(allPeople(model),time,houses(model),towns(model),divorceParameters(model))
 
 #= 
 Atiyah: 

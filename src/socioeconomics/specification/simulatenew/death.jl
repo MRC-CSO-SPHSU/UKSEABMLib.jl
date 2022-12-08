@@ -80,9 +80,10 @@ function setDead!(person)
     nothing
 end 
 
-
 # currently leaves dead agents in population
-function death!(person, currstep, model, parameters)
+function death!(person, currstep, model, pars)
+
+    parameters = populationParameters(pars)
 
     data = dataOf(model)
 
@@ -147,12 +148,15 @@ function death!(person, currstep, model, parameters)
     false
 end 
 
+#death!(person, time, model) = death_!(person, time, model, populationParameters(model))
 
 # Internal function (the existing implementation)
 "evaluate death events in a population"
-function doDeaths_!(people, time, model, parameters)
+function doDeaths_!(model, time, parameters)
 
     deads = Person[] 
+
+    people = alivePeople(model) 
 
     for person in people 
         if death!(person, time, model, parameters) 
@@ -167,11 +171,7 @@ function doDeaths_!(people, time, model, parameters)
     end 
 
     deads   
-end  # function doDeaths_!               
+end  # function doDeaths_!       
 
-# Generic API for doDeaths!
-doDeaths!(model,time,parameters) = 
-    doDeaths_!(alivePeople(model),time,model,populationParameters(parameters))
 
-doDeaths!(model,time) = 
-    doDeaths_!(alivePeople(model),time,model,populationParameters(model))
+doDeaths!(model, time) = doDeaths_!(model, time, allParameters(model))# populationParameters(model))
