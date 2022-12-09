@@ -11,5 +11,6 @@ A library of types, components and simulation functions for establishing socio-e
 - **V0.2.0** (5.12.2022) : unified API for initialize and create functions. Ports and processes concepts for connections and initialisation processes. 
    - V0.2.1  (7.12) : - New Simulation Interface for (3 functions doBirths!, doDeaths!, doDivorces), Improved API for parameter accessory functions
    - V0.2.2  (8.12) : - doMarriages!, minor improvements 
+   - V0.2.3  (9.12) : - doAgeTransitions, doSocialTransitions, doWorkTransitions, adoptions
 
 
