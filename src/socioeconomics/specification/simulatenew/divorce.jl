@@ -93,7 +93,7 @@ function doDivorces!(model, time)
     end 
 
     delayedVerbose() do
-        println("# of divorced in current iteration $(length(divorced))")
+        println("# of divorced : $(length(divorced))")
     end
     
     divorced 

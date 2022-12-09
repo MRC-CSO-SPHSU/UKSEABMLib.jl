@@ -167,7 +167,7 @@ function doDeaths_!(model, time, parameters)
     delayedVerbose() do
         count = length([person for person in people if alive(person)] )
         numDeaths = length(deads)
-        println("# living people : $(count+numDeaths), # people died in curr iteration : $(numDeaths)") 
+        println("# living people : $(count+numDeaths), # deaths : $(numDeaths)") 
     end 
 
     deads   
