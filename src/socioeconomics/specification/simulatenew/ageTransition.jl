@@ -64,14 +64,16 @@ function doAgeTransitions!(model, time)
     nothing 
 end 
 
-selectWorkTransition(person, pars) = 
+
+selectWorkTransition(person) = 
     alive(person) && status(person) != WorkStatus.retired && hasBirthday(person)
 
+selectWorkTransition(person, pars) = selectWorkTransition(person)
 
-function workTransition!(person, time, model, pars)
+function workTransition_!(person, time, model, pars)
     if age(person) == pars.ageTeenagers
         status!(person, WorkStatus.teenager)
-        return
+        return true 
     end
 
     if age(person) == pars.ageOfAdulthood
@@ -82,7 +84,7 @@ function workTransition!(person, time, model, pars)
             outOfTownStudent!(person, true)
         end
 
-        return
+        return true 
     end
 
     if age(person) == pars.ageOfRetirement
@@ -94,5 +96,32 @@ function workTransition!(person, time, model, pars)
 
         dK = rand(Normal(0, pars.wageVar))
         pension!(person, shareWorkingTime * exp(dK))
+
+        return true 
     end
+
+    false 
 end
+
+workTransition!(person, time, model) = 
+    workTransition_!(person, time, model, workParameters(model))
+
+function doWorkTransitions!(model, time)
+    people = alivePeople(model)
+
+    candidates = [ person for person in people if selectWorkTransition(person) ] 
+    
+    n = 0 
+    for cand in candidates
+        if workTransition!(cand, time, model)
+            n += 1 
+        end 
+    end
+
+    delayedVerbose() do 
+        println("# of work transitions : $(n)")
+    end
+
+    nothing 
+end 
+

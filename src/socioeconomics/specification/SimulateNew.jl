@@ -19,7 +19,7 @@ include("simulatenew/death.jl")
 include("simulatenew/birth.jl")  
 include("simulatenew/divorce.jl")       
 include("simulatenew/ageTransition.jl")
-#include("simulatenew/socialTransition.jl")
+include("simulatenew/socialTransition.jl")
 include("simulatenew/marriages.jl")
 include("simulatenew/dependencies.jl")
 
