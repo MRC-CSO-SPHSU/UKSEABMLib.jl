@@ -14,7 +14,9 @@ function divorceProbability(rawRate, pars) # ,classRank)
 end 
 
 function divorce!(man, time, model)
-    applyDivorce_!(man, time, houses(model), houses(model), divorceParameters(model))
+    applyDivorce_!(man, time, houses(model), houses(model), 
+                    fuse(   divorceParameters(model), 
+                            workParameters(model)) )
 end
 
 
