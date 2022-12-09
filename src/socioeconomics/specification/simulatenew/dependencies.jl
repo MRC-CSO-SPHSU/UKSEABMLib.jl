@@ -58,6 +58,7 @@ function doAssignGuardians!(model, time)
         end
     end
 
+    orphans 
 end 
     
 function findFamilyGuardian_(person)
