@@ -201,7 +201,7 @@ function doMarriages!(model,time)
     end 
 
     delayedVerbose() do
-        println("# of married in current iteration $(length(married))")
+        println("# of married : $(length(married))")
     end
     
     married 

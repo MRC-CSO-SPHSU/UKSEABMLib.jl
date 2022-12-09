@@ -268,7 +268,7 @@ function doBirths_!(people, currstep, model, parameters)
     end # for woman 
 
     delayedVerbose() do
-        println("number of births : $length(babies)")
+        println("number of births : $(length(babies))")
     end
 
     # any reason for that?

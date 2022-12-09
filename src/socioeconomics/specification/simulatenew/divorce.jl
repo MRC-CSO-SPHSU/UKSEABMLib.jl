@@ -14,7 +14,9 @@ function divorceProbability(rawRate, pars) # ,classRank)
 end 
 
 function divorce!(man, time, model)
-    applyDivorce_!(man, time, houses(model), houses(model), divorceParameters(model))
+    applyDivorce_!(man, time, houses(model), houses(model), 
+                    fuse(   divorceParameters(model), 
+                            workParameters(model)) )
 end
 
 
@@ -47,7 +49,7 @@ function applyDivorce_!(man, time, allHouses, allTowns, parameters)
         wife.yearDivorced.append(self.year)
         =# 
         if status(wife) == WorkStatus.student
-            startWorking!(wife, parameters)
+            startWorking_!(wife, parameters)
         end
 
         peopleToMove = [man]
@@ -93,7 +95,7 @@ function doDivorces!(model, time)
     end 
 
     delayedVerbose() do
-        println("# of divorced in current iteration $(length(divorced))")
+        println("# of divorced : $(length(divorced))")
     end
     
     divorced 
