@@ -49,7 +49,7 @@ function applyDivorce_!(man, time, allHouses, allTowns, parameters)
         wife.yearDivorced.append(self.year)
         =# 
         if status(wife) == WorkStatus.student
-            startWorking!(wife, parameters)
+            startWorking_!(wife, parameters)
         end
 
         peopleToMove = [man]

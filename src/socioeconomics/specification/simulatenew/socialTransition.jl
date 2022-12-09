@@ -1,11 +1,11 @@
 using Distributions: Normal, LogNormal
 
-export socialTransition!, selectSocialTransition
+export socialTransition!, selectSocialTransition, doSocialTransitions!
 
 
 function selectSocialTransition(p, pars)
     alive(p) && hasBirthday(p) && 
-    age(p) == workingAge(p, pars) &&
+    age(p) == workingAge_(p, pars) &&
     status(p) == WorkStatus.student
 end
 
@@ -14,11 +14,11 @@ end
 # TODO? 
 # * move to separate, optional module
 # * replace with non-class version here
-initialIncomeLevel(person, pars) = pars.incomeInitialLevels[classRank(person)+1]
+initialIncomeLevel_(person, pars) = pars.incomeInitialLevels[classRank(person)+1]
 
-workingAge(person, pars) = pars.workingAge[classRank(person)+1]
+workingAge_(person, pars) = pars.workingAge[classRank(person)+1]
 
-function incomeDist(person, pars)
+function incomeDist_(person, pars)
     # TODO make parameters
     if classRank(person) == 0
         LogNormal(2.5, 0.25)
@@ -38,46 +38,65 @@ end
 # TODO dummy, replace
 # or, possibly remove altogether and calibrate model 
 # properly instead
-socialClassShares(model, class) = 0.2
+socialClassShares_(model, class) = 0.2
 
-function studyClassFactor(person, model, pars)
+function studyClassFactor_(person, model, pars)
     if classRank(person) == 0 
-        return socialClassShares(model, 0) > 0.2 ?  1/0.9 : 0.85
+        return socialClassShares_(model, 0) > 0.2 ?  1/0.9 : 0.85
     end
 
-    if classRank(person) == 1 && socialClassShares(model, 1) > 0.35
+    if classRank(person) == 1 && socialClassShares_(model, 1) > 0.35
         return 1/0.8
     end
 
-    if classRank(person) == 2 && socialClassShares(model, 2) > 0.25
+    if classRank(person) == 2 && socialClassShares_(model, 2) > 0.25
         return 1/0.85
     end
 
     1.0
 end
 
-doneStudying(person, pars) = classRank(person) >= 4
+doneStudying_(person, pars) = classRank(person) >= 4
 
 # TODO
-function addToWorkforce!(person, model)
+function addToWorkforce_!(person, model)
 end
 
 # move newly adult agents into study or work
-function socialTransition!(person, time, model, pars)
-    probStudy = doneStudying(person, pars)  ?  
-        0.0 : startStudyProb(person, model, pars)
+function socialTransition_!(person, time, model, pars)
+    probStudy = doneStudying_(person, pars)  ?  
+        0.0 : startStudyProb_(person, model, pars)
 
     if rand() < probStudy
-        startStudying!(person, pars)
+        startStudying_!(person, pars)
+        return true 
     else
-        startWorking!(person, pars)
-        addToWorkforce!(person, model)
+        startWorking_!(person, pars)
+        addToWorkforce_!(person, model)
     end
+
+    false 
 end
+
+socialTransition!(person, time, model) =
+    socialTransition_!(person, time, model, workParameters(model))
+
+function doSocialTransitions!(model, time) 
+
+    people = alivePeople(model) 
+
+    candidates = [ person for person in people if selectSocialTransition(person, workParameters(model)) ]
+
+    for cand in candidates 
+        socialTransition!(cand, time, model)
+    end 
+
+    
+end 
 
 
 # probability to start studying instead of working
-function startStudyProb(person, model, pars)
+function startStudyProb_(person, model, pars)
     if father(person) == nothing && mother(person) == nothing
         return 0.0
     end
@@ -93,7 +112,7 @@ function startStudyProb(person, model, pars)
         return 0.0
     end
 
-    forgoneSalary = initialIncomeLevel(person, pars) * 
+    forgoneSalary = initialIncomeLevel_(person, pars) * 
         pars.weeklyHours[careNeedLevel(person)+1]
     relCost = forgoneSalary / perCapitaDisposableIncome
     incomeEffect = (pars.constantIncomeParam+1) / 
@@ -111,17 +130,17 @@ function startStudyProb(person, model, pars)
 
     pStudy = incomeEffect * educationEffect * careEffect
 
-    pStudy *= studyClassFactor(person, model, pars)
+    pStudy *= studyClassFactor_(person, model, pars)
 
     return max(0.0, pStudy)
 end
 
-function startStudying!(person, pars)
+function startStudying_!(person, pars)
     addClassRank!(person, 1) 
 end
 
 # TODO here for now, maybe not the best place?
-function resetWork!(person, pars)
+function resetWork_!(person, pars)
     status!(person, WorkStatus.unemployed)
     newEntrant!(person, true)
     workingHours!(person, 0)
@@ -134,14 +153,14 @@ function resetWork!(person, pars)
     outOfTownStudent!(person, true)
 end
 
-function startWorking!(person, pars)
+function startWorking_!(person, pars)
 
-    resetWork!(person, pars)
+    resetWork_!(person, pars)
 
     dKi = rand(Normal(0, pars.wageVar))
-    initialIncome!(person, initialIncomeLevel(person, pars) * exp(dKi))
+    initialIncome!(person, initialIncomeLevel_(person, pars) * exp(dKi))
 
-    dist = incomeDist(person, pars)
+    dist = incomeDist_(person, pars)
 
     finalIncome!(person, rand(dist))
 
