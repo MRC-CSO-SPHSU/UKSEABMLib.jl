@@ -150,19 +150,30 @@ end
 
 #death!(person, time, model) = death_!(person, time, model, populationParameters(model))
 
+
+function doDeathsAlivePeople_(people, model, time, parameters) 
+
+    deads = Person[] 
+    deadsind = Int[] 
+
+    for (ind,person) in enumerate(people) 
+        if death!(person, time, model, parameters) 
+            push!(deadsind,ind)
+            push!(deads,person)
+        end 
+    end # for livingPeople
+
+    deads, deadsind  
+end
+
+
 # Internal function (the existing implementation)
 "evaluate death events in a population"
 function doDeaths_!(model, time, parameters)
 
-    deads = Person[] 
-
     people = alivePeople(model) 
 
-    for person in people 
-        if death!(person, time, model, parameters) 
-            push!(deads,person)
-        end 
-    end # for livingPeople
+    deads, deadsind = doDeathsAlivePeople_(people, model, time, parameters)
     
     delayedVerbose() do
         count = length([person for person in people if alive(person)] )
@@ -170,7 +181,7 @@ function doDeaths_!(model, time, parameters)
         println("# living people : $(count+numDeaths), # deaths : $(numDeaths)") 
     end 
 
-    deads   
+    (deads = deads, deadsind = deadsind)    
 end  # function doDeaths_!       
 
 
