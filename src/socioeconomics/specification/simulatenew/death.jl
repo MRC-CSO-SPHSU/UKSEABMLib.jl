@@ -1,13 +1,10 @@
 
-using ....Utilities: age2yearsmonths, date2yearsmonths
+#using ....Utilities: age2yearsmonths, date2yearsmonths
+#using ....ParamTypes: populationParameters, allParameters
 
-using ....XAgents
+export doDeaths!, setDead!, death! 
 
-using ....ParamTypes: populationParameters, allParameters
-
-export doDeaths!, setDead!
-
-function deathProbability(baseRate,person,parameters) 
+function deathProbability_(baseRate,person,parameters) 
     #=
         Not realized yet  / to be realized in another module? 
         classRank = person.classRank
@@ -83,9 +80,10 @@ function setDead!(person)
     nothing
 end 
 
-
 # currently leaves dead agents in population
-function death!(person, currstep, model, parameters)
+function death!(person, currstep, model, pars)
+
+    parameters = populationParameters(pars)
 
     data = dataOf(model)
 
@@ -128,7 +126,7 @@ function death!(person, currstep, model, parameters)
         Classes to be considered in a different module 
     =#
                         
-    deathProb = min(1.0, deathProbability(rawRate,person,parameters))
+    deathProb = min(1.0, deathProbability_(rawRate,person,parameters))
                         
     #=
         The following is uncommented code in the original code < 1950
@@ -150,31 +148,41 @@ function death!(person, currstep, model, parameters)
     false
 end 
 
+#death!(person, time, model) = death_!(person, time, model, populationParameters(model))
 
-# Internal function (the existing implementation)
-"evaluate death events in a population"
-function doDeaths_!(people, time, model, parameters)
+
+function doDeathsAlivePeople_(people, model, time, parameters) 
 
     deads = Person[] 
+    deadsind = Int[] 
 
-    for person in people 
+    for (ind,person) in enumerate(people) 
         if death!(person, time, model, parameters) 
+            push!(deadsind,ind)
             push!(deads,person)
         end 
     end # for livingPeople
+
+    deads, deadsind  
+end
+
+
+# Internal function (the existing implementation)
+"evaluate death events in a population"
+function doDeaths_!(model, time, parameters)
+
+    people = alivePeople(model) 
+
+    deads, deadsind = doDeathsAlivePeople_(people, model, time, parameters)
     
     delayedVerbose() do
         count = length([person for person in people if alive(person)] )
         numDeaths = length(deads)
-        println("# living people : $(count+numDeaths), # people died in curr iteration : $(numDeaths)") 
+        println("# living people : $(count+numDeaths), # deaths : $(numDeaths)") 
     end 
 
-    deads   
-end  # function doDeaths_!               
+    (deads = deads, deadsind = deadsind)    
+end  # function doDeaths_!       
 
-# Generic API for doDeaths!
-doDeaths!(model,time,parameters) = 
-    doDeaths_!(alivePeople(model),time,model,populationParameters(parameters))
 
-doDeaths!(model,time) = 
-    doDeaths!(model,time,allParameters(model))
+doDeaths!(model, time) = doDeaths_!(model, time, allParameters(model))# populationParameters(model))

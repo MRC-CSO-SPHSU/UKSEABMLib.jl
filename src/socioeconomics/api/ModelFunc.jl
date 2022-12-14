@@ -9,7 +9,7 @@ module ModelFunc
 
 #import ..ParamTypes: populationParameters ?
 
-export allPeople, alivePeople, dataOf
+export allPeople, alivePeople, dataOf, houses, towns 
 #export populationParameters    # This one implies that parameters are part of the model definition
                                # @todo check if this is necessary 
 
