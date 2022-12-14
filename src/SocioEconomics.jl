@@ -8,7 +8,7 @@ module SocioEconomics
 
 # ensuring consistent version of MultiAgents.jl library
 using MultiAgents: MAVERSION
-@assert MAVERSION == v"0.3.2"  
+@assert MAVERSION == v"0.4"  
 
 include("Constants.jl")
 using .Constants: SESRCPATH, SEPATH, SEVERSION, 
