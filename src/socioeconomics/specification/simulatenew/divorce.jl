@@ -1,6 +1,6 @@
-export doDivorces!, selectDivorce, divorce!
+export dodivorces!, select_divorce, select_divorce_alive, divorce!
 
-function divorceProbability(rawRate, pars) # ,classRank) 
+function _divorce_probability(rawRate, pars) # ,classRank) 
     #=
      def computeSplitProb(self, rawRate, classRank):
         a = 0
@@ -13,32 +13,30 @@ function divorceProbability(rawRate, pars) # ,classRank)
     rawRate * pars.divorceBias 
 end 
 
-function divorce!(man, time, model)
-    applyDivorce_!(man, time, houses(model), houses(model), 
-                    fuse(   divorceParameters(model), 
-                            workParameters(model)) )
-end
-
-
-function applyDivorce_!(man, time, allHouses, allTowns, parameters)
-        
-    agem = age(man) 
+function _assumption_divorce(man)
     assumption() do
         @assert isMale(man) 
         @assert !isSingle(man)
         @assert typeof(agem) == Rational{Int}
     end
+    nothing 
+end 
+
+function _divorce!(man, time, allHouses, allTowns, parameters)
+        
+    agem = age(man) 
+    _assumption_divorce(man)
     
     ## This is here to manage the sweeping through of this parameter
     ## but only for the years after 2012
     if time < parameters.thePresent 
         # Not sure yet if the following is parameter or data 
-        rawRate = parameters.basicDivorceRate * parameters.divorceModifierByDecade[ceil(Int, agem / 10)]
+        rawRate = parameters.basicDivorceRate * parameters.divorceModifierByDecade[ceil(Int, agem / 10 )]
     else 
-        rawRate = parameters.variableDivorce  * parameters.divorceModifierByDecade[ceil(Int, agem / 10)]           
+        rawRate = parameters.variableDivorce  * parameters.divorceModifierByDecade[ceil(Int, agem / 10 )]           
     end
 
-    divorceProb = divorceProbability(rawRate, parameters) # TODO , man.classRank)
+    divorceProb = _divorce_probability(rawRate, parameters) # TODO , man.classRank)
 
     if rand() < p_yearly2monthly(divorceProb) 
         wife = partner(man)
@@ -55,9 +53,10 @@ function applyDivorce_!(man, time, allHouses, allTowns, parameters)
         peopleToMove = [man]
         for child in dependents(man)
             @assert alive(child)
+            # TODO check the following 
             if (father(child) == man && mother(child) != wife) ||
                 # if both have the same status decide by probability
-                (((father(child) == man) == (mother(child) == wife)) &&
+                (((father(child) == man) && (mother(child) == wife)) &&
                  rand() < parameters.probChildrenWithFather)
                 push!(peopleToMove, child)
                 resolveDependency!(wife, child)
@@ -74,43 +73,37 @@ function applyDivorce_!(man, time, allHouses, allTowns, parameters)
     false 
 end 
 
+divorce!(man, time, model, parameters) = 
+    _divorce!(man, 
+            time, 
+            houses(model), 
+            towns(model), 
+            fuse(divorceParameters(parameters),workParameters(parameters)))
 
-selectDivorce(person, pars) = alive(person) && isMale(person) && !isSingle(person)
+select_divorce_alive(person)  = isMale(person) && !isSingle(person)
+selectDivorce(person, pars) = alive(person) && select_divorce_alive(person)
 
-# Atiyah: 
-# @todo: the interface to be placed doDivorces(model,time,parameters)
-function doDivorces!(model, time)
-
-    people = allPeople(model)
-
-    marriedMen = [ man for man in people if selectDivorce(man, nothing) ]
-
-    divorced = Person[] 
-    
-    for man in marriedMen 
-        wife = partner(man) 
-        if divorce!(man, time, model) 
-            append!(divorced,[man, wife]) 
-        end 
-    end 
-
+function _verbose_dodivorce(divorced) 
     delayedVerbose() do
         println("# of divorced : $(length(divorced))")
     end
-    
-    divorced 
+    nothing 
+end 
+
+function _dodivorces!(people, model, time)
+    divorced = Person[] 
+    pars = fuse(divorceParameters(model),workParameters(model))
+    for man in people    
+        if ! select_divorce_alive(man) continue end 
+        wife = partner(man) 
+        if _divorce!(man, time, houses(model), towns(model), pars) 
+            push!(divorced,man, wife) 
+        end 
+    end 
+    _verbose_dodivorce(divorced)
+    return divorced  
 end
 
-doDivorces!(model,time,parameters) = error("no reason to implement this")
-
-#= 
-Atiyah: 
-Draft suggestion: if an API with model argument is needed (does not seem to be the case)
-an API may look like 
-doDivorces!(model,time,parameters)   
-
-doDivorces!(model,time,parameters) = 
-    doDivorces(people,time,model.houses,model.towns,parameters)
-    # better (to work for me as well) 
-    # doDivorces!(population(model),time,houses(model),towns(model),divorcePars(model)) 
-=# 
+dodivorces!(model, time, ::FullPopulation) = _dodivorces!(alivePeople(model) , model, time) 
+dodivorces!(model, time, ::AlivePopulation) = _dodivorces!(allPeople(model) , model, time) 
+dodivorces!(model, time) = dodivorces!(model, time, AlivePopulation())
