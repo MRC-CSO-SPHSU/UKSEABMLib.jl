@@ -163,9 +163,8 @@ function _dodeaths!(people, model, time)
 
     deads = Person[] 
     deadsind = Int[] 
-
     for (ind,person) in enumerate(people) 
-        if death!(person, time, model, allParameters(model)) 
+        if _death!(person, time, dataOf(model), populationParameters(model)) 
             push!(deadsind,ind)
             push!(deads,person)
         end 
