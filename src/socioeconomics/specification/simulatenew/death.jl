@@ -1,5 +1,5 @@
 
-export dodeaths!, setDead!, death!
+export dodeaths!, setDead!, death!!
 
 function _death_probability(baseRate,person,poppars)
     #=
@@ -138,7 +138,7 @@ function _verbose_dodeaths(people,deads)
     delayedVerbose() do
         for dead in deads 
             y, = age2yearsmonths(age(dead))
-            println("person $(dead.id) died year $(curryear) with age of $y")
+            println("person $(dead.id) died with age of $y")
         end   
         count = length(people)
         numDeaths = length(deads)
@@ -169,12 +169,39 @@ function _dodeaths!(people, model, time)
             push!(deads,person)
         end 
     end # for livingPeople
-
     _verbose_dodeaths(people,deads)
-
     return (deads = deads, deadsind = deadsind)    
 end
 
-dodeaths!(model, time, ::FullPopulation) = _dodeaths!(alivePeople(model) , model, time) 
-dodeaths!(model, time, ::AlivePopulation) = _dodeaths!(allPeople(model) , model, time) 
-dodeaths!(model, time) = dodeaths!(model, time, AlivePopulation())
+function _verbose_dodeaths(person) 
+    delayedVerbose() do
+        y, = age2yearsmonths(age(person))
+        println("person $(person.id) died with age of $y")
+    end 
+    nothing 
+end 
+
+function _dodeaths_removedeads!(people, model, time) 
+    _assumption_dodeaths(people)
+    len = length(people)
+    for (ind,person) in enumerate(Iterators.reverse(people)) 
+        if _death!(person, time, dataOf(model), populationParameters(model)) 
+            @assert person === people[len-ind+1]
+            deleteat!(people,len-ind+1)
+            _verbose_dodeaths(person)
+        end 
+    end 
+    nothing  
+end
+
+
+dodeaths!(model, time, ::FullPopulation, ::WithReturn) = 
+    _dodeaths!(alivePeople(model) , model, time) 
+dodeaths!(model, time, ::AlivePopulation, ::WithReturn) = 
+    _dodeaths!(allPeople(model) , model, time) 
+dodeaths!(model, time, ::FullPopulation, ::NoReturn) = 
+    _dodeaths_removedeads!(alivePeople(model), model, time)
+dodeaths!(model, time, ::AlivePopulation, ::NoReturn) = 
+    _dodeaths_removedeads!(allPeople(model), model, time)
+dodeaths!(model, time) = 
+    dodeaths!(model, time, AlivePopulation(), NoReturn())

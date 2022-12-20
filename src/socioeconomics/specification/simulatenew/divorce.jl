@@ -17,6 +17,7 @@ function _assumption_divorce(man)
     assumption() do
         @assert isMale(man) 
         @assert !isSingle(man)
+        agem = age(man)
         @assert typeof(agem) == Rational{Int}
     end
     nothing 
@@ -25,7 +26,6 @@ end
 function _divorce!(man, time, allHouses, allTowns, parameters)
         
     agem = age(man) 
-    _assumption_divorce(man)
     
     ## This is here to manage the sweeping through of this parameter
     ## but only for the years after 2012
@@ -83,9 +83,19 @@ divorce!(man, time, model, parameters) =
 select_divorce_alive(person)  = isMale(person) && !isSingle(person)
 selectDivorce(person, pars) = alive(person) && select_divorce_alive(person)
 
-function _verbose_dodivorce(divorced) 
+function _verbose_dodivorce(ndivorced::Int) 
     delayedVerbose() do
-        println("# of divorced : $(length(divorced))")
+        println("# of divorced : ndivorced")
+    end
+    nothing 
+end 
+
+_verbose_dodivorce(divorced::Vector{Person}) = 
+    _verbose_dodivorce(length(divorced)) 
+
+function _verbose_dodivorce(man::Person) 
+    delayedVerbose() do
+        println("man id $(man.id) got divorced")
     end
     nothing 
 end 
@@ -96,14 +106,36 @@ function _dodivorces!(people, model, time)
     for man in people    
         if ! select_divorce_alive(man) continue end 
         wife = partner(man) 
+        _assumption_divorce(man)
         if _divorce!(man, time, houses(model), towns(model), pars) 
-            push!(divorced,man, wife) 
+        #if divorce!(man, time, model, allParameters(model))
+            push!(divorced, man, wife) 
         end 
     end 
     _verbose_dodivorce(divorced)
-    return divorced  
+    return (divorced = divorced,) 
 end
 
-dodivorces!(model, time, ::FullPopulation) = _dodivorces!(alivePeople(model) , model, time) 
-dodivorces!(model, time, ::AlivePopulation) = _dodivorces!(allPeople(model) , model, time) 
-dodivorces!(model, time) = dodivorces!(model, time, AlivePopulation())
+function _dodivorces_noret!(people, model, time)
+    pars = fuse(divorceParameters(model),workParameters(model))
+    ndivorced = 0
+    for man in people    
+        if ! select_divorce_alive(man) continue end 
+        if _divorce!(man, time, houses(model), towns(model), pars) 
+            ndivorced += 2 
+            _verbose_dodivorce(man)
+        end 
+    end 
+    _verbose_dodivorce(ndivorced)
+    nothing 
+end
+
+dodivorces!(model, time, ::FullPopulation, ::WithReturn) = 
+    _dodivorces!(alivePeople(model) , model, time) 
+dodivorces!(model, time, ::AlivePopulation, ::WithReturn) = 
+    _dodivorces!(allPeople(model) , model, time)
+dodivorces!(model, time, ::FullPopulation, ::NoReturn) = 
+    _dodivorces_noret!(alivePeople(model) , model, time) 
+dodivorces!(model, time, ::AlivePopulation, ::NoReturn) = 
+    _dodivorces_noret!(allPeople(model) , model, time) 
+dodivorces!(model, time) = dodivorces!(model, time, AlivePopulation(),NoReturn())

@@ -129,7 +129,7 @@ end
 birth!(woman, currstep, model, pars) = 
     _birth!(woman, currstep, dataOf(model), birthParameters(pars))
 
-function _verbose_dobirths(people, babies, birthpars) 
+function _verbose_dobirths(people, nbabies::Int, birthpars)
     delayedVerbose() do
         allFemales = [ woman for woman in people if isFemale(woman) ]
         adultWomen = [ aWoman for aWoman in allFemales if 
@@ -170,18 +170,13 @@ function _verbose_dobirths(people, babies, birthpars)
         println("# of women with recent child: $(length(womenWithRecentChild))")
         println("married reproductive percentage : $repMarriedPercentage")
         println("  out of which had a recent child : $womenWithRecentChildPercentage ")
-        println("number of births : $(length(babies))")    
+        println("number of births : $nbabies")    
     end
     nothing 
 end
-"""
-Accept a population and evaluates the birth rate upon computing
-- the population of married fertile women according to 
-fixed parameters (minPregnenacyAge, maxPregnenacyAge) and 
-- the birth probability data (fertility bias and growth rates) 
 
-Class rankes and shares are temporarily ignored.
-"""
+_verbose_dobirths(people, babies, birthpars) = 
+    _verbose_dobirths(people, length(babies), birthpars)
 
 select_birth(woman, birthpars) = isFemale(woman) && 
     !isSingle(woman) && 
@@ -223,10 +218,6 @@ function _dobirths!(people, currstep, data, birthpars)
 
     # numBirths =  0    # instead of [0, 0, 0, 0, 0]
 
-    # TODO The following could be collapsed into one loop / not sure if it is more efficient 
-    #      there is also a potential to save alot of re-computation in each iteration by 
-    #      storing the intermediate results and modifying the computation.
-    #      However, it could be also the case that Julia compiler does something efficient any way? 
     #reproductiveWomen = [ woman for woman in people if select_birth(woman, birthpars) ]
     _assumption_dobirths(people, birthpars, currstep)
     babies = Person[] 
@@ -281,12 +272,43 @@ function _dobirths!(people, currstep, data, birthpars)
     return (babies = babies,)
 end  # function doBirths! 
 
-dobirths!(model,time,::FullPopulation)  = 
+
+function _dobirths_add!(people, currstep, data, birthpars)
+    _assumption_dobirths(people, birthpars, currstep)
+    npeople = length(people)  
+    for woman in Iterators.reverse(people)  
+        if !(select_birth(woman, birthpars)) continue end 
+        if _subject_to_birth(woman, currstep, data, birthpars)
+           baby = _givesbirth!(woman)
+           push!(people,baby)
+        end 
+    end # for woman 
+    nbabies = length(people) - npeople 
+    _verbose_dobirths(people, nbabies, birthpars)
+    nothing 
+end  # function doBirths! 
+
+dobirths!(model,time,::FullPopulation, ::WithReturn)  = 
     _dobirths!(alivePeople(model),time,dataOf(model),birthParameters(model))
-dobirths!(model,time,::AlivePopulation) =
+dobirths!(model,time,::AlivePopulation, ::WithReturn) =
 	_dobirths!(allPeople(model),time,dataOf(model),birthParameters(model))
+dobirths!(model,time,::FullPopulation, ::NoReturn)  = 
+    _dobirths_add!(alivePeople(model),time,dataOf(model),birthParameters(model))
+dobirths!(model,time,::AlivePopulation, ::NoReturn) =
+	_dobirths_add!(allPeople(model),time,dataOf(model),birthParameters(model))
+
+"""
+    dobirths!(mode, time)
+
+Accept a population and evaluates the birth rate upon computing
+- the population of married fertile women according to 
+fixed parameters (minPregnenacyAge, maxPregnenacyAge) and 
+- the birth probability data (fertility bias and growth rates) 
+    
+Class rankes and shares are temporarily ignored.
+"""
 dobirths!(model,time) =
-	dobirths!(model,time,AlivePopulation())
+	dobirths!(model,time,AlivePopulation(), WithReturn())
 
 
 
