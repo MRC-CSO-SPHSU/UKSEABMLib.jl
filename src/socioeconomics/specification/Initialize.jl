@@ -28,7 +28,7 @@ function initializeHousesInTowns_(towns, pars)
         if town.density > 0
 
             adjustedDensity = town.density * pars.mapDensityModifier
-        
+         
             for hx in 1:pars.townGridDimension  
                 for hy in 1:pars.townGridDimension 
         
@@ -43,8 +43,7 @@ function initializeHousesInTowns_(towns, pars)
         end # if town.density 
     end # for town 
     
-    houses  
-
+    return houses  
 end  # function initializeHousesInTwons 
 
 
