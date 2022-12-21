@@ -1,5 +1,5 @@
-export Town, undefinedTown, TownLocation
-export isAdjacent8, adjacent8Towns, manhattanDistance
+export Town, TownLocation
+export undefined, isAdjacent8, adjacent8Towns, manhattanDistance
 
 """
 Specification of a Town agent type.
@@ -15,22 +15,18 @@ Type Town to extend from AbstractAXgent.
 
 const TownLocation  = NTuple{2,Int}
 
-struct Town <: AbstractXAgent
+struct Town{H} <: AbstractXAgent
     id::Int
     pos::TownLocation
     name::String                            # does not look necessary
     # lha::Array{Float64,1}                 # local house allowance 
                                             #   a vector of size 4 each corresponding the number of bed rooms 
     density::Float64                        # relative population density w.r.t. the town with the highest density 
+    allocatedHouses::Vector{H}
+    emptyHouses::Vector{H}
 
-    ""
-    function Town(pos::TownLocation,name::String,density::Float64) 
-        #global IDCOUNTER = IDCOUNTER + 1
-        # idcounter = getIDCOUNTER() 
-        # new(IDCOUNTER,pos,name,density)
-        new(getIDCOUNTER(),pos,name,density)
-    end 
-
+    Town{H}(pos::TownLocation,name::String,density::Float64) where H =
+        new{H}(getIDCOUNTER(),pos,name,density,H[],H[])
 end  # Town 
 
 "costum show method for Town"
@@ -43,9 +39,10 @@ end
 
 # Base.show(io::IO, ::MIME"text/plain", town::Town) = Base.show(io,town)
     
-Town(pos;name="",density=0.0) = Town(pos,name,density)
+Town{H}(pos;name="",density=0.0) where H = Town{H}(pos,name,density)
 
-const undefinedTown = Town((-1,-1),"",0.0)
+undefined(town::Town{H}) where H = 
+    town.pos == (-1,-1)
 
 isAdjacent8(town1, town2) = 
     abs(town1.pos[1] - town2.pos[1]) <= 1 &&   

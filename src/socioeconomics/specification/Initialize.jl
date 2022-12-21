@@ -78,7 +78,7 @@ function assignCouplesToHouses_!(population::Vector{Person}, houses::Vector{Pers
     end # for person     
 
     for person in population
-        if person.pos == undefinedHouse
+        if person.pos == UNDEFINED_HOUSE
             @assert isMale(person)
             @assert length(randomhouses) >= 1
             moveToHouse!(person, pop!(randomhouses))

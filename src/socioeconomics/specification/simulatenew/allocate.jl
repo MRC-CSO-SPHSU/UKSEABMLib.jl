@@ -7,12 +7,10 @@ An initial design for findNewHouse*(*) interfaces (subject to incremental
 export findEmptyHouseInTown, findEmptyHouseInOrdAdjacentTown, 
         findEmptyHouseAnywhere, movePeopleToEmptyHouse!, movePeopleToHouse!
 
-const undefinedHouse = PersonHouse(undefinedTown,(-1,-1))
-
 # The type annotation is to hint validity for future extensions of agent types 
 function _select_house(list)::PersonHouse
     if isempty(list)
-        return undefinedHouse
+        return UNDEFINED_HOUSE
     end
     rand(list)
 end
@@ -32,7 +30,7 @@ end
 findEmptyHouseAnywhere(allHouses) = _select_house(emptyHouses(allHouses)) 
 
 function movePeopleToHouse!(people, house)
-    @assert house !== undefinedHouse
+    @assert house !== UNDEFINED_HOUSE
     # TODO 
     # - yearInTown (used in relocation cost)
     # - movedThisYear
@@ -46,40 +44,40 @@ end
 
 # TODO return only one type 
 function movePersonToEmptyHouse!(person::Person, dmax, allHouses, allTowns=Town[]) 
-    newhouse = undefinedHouse
+    newhouse = UNDEFINED_HOUSE
 
     if dmax == :here
         newhouse = findEmptyHouseInTown(person.pos,allHouses)
     end
-    if dmax == :near || newhouse == undefinedHouse
+    if dmax == :near || newhouse == UNDEFINED_HOUSE
         newhouse = findEmptyHouseInOrdAdjacentTown(person.pos,allHouses,allTowns) 
     end
-    if dmax == :far || newhouse == undefinedHouse
+    if dmax == :far || newhouse == UNDEFINED_HOUSE
         newhouse = findEmptyHouseAnywhere(allHouses)
     end 
 
-    if newhouse != undefinedHouse
+    if newhouse != UNDEFINED_HOUSE
         movePersonToHouse!(person, newhouse)
     end
-    return undefinedHouse
+    return UNDEFINED_HOUSE
 end
 
 
 # people[1] determines centre of search radius
 function movePeopleToEmptyHouse!(people, dmax, allHouses, allTowns=Town[]) 
-    newhouse = undefinedHouse
+    newhouse = UNDEFINED_HOUSE
 
     if dmax == :here
         newhouse = findEmptyHouseInTown(people[1].pos,allHouses)
     end
-    if dmax == :near || newhouse == undefinedHouse
+    if dmax == :near || newhouse == UNDEFINED_HOUSE
         newhouse = findEmptyHouseInOrdAdjacentTown(people[1].pos,allHouses,allTowns) 
     end
-    if dmax == :far || newhouse == undefinedHouse
+    if dmax == :far || newhouse == UNDEFINED_HOUSE
         newhouse = findEmptyHouseAnywhere(allHouses)
     end 
 
-    if newhouse != undefinedHouse
+    if newhouse != UNDEFINED_HOUSE
         movePeopleToHouse!(people, newhouse)
     end
     return newhouse

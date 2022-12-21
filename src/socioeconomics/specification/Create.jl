@@ -17,11 +17,11 @@ createTowns(pars::DemographyPars) = createTowns(mapParameters(pars))
 
 function createTowns(mappars) 
 
-    uktowns = Town[] 
+    uktowns = PersonTown{PersonHouse}[] 
     
     for y in 1:mappars.mapGridYDimension
         for x in 1:mappars.mapGridXDimension 
-            town = Town((x,y),density=mappars.map[y,x])
+            town = PersonTown((x,y),density=mappars.map[y,x])
             push!(uktowns,town)
         end
     end
@@ -75,7 +75,7 @@ function createPyramidPopulation_(pars)
         
         gender = Bool(rand(0:1)) ? male : female
 
-        person = Person(undefinedHouse, age; gender)
+        person = Person(UNDEFINED_HOUSE, age; gender)
         if age < 18
             push!(population, person)
         else
@@ -176,8 +176,8 @@ function createPopulation_(pars)
         #    birthYear = properties[:startYear]  - ageMale/Female 
         #    birthMonth = rand((1:12))
 
-        newMan = Person(undefinedHouse,rageMale,gender=male)
-        newWoman = Person(undefinedHouse,rageFemale,gender=female)   
+        newMan = Person(UNDEFINED_HOUSE,rageMale,gender=male)
+        newWoman = Person(UNDEFINED_HOUSE,rageFemale,gender=female)   
         setAsPartners!(newMan,newWoman) 
         
         push!(population,newMan);  push!(population,newWoman) 

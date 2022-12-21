@@ -4,7 +4,6 @@ export getHomeTown, getHouseLocation, undefined, isEmpty, town
 
 using ....Utilities: removefirst!
 
-
 const HouseLocation  = NTuple{2,Int}
 
 """
@@ -14,7 +13,6 @@ This file is included in the module XAgents
 
 Type House to extend from AbstracXAgent.
 """ 
-
 mutable struct House{P, T} <: AbstractXAgent
     id :: Int
     town :: T
@@ -25,8 +23,8 @@ mutable struct House{P, T} <: AbstractXAgent
     House{P, T}(town, pos) where {P, T} = new(getIDCOUNTER(),town, pos,P[])
 end # House 
 
-
-undefined(house) = house.town == undefinedTown && house.pos == (-1,-1)
+undefined(house::House{P,T}) where {P,T} = 
+    house.town == undefined(town) && house.pos == (-1,-1)
 
 isEmpty(house) = length(house.occupants) == 0
 
@@ -57,8 +55,6 @@ end
 "remove an occupant from a house"
 function removeOccupant!(house::House{P}, person::P) where {P}
     removefirst!(house.occupants, person) 
-	# we can't assume anything about the layout of typeof(person)
-	#person.pos = undefinedHouse 
     nothing 
 end
 
