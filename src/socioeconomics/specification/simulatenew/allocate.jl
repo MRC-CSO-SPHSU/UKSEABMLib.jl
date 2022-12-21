@@ -4,15 +4,14 @@ An initial design for findNewHouse*(*) interfaces (subject to incremental
     modification, simplifcation and tuning)
 =# 
 
-#using Memoization
-
 export findEmptyHouseInTown, findEmptyHouseInOrdAdjacentTown, 
         findEmptyHouseAnywhere, movePeopleToEmptyHouse!, movePeopleToHouse!
 
 
 function selectHouse(list)
     if isempty(list)
-        return nothing
+        #return nothing
+        error("list of houses is empty")
     end
     rand(list)
 end
@@ -43,6 +42,28 @@ function movePeopleToHouse!(people, house)
         end
     end
 end
+
+
+function movePersonToEmptyHouse!(person::Person, dmax, allHouses, allTowns=Town[]) 
+    newhouse = nothing
+
+    if dmax == :here
+        newhouse = findEmptyHouseInTown(person.pos,allHouses)
+    end
+    if dmax == :near || newhouse == nothing 
+        newhouse = findEmptyHouseInOrdAdjacentTown(person.pos,allHouses,allTowns) 
+    end
+    if dmax == :far || newhouse == nothing
+        newhouse = findEmptyHouseAnywhere(allHouses)
+    end 
+
+    if newhouse != nothing
+        movePersonToHouse!(person, newhouse)
+        # return newhouse
+    end
+    nothing 
+end
+
 
 # people[1] determines centre of search radius
 function movePeopleToEmptyHouse!(people, dmax, allHouses, allTowns=Town[]) 
