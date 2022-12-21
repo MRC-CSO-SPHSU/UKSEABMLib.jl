@@ -17,5 +17,6 @@ A library of types, components and simulation functions for establishing socio-e
    - V0.2.2  (8.12) : doMarriages!, minor improvements 
    - V0.2.3  (9.12) : doAgeTransitions, doSocialTransitions, doWorkTransitions, adoptions
    - V0.2.4  (14.12) : Minor changes for MA Version 0.4, return indicies of dead people (i.e. starting improved return values of simulation functions)
+   - V0.2.5  (21.12) : fixing major performance issues (type instabilities, excessive creation of temporary arrays), tuning API of some simulation functions (dodeaths!, dobirths! and dodivorces!), improved runtime performance (4x faster in comparison with V0.2.4), improved memory allocation (8x less) and storage allocation (4x less)
 
 
