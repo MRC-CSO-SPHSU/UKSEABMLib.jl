@@ -24,7 +24,7 @@ mutable struct House{P, T} <: AbstractXAgent
 end # House 
 
 undefined(house::House{P,T}) where {P,T} = 
-    house.town == undefined(town) && house.pos == (-1,-1)
+    undefined(house.town) && house.pos == UNDEFINED_2DLOCATION
 
 isEmpty(house) = length(house.occupants) == 0
 
