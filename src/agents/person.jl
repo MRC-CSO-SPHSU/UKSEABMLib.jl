@@ -118,13 +118,12 @@ end
 
 #Base.show(io::IO, ::MIME"text/plain", person::Person) = Base.show(io,person)
 
-begin 
-    const PersonHouse = House{Person, PersonTown}
-    const PersonTown = Town{PersonHouse}
-end 
 
-const UNDEFINED_TOWN = Town{PersonHouse}((-1,-1),"",0.0)
-const UNDEFINED_HOUSE = PersonHouse(UNDEFINED_TOWN, (-1, -1))
+const PersonHouse = House{Person, Town}
+const PersonTown = Town{PersonHouse} 
+
+const UNDEFINED_TOWN = Town{House}(UNDEFINED_2DLOCATION,"",0.0)
+const UNDEFINED_HOUSE = PersonHouse(UNDEFINED_TOWN, UNDEFINED_2DLOCATION)
 
 "Constructor with default values"
 Person(pos,age; gender=unknown,

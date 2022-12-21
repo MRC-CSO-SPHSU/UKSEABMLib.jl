@@ -17,7 +17,7 @@ createTowns(pars::DemographyPars) = createTowns(mapParameters(pars))
 
 function createTowns(mappars) 
 
-    uktowns = PersonTown{PersonHouse}[] 
+    uktowns = PersonTown[] 
     
     for y in 1:mappars.mapGridYDimension
         for x in 1:mappars.mapGridXDimension 
