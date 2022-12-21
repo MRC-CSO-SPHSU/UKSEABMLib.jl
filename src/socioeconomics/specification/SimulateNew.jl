@@ -9,7 +9,7 @@ module SimulateNew
 using ....API.ModelFunc  # Here it is does not make sense anymore to 
                     #     employ explicit using statements 
                     #     anything(model) comes from there 
-
+using ....API.Traits
 using ....Utilities
 using ....XAgents
 using ....ParamTypes

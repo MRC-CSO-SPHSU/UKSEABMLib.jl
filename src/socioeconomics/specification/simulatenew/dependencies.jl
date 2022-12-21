@@ -1,6 +1,7 @@
-export selectAssignGuardian, assignGuardian!, doAssignGuardians! 
+export select_nonguarded, select_nonguarded_alive, 
+        assignGuardian!, doAssignGuardians! 
 
-function hasValidGuardian_(person)
+function _has_valid_guardian(person)
     for g in guardians(person)
         if alive(g)
             return true
@@ -10,9 +11,8 @@ function hasValidGuardian_(person)
     false
 end
 
-
-selectAssignGuardian(person) = alive(person) && !canLiveAlone(person) && 
-    !hasValidGuardian_(person)
+select_nonguarded_alive(person) = !canLiveAlone(person) && !_has_valid_guardian(person) 
+select_nonguarded(person) = alive(person) && select_nonguarded_alive(person)
 
 
 function assignGuardian!(person, time, model)
@@ -36,30 +36,6 @@ function assignGuardian!(person, time, model)
 
     true
 end
-
-function doAssignGuardians!(model, time) 
-
-    people = allPeople(model) 
-
-    orphans = [ person for person in people if selectAssignGuardian(person) ]
-
-    n = length(orphans)
-    for orphan in orphans 
-        # Warn if no guardian is selected for an orphan 
-        if assignGuardian!(orphan, time, model)
-            n -= 1 
-        end 
-    end
-
-    delayedVerbose() do 
-        println("# of orphans : $(length(orphans)) out of which $(n) has been adopted")
-        if length(orphans) > 0 
-            println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
-        end
-    end
-
-    orphans 
-end 
     
 function findFamilyGuardian_(person)
     potGuardians = Vector{Union{Person, Nothing}}()
@@ -121,3 +97,28 @@ function adopt_!(guard, person)
         setAsGuardianDependent!(partner(guard), person)
     end
 end
+
+function doAssignGuardians!(model, time) 
+
+    people = allPeople(model) 
+
+    #orphans = [ person for person in people if selectAssignGuardian(person) ]
+    orphans = [ person for person in people if select_nonguarded_alive(person) ]
+
+    n = length(orphans)
+    for orphan in orphans 
+        # Warn if no guardian is selected for an orphan 
+        if assignGuardian!(orphan, time, model)
+            n -= 1 
+        end 
+    end
+
+    delayedVerbose() do 
+        println("# of orphans : $(length(orphans)) out of which $(n) has been adopted")
+        if length(orphans) > 0 
+            println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
+        end
+    end
+
+    orphans 
+end 
