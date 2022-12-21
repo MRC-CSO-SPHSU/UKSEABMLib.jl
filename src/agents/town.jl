@@ -14,6 +14,7 @@ Type Town to extend from AbstractAXgent.
 """
 
 const TownLocation  = NTuple{2,Int}
+const UNDEFINED_2DLOCATION = (-1,-1)
 
 struct Town{H} <: AbstractXAgent
     id::Int
@@ -42,7 +43,7 @@ end
 Town{H}(pos;name="",density=0.0) where H = Town{H}(pos,name,density)
 
 undefined(town::Town{H}) where H = 
-    town.pos == (-1,-1)
+    town.pos == UNDEFINED_2DLOCATION
 
 isAdjacent8(town1, town2) = 
     abs(town1.pos[1] - town2.pos[1]) <= 1 &&   
