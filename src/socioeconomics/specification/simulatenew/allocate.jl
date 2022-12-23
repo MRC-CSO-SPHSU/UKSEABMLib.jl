@@ -68,10 +68,10 @@ function movePeopleToEmptyHouse!(people, dmax, allHouses, allTowns=Town[])
     newhouse = UNDEFINED_HOUSE
 
     if dmax == :here
-        newhouse = findEmptyHouseInTown(people[1].pos,allHouses)
+        newhouse = findEmptyHouseInTown(getHomeTown(people[1]),allHouses)
     end
     if dmax == :near || newhouse == UNDEFINED_HOUSE
-        newhouse = findEmptyHouseInOrdAdjacentTown(people[1].pos,allHouses,allTowns) 
+        newhouse = findEmptyHouseInOrdAdjacentTown(getHomeTown(people[1]),allHouses,allTowns) 
     end
     if dmax == :far || newhouse == UNDEFINED_HOUSE
         newhouse = findEmptyHouseAnywhere(allHouses)
