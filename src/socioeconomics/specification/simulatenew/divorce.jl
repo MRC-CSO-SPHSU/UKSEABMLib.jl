@@ -65,7 +65,7 @@ function _divorce!(man, time, allHouses, allTowns, parameters)
             end 
         end # for 
 
-        movePeopleToEmptyHouse!(peopleToMove, rand([:near, :far]), allHouses, allTowns)
+        movePeopleToEmptyHouse!(peopleToMove, rand([:near, :far]), allTowns)
 
         return true 
     end
@@ -85,7 +85,7 @@ selectDivorce(person, pars) = alive(person) && select_divorce_alive(person)
 
 function _verbose_dodivorce(ndivorced::Int) 
     delayedVerbose() do
-        println("# of divorced : ndivorced")
+        println("# of divorced : $ndivorced")
     end
     nothing 
 end 
