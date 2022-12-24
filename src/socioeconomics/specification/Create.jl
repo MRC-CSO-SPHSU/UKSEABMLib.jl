@@ -10,24 +10,39 @@ using ....Utilities
 using ....XAgents
 using ....ParamTypes 
 
-export createTowns, createPopulation, createPyramidPopulation
+export create_towns, create_inhabited_towns, createPopulation, createPyramidPopulation
 ### 
 
-createTowns(pars::DemographyPars) = createTowns(mapParameters(pars))
-
-function createTowns(mappars) 
-
+function _create_towns(mappars)
     uktowns = PersonTown[] 
-    
     for y in 1:mappars.mapGridYDimension
         for x in 1:mappars.mapGridXDimension 
             town = PersonTown((x,y),density=mappars.map[y,x])
             push!(uktowns,town)
         end
     end
-
-    uktowns
+    return uktowns
 end
+
+create_towns(pars::DemographyPars) = _create_towns(mapParameters(pars))
+
+function _create_inhabited_towns(mappars) 
+    uktowns = PersonTown[] 
+    for y in 1:mappars.mapGridYDimension
+        for x in 1:mappars.mapGridXDimension 
+            density = mappars.map[y,x] 
+            if density > 0 
+                town = PersonTown((x,y),density=density)
+                push!(uktowns,town)
+            end 
+        end
+    end
+    @info "# of towns : $(length(uktowns))"
+    return uktowns
+end 
+
+create_inhabited_towns(pars) = 
+    _create_inhabited_towns(mapParameters(pars))
 
 # return agents with age in interval minAge, maxAge
 # assumes pop is sorted by age
