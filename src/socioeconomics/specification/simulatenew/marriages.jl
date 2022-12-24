@@ -25,7 +25,7 @@ end
 
 
 @memoize eligibleWomen_(model, pars) = [f for f in allPeople(model) if isFemale(f) && alive(f) &&
-                                       isSingle(f) && age(f) > pars.minPregnancyAge]
+                                       isSingle(f) && age(f) > pars.minPregnancyAge] # How about parss.maxPregnancyAge 
 
 # reset memoization caches
 # needs to be done on every time step
