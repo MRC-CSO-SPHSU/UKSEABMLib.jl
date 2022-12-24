@@ -8,7 +8,7 @@ export UNDEFINED_HOUSE, UNDEFINED_TOWN
 export moveToHouse!, resetHouse!, resolvePartnership!, householdIncome
 export householdIncomePerCapita
 
-export getHomeTown, getHomeTownName, agestepAlive!, livingTogether
+export home, getHomeTown, getHomeTownName, agestepAlive!, livingTogether
 export setAsParentChild!, setAsPartners!, setParent!
 export hasAliveChild, ageYoungestAliveChild, hasBirthday, yearsold
 export hasChildrenAtHome, areParentChild, related1stDegree, areSiblings
@@ -122,7 +122,7 @@ end
 const PersonHouse = House{Person, Town}
 const PersonTown = Town{PersonHouse} 
 
-const UNDEFINED_TOWN = Town{House}(UNDEFINED_2DLOCATION,"",0.0)
+const UNDEFINED_TOWN = Town{House}(UNDEFINED_2DLOCATION, 0.0)
 const UNDEFINED_HOUSE = PersonHouse(UNDEFINED_TOWN, UNDEFINED_2DLOCATION)
 
 "Constructor with default values"
@@ -149,6 +149,8 @@ Person(;pos=UNDEFINED_HOUSE,age=0,
                 CareBlock(0, 0, 0),
                 ClassBlock(0), DependencyBlock{Person}())
 
+home(person) = person.pos 
+
 "associate a house to a person, removes person from previous house"
 function moveToHouse!(person::Person,house)
     if ! undefined(person.pos) 
@@ -163,7 +165,6 @@ function resetHouse!(person::Person)
     if ! undefined(person.pos) 
         removeOccupant!(person.pos, person)
     end
-
     person.pos = UNDEFINED_HOUSE
     nothing 
 end 
@@ -281,7 +282,7 @@ end
 function resolveDependency!(guardian, dependent)
     deps = dependents(guardian)
     idx_d = findfirst(==(dependent), deps)
-    if idx_d == nothing
+    if idx_d == nothing  # an error should be returned?
         return
     end
 

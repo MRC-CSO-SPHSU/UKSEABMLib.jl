@@ -37,9 +37,7 @@ function getHomeTown(house::House)
 end
 
 "town name associated with house"
-function getHomeTownName(house::House)
-    house.town.name
-end
+getHomeTownName(house::House) = house.town.id 
 
 "house location in the associated town"
 function getHouseLocation(house::House)
@@ -48,13 +46,23 @@ end
 
 "add an occupant to a house"
 function addOccupant!(house::House{P}, person::P) where {P}
-	push!(house.occupants, person) 
+    if isEmpty(house)
+	    push!(house.occupants, person)
+        @assert house in emptyhouses(getHomeTown(house))
+        make_emptyhouse_occupied!(house)
+    else 
+        push!(house.occupants,person)
+    end 
 	nothing
 end
 
 "remove an occupant from a house"
 function removeOccupant!(house::House{P}, person::P) where {P}
     removefirst!(house.occupants, person) 
+    if isEmpty(house) 
+        @assert house in occupiedhouses(getHomeTown(house))
+        make_occupiedhouse_empty!(house)
+    end 
     nothing 
 end
 
