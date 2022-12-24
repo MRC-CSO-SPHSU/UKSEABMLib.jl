@@ -54,6 +54,7 @@ end # function deathProb
 # Atiyah: Does not this rather belong to person.jl?
 function setDead!(person) 
     person.info.alive = false
+    house = home(person) 
     resetHouse!(person)
     if !isSingle(person) 
         resolvePartnership!(partner(person),person)
@@ -134,15 +135,23 @@ end
 death!(person, currstep, model, pars) = 
     _death!(person, currstep, dataOf(model), populationParameters(pars))
 
-function _verbose_dodeaths(people,deads)
+
+function _verbose_dodeaths(people,numDeaths::Int,towns) 
+    delayedVerbose() do 
+        count = length(people)
+        println("# living people : $(count), # deaths : $(numDeaths)")
+        ehouses,ohouses = number_of_houses(towns) 
+        println("# empty houses : $ehouses , # occupied houses : $ohouses")
+    end 
+end 
+
+function _verbose_dodeaths(people,deads,towns)
     delayedVerbose() do
         for dead in deads 
             y, = age2yearsmonths(age(dead))
             println("person $(dead.id) died with age of $y")
         end   
-        count = length(people)
-        numDeaths = length(deads)
-        println("# living people : $(count), # deaths : $(numDeaths)") 
+        _verbose_dodeaths(people,length(deads),towns)
     end 
     nothing 
 end 
@@ -169,7 +178,7 @@ function _dodeaths!(people, model, time)
             push!(deads,person)
         end 
     end # for livingPeople
-    _verbose_dodeaths(people,deads)
+    _verbose_dodeaths(people,deads,towns(model))
     return (deads = deads, deadsind = deadsind)    
 end
 
@@ -183,14 +192,19 @@ end
 
 function _dodeaths_removedeads!(people, model, time) 
     _assumption_dodeaths(people)
+    ndeads = 0
     len = length(people)
     for (ind,person) in enumerate(Iterators.reverse(people)) 
         if _death!(person, time, dataOf(model), populationParameters(model)) 
             @assert person === people[len-ind+1]
             deleteat!(people,len-ind+1)
             _verbose_dodeaths(person)
+            ndeads += 1
         end 
     end 
+    if ndeads > 0 
+        _verbose_dodeaths(people,ndeads,towns(model))
+    end
     nothing  
 end
 
