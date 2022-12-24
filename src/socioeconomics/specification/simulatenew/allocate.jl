@@ -4,81 +4,70 @@ An initial design for findNewHouse*(*) interfaces (subject to incremental
     modification, simplifcation and tuning)
 =# 
 
-export findEmptyHouseInTown, findEmptyHouseInOrdAdjacentTown, 
-        findEmptyHouseAnywhere, movePeopleToEmptyHouse!, movePeopleToHouse!
+export get_or_create_emptyhouse!, move_person_to_emptyhouse!
 
-# The type annotation is to hint validity for future extensions of agent types 
-function _select_house(list)::PersonHouse
-    if isempty(list)
-        return UNDEFINED_HOUSE
+# The type annotation is to ensure validity for future extensions of agent types 
+_get_random_emptyhouse(town::PersonTown) = rand(emptyhouses(town))
+
+function get_or_create_emptyhouse!(town::PersonTown, allTowns, allHouses, mappars, ::InTown) 
+    if has_emptyhouses(town)
+        return _get_random_emptyhouse(town)
+    else
+        xdim = mappars.townGridDimension # todo Correction rand(1:mappars.townGridDimension)
+        ydim = 0 
+        newhouse = establish_newhouse(town,xdim, ydim)
+        push!(allHouses, newhouse) 
+        return newhouse 
     end
-    rand(list)
 end
 
-findEmptyHouseInTown(town, allHouses) = _select_house(emptyHousesInTown(town, allHouses))
-
-function findEmptyHouseInOrdAdjacentTown(town, allHouses, allTowns) 
-    adjTowns = adjacent8Towns(town, allTowns)
-    emptyHouses = [ house for town in adjTowns 
-                          for house in emptyHousesInTown(town, allHouses) ]
-
-    _select_house(emptyHouses)
+function _get_or_create_emptyhouse!(towns, allTowns, allHouses, mappars) 
+    town = select_random_town(towns)
+    return get_or_create_emptyhouse!(town, allTowns, allHouses, mappars, InTown())
 end
 
-# we might want to cache a list of empty houses at some point, but for now 
-# this is fine
-findEmptyHouseAnywhere(allHouses) = _select_house(emptyHouses(allHouses)) 
+get_or_create_emptyhouse!(town, allTowns, allHouses, mappars, ::AdjTown) = 
+    _get_or_create_emptyhouse!(adjacent_8_towns(town), allTowns, allHouses, mappars) 
 
-function movePeopleToHouse!(people, house)
-    @assert house !== UNDEFINED_HOUSE
+get_or_create_emptyhouse(::PersonTown, allTowns, allHouses, mappars, ::AnyWhere) = 
+    _get_or_create_emptyhouse!(allTowns, allTowns, allHouses, mappars) 
+
+function move_person_to_emptyhouse(person, house) 
+    moveToHouse!(person, house) 
+    #make_emptyhouse_occupied!(newhouse)
+    nothing 
+end 
+
+function move_person_to_emptyhouse!(person::Person, 
+                                    allTowns,
+                                    allHouses, 
+                                    mappars,
+                                    dmax) 
     # TODO 
     # - yearInTown (used in relocation cost)
     # - movedThisYear
+    newhouse = get_or_create_emptyhouse(getHomeTown(person), allTowns, allHouses, mappars, dmax)
+    move_person_to_emptyhouse!(person, newhouse)
+    return newhouse 
+end
+
+function move_person_to_person_house!(personToMove,personWithAHouse) end 
+
+function move_people_to_house!(people, house)
     for person in people
-        if person.pos != house
-            moveToHouse!(person, house)
-        end
+        moveToHouse!(person, house)
     end
     nothing 
 end
 
-# TODO return only one type 
-function movePersonToEmptyHouse!(person::Person, dmax, allHouses, allTowns=Town[]) 
-    newhouse = UNDEFINED_HOUSE
-
-    if dmax == :here
-        newhouse = findEmptyHouseInTown(person.pos,allHouses)
-    end
-    if dmax == :near || newhouse == UNDEFINED_HOUSE
-        newhouse = findEmptyHouseInOrdAdjacentTown(person.pos,allHouses,allTowns) 
-    end
-    if dmax == :far || newhouse == UNDEFINED_HOUSE
-        newhouse = findEmptyHouseAnywhere(allHouses)
-    end 
-
-    if newhouse != UNDEFINED_HOUSE
-        movePersonToHouse!(person, newhouse)
-    end
-    return UNDEFINED_HOUSE
-end
-
+move_people_to_person_house!(peopleToMove,personWithAHouse) = 
+    move_people_to_house!(peopleToMove,home(personWithAHouse))
 
 # people[1] determines centre of search radius
-function movePeopleToEmptyHouse!(people, dmax, allHouses, allTowns=Town[]) 
-    newhouse = UNDEFINED_HOUSE
-
-    if dmax == :here
-        newhouse = findEmptyHouseInTown(getHomeTown(people[1]),allHouses)
-    end
-    if dmax == :near || newhouse == UNDEFINED_HOUSE
-        newhouse = findEmptyHouseInOrdAdjacentTown(getHomeTown(people[1]),allHouses,allTowns) 
-    end
-    if dmax == :far || newhouse == UNDEFINED_HOUSE
-        newhouse = findEmptyHouseAnywhere(allHouses)
-    end 
-
-    if newhouse != UNDEFINED_HOUSE
-        movePeopleToHouse!(people, newhouse)
-    end
+function move_people_to_emptyhouse!(people,allTowns,allHouses,mappars,dmax) 
+    head = people[1]    
+    newhouse = move_person_to_emptyhouse!(head,allTowns,allHouses,mappars,dmax)
+    others = people[2:end] 
+    move_people_to_person_house!(others,head)
     return newhouse
 end
