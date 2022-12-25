@@ -53,7 +53,7 @@ end # function deathProb
 
 # Atiyah: Does not this rather belong to person.jl?
 function setDead!(person) 
-    person.info.alive = false
+    person.info.alive = false    # this statement is a sign that this function does not belong here!
     house = home(person) 
     resetHouse!(person)
     if !isSingle(person) 
