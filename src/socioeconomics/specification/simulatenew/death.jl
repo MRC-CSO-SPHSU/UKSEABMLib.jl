@@ -197,7 +197,8 @@ function _dodeaths_removedeads!(people, model, time)
     for (ind,person) in enumerate(Iterators.reverse(people)) 
         if _death!(person, time, dataOf(model), populationParameters(model)) 
             @assert person === people[len-ind+1]
-            deleteat!(people,len-ind+1)
+            #deleteat!(people,len-ind+1)
+            remove_person!(model, len-ind+1) 
             _verbose_dodeaths(person)
             ndeads += 1
         end 
