@@ -1,63 +1,65 @@
-
 #= 
-An initial design for findNewHouse*(*) interfaces (subject to incremental 
-    modification, simplifcation and tuning)
+Implemenation of get_or_create_emptyhouse! & move_person_to_empty_house 
 =# 
 
 export get_or_create_emptyhouse!, move_person_to_emptyhouse!
 
-# The type annotation is to ensure validity for future extensions of agent types 
-_get_random_emptyhouse(town::PersonTown) = rand(emptyhouses(town))
+function _get_random_emptyhouse(town) 
+    @assert has_emptyhouses(town)
+    rand(emptyhouses(town))
+end
 
+function _create_emptyhouse!(town, model) 
+    xdim = mapParameters(model).townGridDimension # todo Correction rand(1:mappars.townGridDimension)
+    ydim = 0 
+    newhouse = create_newhouse(town,xdim, ydim)
+    add_house!(model, newhouse) 
+    return newhouse 
+end 
 
-function _get_or_create_emptyhouse!(town::PersonTown, allHouses, mappars) 
+function _get_or_create_emptyhouse!(town::PersonTown, model) 
     if has_emptyhouses(town)
         return _get_random_emptyhouse(town)
     else
-        xdim = mappars.townGridDimension # todo Correction rand(1:mappars.townGridDimension)
-        ydim = 0 
-        newhouse = establish_newhouse(town,xdim, ydim)
-        push!(allHouses, newhouse) 
+        return _create_emptyhouse!(town, model)
     end
-    return newhouse 
 end
 
-get_or_create_emptyhouse!(town::PersonTown, allTowns, allHouses, mappars, ::InTown) = 
-    _get_or_create_emptyhouse!(town, allHouses, mappars)
+get_or_create_emptyhouse!(town, model, ::InTown) = 
+    _get_or_create_emptyhouse!(town, model)
     
-function _get_or_create_emptyhouse!(towns::Vector{PersonTown}, allHouses, mappars) 
+function _get_or_create_emptyhouse!(towns, model) 
     town = select_random_town(towns)
-    return get_or_create_emptyhouse!(town, allHouses, mappars)
+    _get_or_create_emptyhouse!(town, model)
 end
 
-get_or_create_emptyhouse!(town, allTowns, allHouses, mappars, ::AdjTown) = 
-    _get_or_create_emptyhouse!(adjacent_8_towns(town), allHouses, mappars) 
+get_or_create_emptyhouse!(town, model, ::AdjTown) = 
+    _get_or_create_emptyhouse!(adjacent_8_towns(town, towns(model)), model) 
 
-get_or_create_emptyhouse!(::PersonTown, allTowns, allHouses, mappars, ::AnyWhere) = 
-    _get_or_create_emptyhouse!(allTowns, allHouses, mappars) 
+get_or_create_emptyhouse!(::PersonTown, model, ::AnyWhere) = 
+    _get_or_create_emptyhouse!(towns(model), model) 
 
-function move_person_to_emptyhouse(person, house) 
+function move_person_to_emptyhouse!(person, house) 
     @assert isEmpty(house)
     moveToHouse!(person, house) 
 end
  
 function move_person_to_emptyhouse!(person::Person, 
-                                    allTowns,
-                                    allHouses, 
-                                    mappars,
+                                    model,
                                     dmax) 
     # TODO 
     # - yearInTown (used in relocation cost)
     # - movedThisYear
-    newhouse = get_or_create_emptyhouse(getHomeTown(person), allTowns, allHouses, mappars, dmax)
+    newhouse = get_or_create_emptyhouse!(getHomeTown(person), model, dmax)
     move_person_to_emptyhouse!(person, newhouse)
-    return newhouse 
+    nothing
 end
 
 move_person_to_person_house!(personToMove,personWithAHouse) =
     moveToHouse!(personToMove, home(personWithAHouse))
 
 function move_people_to_house!(people, house)
+    @assert house !== UNDEFINED_HOUSE
     for person in people
         moveToHouse!(person, house)
     end
@@ -68,10 +70,10 @@ move_people_to_person_house!(peopleToMove,personWithAHouse) =
     move_people_to_house!(peopleToMove,home(personWithAHouse))
 
 # people[1] determines centre of search radius
-function move_people_to_emptyhouse!(people,allTowns,allHouses,mappars,dmax) 
+function move_people_to_emptyhouse!(people, model,dmax) 
     head = people[1]    
-    newhouse = move_person_to_emptyhouse!(head,allTowns,allHouses,mappars,dmax)
+    move_person_to_emptyhouse!(head,model,dmax)
     others = people[2:end] 
     move_people_to_person_house!(others,head)
-    return newhouse
+    nothing 
 end
