@@ -9,7 +9,8 @@ export get_or_create_emptyhouse!, move_person_to_emptyhouse!
 # The type annotation is to ensure validity for future extensions of agent types 
 _get_random_emptyhouse(town::PersonTown) = rand(emptyhouses(town))
 
-function get_or_create_emptyhouse!(town::PersonTown, allTowns, allHouses, mappars, ::InTown) 
+
+function _get_or_create_emptyhouse!(town::PersonTown, allHouses, mappars) 
     if has_emptyhouses(town)
         return _get_random_emptyhouse(town)
     else
@@ -17,27 +18,29 @@ function get_or_create_emptyhouse!(town::PersonTown, allTowns, allHouses, mappar
         ydim = 0 
         newhouse = establish_newhouse(town,xdim, ydim)
         push!(allHouses, newhouse) 
-        return newhouse 
     end
+    return newhouse 
 end
 
-function _get_or_create_emptyhouse!(towns, allTowns, allHouses, mappars) 
+get_or_create_emptyhouse!(town::PersonTown, allTowns, allHouses, mappars, ::InTown) = 
+    _get_or_create_emptyhouse!(town, allHouses, mappars)
+    
+function _get_or_create_emptyhouse!(towns::Vector{PersonTown}, allHouses, mappars) 
     town = select_random_town(towns)
-    return get_or_create_emptyhouse!(town, allTowns, allHouses, mappars, InTown())
+    return get_or_create_emptyhouse!(town, allHouses, mappars)
 end
 
 get_or_create_emptyhouse!(town, allTowns, allHouses, mappars, ::AdjTown) = 
-    _get_or_create_emptyhouse!(adjacent_8_towns(town), allTowns, allHouses, mappars) 
+    _get_or_create_emptyhouse!(adjacent_8_towns(town), allHouses, mappars) 
 
-get_or_create_emptyhouse(::PersonTown, allTowns, allHouses, mappars, ::AnyWhere) = 
-    _get_or_create_emptyhouse!(allTowns, allTowns, allHouses, mappars) 
+get_or_create_emptyhouse!(::PersonTown, allTowns, allHouses, mappars, ::AnyWhere) = 
+    _get_or_create_emptyhouse!(allTowns, allHouses, mappars) 
 
 function move_person_to_emptyhouse(person, house) 
+    @assert isEmpty(house)
     moveToHouse!(person, house) 
-    #make_emptyhouse_occupied!(newhouse)
-    nothing 
-end 
-
+end
+ 
 function move_person_to_emptyhouse!(person::Person, 
                                     allTowns,
                                     allHouses, 
@@ -51,7 +54,8 @@ function move_person_to_emptyhouse!(person::Person,
     return newhouse 
 end
 
-function move_person_to_person_house!(personToMove,personWithAHouse) end 
+move_person_to_person_house!(personToMove,personWithAHouse) =
+    moveToHouse!(personToMove, home(personWithAHouse))
 
 function move_people_to_house!(people, house)
     for person in people
