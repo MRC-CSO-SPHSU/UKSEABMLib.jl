@@ -99,8 +99,8 @@ function joinCouple_!(man, woman, model, pars)
     append!(peopleToMove, gatherDependentsSingle(man), gatherDependentsSingle(woman))
 
     if rand() < pars.couplesMoveToExistingHousehold
-        targetHouse = nOccupants(man.pos) > nOccupants(woman.pos) ? 
-            woman.pos : man.pos
+        targetHouse = nOccupants(home(man)) > nOccupants(home(woman)) ? 
+            home(woman) : home(man)
 
         movePeopleToHouse!(targetHouse, peopleToMove)
     else
@@ -212,7 +212,7 @@ end # doMarriages
 function gatherDependentsSingle(person)
     assumption() do
         for p in dependents(person)
-            @assert p.pos == person.pos
+            @assert home(p) === home(person)
             @assert length(guardians(p)) == 1
             @assert guardians(p)[1] == person
         end

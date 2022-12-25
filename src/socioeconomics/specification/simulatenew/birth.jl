@@ -102,7 +102,7 @@ function _givesbirth!(woman)
     # parentsClassRank = max([woman.classRank, woman.partner.classRank])
     # baby = Person(woman, woman.partner, self.year, 0, 'random', woman.house, woman.sec, -1, 
     #              parentsClassRank, 0, 0, 0, 0, 0, 0, 'child', False, 0, month)            
-    baby = Person(pos=woman.pos,
+    baby = Person(pos=home(woman),
                     father=partner(woman),mother=woman,
                     gender=rand([male,female]))
 

@@ -91,7 +91,7 @@ end
 
 
 function adopt_!(guard, person)
-    movePeopleToHouse!([person], guard.pos)
+    movePeopleToHouse!([person], home(guard))
     setAsGuardianDependent!(guard, person)
     if ! isSingle(guard)
         setAsGuardianDependent!(partner(guard), person)
