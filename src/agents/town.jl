@@ -1,7 +1,7 @@
 export Town, TownLocation
 export undefined, isAdjacent8, adjacent8Towns, manhattanDistance
 export add_emptyhouse!, make_emptyhouse_occupied!, make_occupiedhouse_empty!
-export has_emptyhouses
+export has_emptyhouses, emptyhouses, occupiedhouses 
 
 """
 Specification of a Town agent type.
@@ -61,9 +61,7 @@ function add_emptyhouse!(town,house)
 end
 
 has_emptyhouses(town) = length(town.emptyHouses) > 0 
-
-# remark: emptyhouses is used with arguments with other types
-emptyhouses(town::Town) = town.emptyHouses 
+emptyhouses(town::Town{H}) where H = town.emptyHouses 
 occupiedhouses(town)    = town.occupiedHouses
 
 function make_emptyhouse_occupied!(town,idx::Int)
