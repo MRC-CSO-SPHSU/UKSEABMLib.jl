@@ -308,7 +308,7 @@ fixed parameters (minPregnenacyAge, maxPregnenacyAge) and
 Class rankes and shares are temporarily ignored.
 """
 dobirths!(model,time) =
-	dobirths!(model,time,AlivePopulation(), WithReturn())
+	dobirths!(model,time,AlivePopulation(), NoReturn())
 
 
 
