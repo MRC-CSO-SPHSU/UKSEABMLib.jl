@@ -102,7 +102,7 @@ function _givesbirth!(woman)
     # parentsClassRank = max([woman.classRank, woman.partner.classRank])
     # baby = Person(woman, woman.partner, self.year, 0, 'random', woman.house, woman.sec, -1, 
     #              parentsClassRank, 0, 0, 0, 0, 0, 0, 'child', False, 0, month)            
-    baby = Person(pos=woman.pos,
+    baby = Person(pos=home(woman),
                     father=partner(woman),mother=woman,
                     gender=rand([male,female]))
 
@@ -273,14 +273,15 @@ function _dobirths!(people, currstep, data, birthpars)
 end  # function doBirths! 
 
 
-function _dobirths_add!(people, currstep, data, birthpars)
+function _dobirths_add!(model, people, currstep, data, birthpars)
     _assumption_dobirths(people, birthpars, currstep)
     npeople = length(people)  
     for woman in Iterators.reverse(people)  
         if !(select_birth(woman, birthpars)) continue end 
         if _subject_to_birth(woman, currstep, data, birthpars)
            baby = _givesbirth!(woman)
-           push!(people,baby)
+           #push!(people,baby)
+           add_person!(model,baby)
         end 
     end # for woman 
     nbabies = length(people) - npeople 
@@ -293,9 +294,9 @@ dobirths!(model,time,::FullPopulation, ::WithReturn)  =
 dobirths!(model,time,::AlivePopulation, ::WithReturn) =
 	_dobirths!(allPeople(model),time,dataOf(model),birthParameters(model))
 dobirths!(model,time,::FullPopulation, ::NoReturn)  = 
-    _dobirths_add!(alivePeople(model),time,dataOf(model),birthParameters(model))
+    _dobirths_add!(model, alivePeople(model),time,dataOf(model),birthParameters(model))
 dobirths!(model,time,::AlivePopulation, ::NoReturn) =
-	_dobirths_add!(allPeople(model),time,dataOf(model),birthParameters(model))
+	_dobirths_add!(model, allPeople(model),time,dataOf(model),birthParameters(model))
 
 """
     dobirths!(mode, time)

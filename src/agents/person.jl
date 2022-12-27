@@ -2,13 +2,13 @@ using TypedDelegation
 
 using ....Utilities.DeclUtils
 
-export Person
-export PersonHouse, undefinedHouse
+export Person, PersonHouse, PersonTown
+export UNDEFINED_HOUSE, UNDEFINED_TOWN
 
 export moveToHouse!, resetHouse!, resolvePartnership!, householdIncome
 export householdIncomePerCapita
 
-export getHomeTown, getHomeTownName, agestepAlive!, livingTogether
+export home, getHomeTown, getHomeTownName, agestepAlive!, livingTogether
 export setAsParentChild!, setAsPartners!, setParent!
 export hasAliveChild, ageYoungestAliveChild, hasBirthday, yearsold
 export hasChildrenAtHome, areParentChild, related1stDegree, areSiblings
@@ -118,8 +118,14 @@ end
 
 #Base.show(io::IO, ::MIME"text/plain", person::Person) = Base.show(io,person)
 
-"Constructor with default values"
 
+const PersonHouse = House{Person, Town}
+const PersonTown = Town{PersonHouse} 
+
+const UNDEFINED_TOWN = Town{House}(UNDEFINED_2DLOCATION, 0.0)
+const UNDEFINED_HOUSE = PersonHouse(UNDEFINED_TOWN, UNDEFINED_2DLOCATION)
+
+"Constructor with default values"
 Person(pos,age; gender=unknown,
     father=nothing,mother=nothing,
     partner=nothing,children=Person[]) = 
@@ -132,7 +138,7 @@ Person(pos,age; gender=unknown,
 
 
 "Constructor with default values"
-Person(;pos=undefinedHouse,age=0,
+Person(;pos=UNDEFINED_HOUSE,age=0,
         gender=unknown,
         father=nothing,mother=nothing,
         partner=nothing,children=Person[]) = 
@@ -143,17 +149,13 @@ Person(;pos=undefinedHouse,age=0,
                 CareBlock(0, 0, 0),
                 ClassBlock(0), DependencyBlock{Person}())
 
-
-const PersonHouse = House{Person, Town}
-const undefinedHouse = PersonHouse(undefinedTown, (-1, -1))
-
+home(person) = person.pos 
 
 "associate a house to a person, removes person from previous house"
 function moveToHouse!(person::Person,house)
     if ! undefined(person.pos) 
         removeOccupant!(person.pos, person)
     end
-
     person.pos = house
     addOccupant!(house, person)
 end
@@ -163,8 +165,7 @@ function resetHouse!(person::Person)
     if ! undefined(person.pos) 
         removeOccupant!(person.pos, person)
     end
-
-    person.pos = undefinedHouse
+    person.pos = UNDEFINED_HOUSE
     nothing 
 end 
 
@@ -281,7 +282,7 @@ end
 function resolveDependency!(guardian, dependent)
     deps = dependents(guardian)
     idx_d = findfirst(==(dependent), deps)
-    if idx_d == nothing
+    if idx_d == nothing  # an error should be returned?
         return
     end
 
