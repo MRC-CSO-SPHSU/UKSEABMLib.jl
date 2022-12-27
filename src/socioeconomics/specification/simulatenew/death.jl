@@ -1,10 +1,7 @@
 
-#using ....Utilities: age2yearsmonths, date2yearsmonths
-#using ....ParamTypes: populationParameters, allParameters
+export dodeaths!, setDead!, death!!
 
-export doDeaths!, setDead!, death! 
-
-function deathProbability_(baseRate,person,parameters) 
+function _death_probability(baseRate,person,poppars)
     #=
         Not realized yet  / to be realized in another module? 
         classRank = person.classRank
@@ -12,11 +9,9 @@ function deathProbability_(baseRate,person,parameters)
             classRank = person.parentsClassRank
     =# 
 
-    if isMale(person) 
-        mortalityBias =  parameters.maleMortalityBias
-    else 
-        mortalityBias =  parameters.femaleMortalityBias 
-    end 
+    mortalityBias = isMale(person) ? 
+        poppars.maleMortalityBias :
+        poppars.femaleMortalityBias 
 
     #= 
     To be integrated in class modules 
@@ -53,12 +48,13 @@ function deathProbability_(baseRate,person,parameters)
     #   a += math.pow(self.p['unmetCareNeedBias'], 1-x.averageShareUnmetNeed)
     #   higherUnmetNeed = (classRate*len(classPop))/a
     #   deathProb = higherUnmetNeed*math.pow(self.p['unmetCareNeedBias'], 1-shareUnmetNeed)            
-    deathProb 
+    return deathProb 
 end # function deathProb
 
 # Atiyah: Does not this rather belong to person.jl?
 function setDead!(person) 
-    person.info.alive = false
+    person.info.alive = false    # this statement is a sign that this function does not belong here!
+    house = home(person) 
     resetHouse!(person)
     if !isSingle(person) 
         resolvePartnership!(partner(person),person)
@@ -80,40 +76,32 @@ function setDead!(person)
     nothing
 end 
 
+
+
 # currently leaves dead agents in population
-function death!(person, currstep, model, pars)
-
-    parameters = populationParameters(pars)
-
-    data = dataOf(model)
+function _death!(person, currstep, data, poppars)
 
     (curryear,currmonth) = date2yearsmonths(currstep)
     currmonth += 1 # adjusting 0:11 => 1:12 
 
     agep = age(person)             
 
-    assumption() do
-        @assert alive(person)       
-        @assert isMale(person) || isFemale(person) # Assumption 
-        @assert typeof(agep) == Rational{Int}
-    end
- 
     if curryear >= 1950 
                         
-        agep = agep > 109 ? Rational(109) : agep 
+        agep = agep > 109 ? 109//1 : agep 
         ageindex = trunc(Int,agep)
-        rawRate = isMale(person) ?  data.deathMale[ageindex+1,curryear-1950+1] : 
-                                    data.deathFemale[ageindex+1,curryear-1950+1]
+        rawRate = isMale(person) ? data.deathMale[ageindex+1,curryear-1950+1] : 
+                                            data.deathFemale[ageindex+1,curryear-1950+1]
                                    
         # lifeExpectancy = max(90 - agep, 3 // 1)  # ??? This is a direct translation 
                         
     else # curryear < 1950 / made-up probabilities 
                         
-        babyDieProb = agep < 1 ? parameters.babyDieProb : 0.0 # does not play any role in the code
+        babyDieProb = agep < 1 ? poppars.babyDieProb : 0.0 # does not play any role in the code
         ageDieProb  = isMale(person) ? 
-                        exp(agep / parameters.maleAgeScaling)  * parameters.maleAgeDieProb : 
-                        exp(agep / parameters.femaleAgeScaling) * parameters.femaleAgeDieProb
-        rawRate = parameters.baseDieProb + babyDieProb + ageDieProb
+                        exp(agep / poppars.maleAgeScaling)  * poppars.maleAgeDieProb : 
+                        exp(agep / poppars.femaleAgeScaling) * poppars.femaleAgeDieProb
+        rawRate = poppars.baseDieProb + babyDieProb + ageDieProb
                                     
         # lifeExpectancy = max(90 - agep, 5 // 1)  # ??? Does not currently play any role
                         
@@ -126,7 +114,7 @@ function death!(person, currstep, model, pars)
         Classes to be considered in a different module 
     =#
                         
-    deathProb = min(1.0, deathProbability_(rawRate,person,parameters))
+    deathProb = min(1.0, _death_probability(rawRate,person,poppars))
                         
     #=
         The following is uncommented code in the original code < 1950
@@ -135,10 +123,6 @@ function death!(person, currstep, model, pars)
     =# 
                                 
     if rand() < p_yearly2monthly(deathProb)
-        delayedVerbose() do
-            y, m = age2yearsmonths(agep)
-            println("person $(person.id) died year $(curryear) with age of $y")
-        end  
         setDead!(person) 
         return true 
         # person.deadYear = self.year  
@@ -148,41 +132,91 @@ function death!(person, currstep, model, pars)
     false
 end 
 
-#death!(person, time, model) = death_!(person, time, model, populationParameters(model))
+death!(person, currstep, model, pars) = 
+    _death!(person, currstep, dataOf(model), populationParameters(pars))
 
 
-function doDeathsAlivePeople_(people, model, time, parameters) 
+function _verbose_dodeaths(people,numDeaths::Int,towns) 
+    delayedVerbose() do 
+        count = length(people)
+        println("# living people : $(count), # deaths : $(numDeaths)")
+        ehouses,ohouses = number_of_houses(towns) 
+        println("# empty houses : $ehouses , # occupied houses : $ohouses")
+    end 
+end 
+
+function _verbose_dodeaths(people,deads,towns)
+    delayedVerbose() do
+        for dead in deads 
+            y, = age2yearsmonths(age(dead))
+            println("person $(dead.id) died with age of $y")
+        end   
+        _verbose_dodeaths(people,length(deads),towns)
+    end 
+    nothing 
+end 
+
+function _assumption_dodeaths(people)
+    assumption() do
+        for person in people 
+            @assert alive(person)       
+            @assert isMale(person) || isFemale(person) # Assumption 
+            @assert typeof(age(person)) == Rational{Int}
+        end 
+    end
+    nothing 
+end 
+
+function _dodeaths!(people, model, time) 
+    _assumption_dodeaths(people)
 
     deads = Person[] 
     deadsind = Int[] 
-
     for (ind,person) in enumerate(people) 
-        if death!(person, time, model, parameters) 
+        if _death!(person, time, dataOf(model), populationParameters(model)) 
             push!(deadsind,ind)
             push!(deads,person)
         end 
     end # for livingPeople
+    _verbose_dodeaths(people,deads,towns(model))
+    return (deads = deads, deadsind = deadsind)    
+end
 
-    deads, deadsind  
+function _verbose_dodeaths(person) 
+    delayedVerbose() do
+        y, = age2yearsmonths(age(person))
+        println("person $(person.id) died with age of $y")
+    end 
+    nothing 
+end 
+
+function _dodeaths_removedeads!(people, model, time) 
+    _assumption_dodeaths(people)
+    ndeads = 0
+    len = length(people)
+    for (ind,person) in enumerate(Iterators.reverse(people)) 
+        if _death!(person, time, dataOf(model), populationParameters(model)) 
+            @assert person === people[len-ind+1]
+            #deleteat!(people,len-ind+1)
+            remove_person!(model, len-ind+1) 
+            _verbose_dodeaths(person)
+            ndeads += 1
+        end 
+    end 
+    if ndeads > 0 
+        _verbose_dodeaths(people,ndeads,towns(model))
+    end
+    nothing  
 end
 
 
-# Internal function (the existing implementation)
-"evaluate death events in a population"
-function doDeaths_!(model, time, parameters)
-
-    people = alivePeople(model) 
-
-    deads, deadsind = doDeathsAlivePeople_(people, model, time, parameters)
-    
-    delayedVerbose() do
-        count = length([person for person in people if alive(person)] )
-        numDeaths = length(deads)
-        println("# living people : $(count+numDeaths), # deaths : $(numDeaths)") 
-    end 
-
-    (deads = deads, deadsind = deadsind)    
-end  # function doDeaths_!       
-
-
-doDeaths!(model, time) = doDeaths_!(model, time, allParameters(model))# populationParameters(model))
+dodeaths!(model, time, ::FullPopulation, ::WithReturn) = 
+    _dodeaths!(alivePeople(model) , model, time) 
+dodeaths!(model, time, ::AlivePopulation, ::WithReturn) = 
+    _dodeaths!(allPeople(model) , model, time) 
+dodeaths!(model, time, ::FullPopulation, ::NoReturn) = 
+    _dodeaths_removedeads!(alivePeople(model), model, time)
+dodeaths!(model, time, ::AlivePopulation, ::NoReturn) = 
+    _dodeaths_removedeads!(allPeople(model), model, time)
+dodeaths!(model, time) = 
+    dodeaths!(model, time, AlivePopulation(), NoReturn())

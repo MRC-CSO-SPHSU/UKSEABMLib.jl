@@ -10,24 +10,39 @@ using ....Utilities
 using ....XAgents
 using ....ParamTypes 
 
-export createTowns, createPopulation, createPyramidPopulation
+export create_towns, create_inhabited_towns, createPopulation, createPyramidPopulation
 ### 
 
-createTowns(pars::DemographyPars) = createTowns(mapParameters(pars))
-
-function createTowns(mappars) 
-
-    uktowns = Town[] 
-    
+function _create_towns(mappars)
+    uktowns = PersonTown[] 
     for y in 1:mappars.mapGridYDimension
         for x in 1:mappars.mapGridXDimension 
-            town = Town((x,y),density=mappars.map[y,x])
+            town = PersonTown((x,y),density=mappars.map[y,x])
             push!(uktowns,town)
         end
     end
-
-    uktowns
+    return uktowns
 end
+
+create_towns(pars::DemographyPars) = _create_towns(mapParameters(pars))
+
+function _create_inhabited_towns(mappars) 
+    uktowns = PersonTown[] 
+    for y in 1:mappars.mapGridYDimension
+        for x in 1:mappars.mapGridXDimension 
+            density = mappars.map[y,x] 
+            if density > 0 
+                town = PersonTown((x,y),density=density)
+                push!(uktowns,town)
+            end 
+        end
+    end
+    @info "# of towns : $(length(uktowns))"
+    return uktowns
+end 
+
+create_inhabited_towns(pars) = 
+    _create_inhabited_towns(mapParameters(pars))
 
 # return agents with age in interval minAge, maxAge
 # assumes pop is sorted by age
@@ -75,7 +90,7 @@ function createPyramidPopulation_(pars)
         
         gender = Bool(rand(0:1)) ? male : female
 
-        person = Person(undefinedHouse, age; gender)
+        person = Person(UNDEFINED_HOUSE, age; gender)
         if age < 18
             push!(population, person)
         else
@@ -176,8 +191,8 @@ function createPopulation_(pars)
         #    birthYear = properties[:startYear]  - ageMale/Female 
         #    birthMonth = rand((1:12))
 
-        newMan = Person(undefinedHouse,rageMale,gender=male)
-        newWoman = Person(undefinedHouse,rageFemale,gender=female)   
+        newMan = Person(UNDEFINED_HOUSE,rageMale,gender=male)
+        newWoman = Person(UNDEFINED_HOUSE,rageFemale,gender=female)   
         setAsPartners!(newMan,newWoman) 
         
         push!(population,newMan);  push!(population,newWoman) 

@@ -1,9 +1,8 @@
 export  House, HouseLocation
 
-export getHomeTown, getHouseLocation, undefined, isEmpty, town 
+export getHomeTown, getHouseLocation, undefined, isEmpty, town, number_of_occupants
 
 using ....Utilities: removefirst!
-
 
 const HouseLocation  = NTuple{2,Int}
 
@@ -14,7 +13,6 @@ This file is included in the module XAgents
 
 Type House to extend from AbstracXAgent.
 """ 
-
 mutable struct House{P, T} <: AbstractXAgent
     id :: Int
     town :: T
@@ -25,9 +23,10 @@ mutable struct House{P, T} <: AbstractXAgent
     House{P, T}(town, pos) where {P, T} = new(getIDCOUNTER(),town, pos,P[])
 end # House 
 
+undefined(house::House{P,T}) where {P,T} = 
+    undefined(house.town) && house.pos == UNDEFINED_2DLOCATION
 
-undefined(house) = house.town == undefinedTown && house.pos == (-1,-1)
-
+number_of_occupants(house) = length(house.occupants)
 isEmpty(house) = length(house.occupants) == 0
 
 town(house) = house.town 
@@ -39,9 +38,7 @@ function getHomeTown(house::House)
 end
 
 "town name associated with house"
-function getHomeTownName(house::House)
-    house.town.name
-end
+getHomeTownName(house::House) = house.town.id 
 
 "house location in the associated town"
 function getHouseLocation(house::House)
@@ -50,15 +47,25 @@ end
 
 "add an occupant to a house"
 function addOccupant!(house::House{P}, person::P) where {P}
-	push!(house.occupants, person) 
+    @assert !(person in house.occupants)
+    if isEmpty(house)
+	    push!(house.occupants, person)
+        @assert house in emptyhouses(getHomeTown(house))
+        make_emptyhouse_occupied!(house)
+    else 
+        push!(house.occupants,person)
+    end 
 	nothing
 end
 
 "remove an occupant from a house"
 function removeOccupant!(house::House{P}, person::P) where {P}
     removefirst!(house.occupants, person) 
-	# we can't assume anything about the layout of typeof(person)
-	#person.pos = undefinedHouse 
+    @assert !(person in house.occupants)
+    if isEmpty(house) 
+        @assert house in occupiedhouses(getHomeTown(house))
+        make_occupiedhouse_empty!(house)
+    end 
     nothing 
 end
 

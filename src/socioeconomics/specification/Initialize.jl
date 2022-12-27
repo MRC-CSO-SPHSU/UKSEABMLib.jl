@@ -20,37 +20,31 @@ struct InitClassesProcess <: AbsInitProcess end
 struct InitWorkProcess <: AbsInitProcess end 
 
 "initialize houses in a given set of towns"
-function initializeHousesInTowns_(towns, pars) 
-
-    houses = PersonHouse[] 
-
+function _initialize_houses_towns(towns, houses, pars)
+    @assert length(houses) == 0  
     for town in towns
         if town.density > 0
-
             adjustedDensity = town.density * pars.mapDensityModifier
-        
             for hx in 1:pars.townGridDimension  
                 for hy in 1:pars.townGridDimension 
-        
                     if(rand() < adjustedDensity)
-                        house = PersonHouse(town,(hx,hy))
-                        push!(houses,house)
+                        house = create_newhouse_and_append!(town,houses,hx,hy)
                     end
-        
                 end # for hy 
             end # for hx 
-  
         end # if town.density 
     end # for town 
-    
-    houses  
-
+    return houses  
 end  # function initializeHousesInTwons 
 
-
 function initialConnect!(houses, towns, pars,::InitHousesInTownsPort)
-    newHouses = initializeHousesInTowns_(towns, mapParameters(pars))
-    append!(houses, newHouses)
+    _initialize_houses_towns(towns, houses, mapParameters(pars))
+    @assert length(houses) > 0
+    for house in houses 
+        @assert getHomeTown(house) != nothing
+    end 
+    @info "# of initialized houses $(length(houses))"
+    nothing 
 end
 
 initialConnect!(houses::Vector{PersonHouse},
@@ -73,16 +67,18 @@ function assignCouplesToHouses_!(population::Vector{Person}, houses::Vector{Pers
             moveToHouse!(partner(woman), house)
         end
 
-        for child in dependents(woman)
+        #for child in dependents(woman)
+        for child in children(woman)
             moveToHouse!(child, house)
         end
     end # for person     
 
     for person in population
-        if person.pos == undefinedHouse
+        if home(person) === UNDEFINED_HOUSE
             @assert isMale(person)
             @assert length(randomhouses) >= 1
-            moveToHouse!(person, pop!(randomhouses))
+            house = pop!(randomhouses)
+            moveToHouse!(person, house)
         end
     end
 end  # function assignCouplesToHouses 
