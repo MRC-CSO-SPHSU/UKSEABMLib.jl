@@ -9,10 +9,13 @@ function _get_random_emptyhouse(town)
     rand(emptyhouses(town))
 end
 
+#@memoize # does not really make that big difference  
+_town_dimension(model) = 1:mapParameters(model).townGridDimension
 function _create_emptyhouse!(town, model) 
-    xdim = mapParameters(model).townGridDimension # todo Correction rand(1:mappars.townGridDimension)
-    ydim = 0 
-    newhouse = create_newhouse(town,xdim, ydim)
+    dims = _town_dimension(model)
+    xdim = rand(dims) 
+    ydim = rand(dims) 
+    newhouse = create_newhouse!(town,xdim, ydim)
     add_house!(model, newhouse) 
     return newhouse 
 end 
@@ -34,7 +37,7 @@ function _get_or_create_emptyhouse!(towns, model)
 end
 
 get_or_create_emptyhouse!(town, model, ::AdjTown) = 
-    _get_or_create_emptyhouse!(adjacent_8_towns(town, towns(model)), model) 
+    _get_or_create_emptyhouse!(adjacent_inhabited_towns(town, towns(model)), model) 
 
 get_or_create_emptyhouse!(::PersonTown, model, ::AnyWhere) = 
     _get_or_create_emptyhouse!(towns(model), model) 
