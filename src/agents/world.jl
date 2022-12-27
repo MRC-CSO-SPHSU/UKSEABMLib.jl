@@ -1,18 +1,30 @@
+using StatsBase 
 using Memoization
 
-export adjacent_8_towns #, adjacent_inhabited_towns 
+export adjacent_8_towns, adjacent_inhabited_towns 
 export select_random_town, create_newhouse!, create_newhouse_and_append!
 export number_of_houses
 
 # memoization not really necessary for low number of towns, but why not
 "Find all towns adjacent to `town` (von Neumann neighbourhood). Memoized for efficiency - empty cache when topology changes."
-@memoize adjacent_8_towns(town, towns) = [ t for t in towns if isAdjacent8(town, t) ] 
+#@memoize adjacent_8_towns(town, towns) = [ t for t in towns if isAdjacent8(town, t) ] 
 
-#@memoize adjacent_inhabited_towns(town, towns) = 
-#    [ t for t in towns if isAdjacent8(town, t) && t.density > 0 ] 
+# effectivness of memoization is not clear 
+@memoize adjacent_inhabited_towns(town, towns) = [ t for t in towns if isAdjacent8(town, t) && t.density > 0 ] 
 
-# TODO fix , integrate densities 
-select_random_town(towns) = rand(towns)
+# memoization does not help 
+function _weights(towns) 
+    w = Vector{Float64}(undef,length(towns))
+    for (i,town) in enumerate(towns)
+        w[i] = town.density
+    end 
+    return w
+end 
+
+function select_random_town(towns) 
+    ws = _weights(towns)
+    return sample(towns, Weights(ws))
+end 
 
 function create_newhouse!(town,xdim,ydim)
     house = PersonHouse(town,(xdim,ydim))
