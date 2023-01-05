@@ -5,11 +5,15 @@ Functions used for demography simulation
 # to replace the module Simulate
 module SimulateNew 
 
+using ....API.Traits
+import ....API.Traits: verbosemsg 
+
 # API for accessory functions 
 using ....API.ModelFunc  # Here it is does not make sense anymore to 
                     #     employ explicit using statements 
                     #     anything(model) comes from there 
-using ....API.Traits
+import ....API.ModelFunc: select_population, selectedfor
+
 using ....Utilities
 using ....XAgents
 using ....ParamTypes
