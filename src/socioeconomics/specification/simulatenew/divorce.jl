@@ -1,4 +1,4 @@
-export dodivorces!, select_divorce, select_divorce_alive, divorce!
+export dodivorces!, select_divorce, divorce!
 
 function _divorce_probability(rawRate, pars) # ,classRank) 
     #=
@@ -23,12 +23,15 @@ function _assumption_divorce(man)
     nothing 
 end 
 
-#const _DIST_CHOICES = (InTown(),AdjTown(),AnyWhere())
+selectedfor(person,pars,::AlivePopulation,::Divorce) = 
+    isMale(person) && !isSingle(person)
+selectedfor(person, pars,::FullPopulation,process::Divorce) = 
+    alive(person) && selectedfor(person,pars,AlivePopulation(),process)
 
-function _divorce!(man, time, model, divorcepars) #parameters)
-        
-    agem = age(man) 
+function _divorce!(man, time, model, divorcepars, workpars, popfeature) #parameters)
+    if !selectedfor(man,nothing,popfeature, Divorce()) return false end 
     
+    agem = age(man) 
     ## This is here to manage the sweeping through of this parameter
     ## but only for the years after 2012
     if time < divorcepars.thePresent 
@@ -49,7 +52,7 @@ function _divorce!(man, time, model, divorcepars) #parameters)
         wife.yearDivorced.append(self.year)
         =# 
         if status(wife) == WorkStatus.student
-            startWorking_!(wife, workParameters(model))
+            startWorking_!(wife, workpars)
         end
 
         #peopleToMove = [man]
@@ -70,22 +73,20 @@ function _divorce!(man, time, model, divorcepars) #parameters)
                 resolveDependency!(man, child)
             end 
         end # for 
-
+        verbose(man, Divorce())
         return true 
     end
 
     return false 
 end 
 
-divorce!(man, time, model, pars) = 
+divorce!(man, time, model, popfeature::PopulationFeature = FullPopulation()) = 
     _divorce!(man, 
             time, 
             model,
-            divorceParameters(pars))
-            #fuse(divorceParameters(parameters),workParameters(parameters), mapParameters(parameters)))
-
-select_divorce_alive(person)  = isMale(person) && !isSingle(person)
-selectDivorce(person, pars) = alive(person) && select_divorce_alive(person)
+            divorceParameters(model),
+            workParameters(model),
+            popfeature)
 
 function _verbose_dodivorce(ndivorced::Int, model) 
     delayedVerbose() do
@@ -107,45 +108,26 @@ function _verbose_dodivorce(man::Person)
     nothing 
 end 
 
-function _dodivorces!(people, model, time)
-    divorced = Person[] 
-    #pars = fuse(divorceParameters(model),workParameters(model), mapParameters(model))
-    for man in people    
-        if ! select_divorce_alive(man) continue end 
-        wife = partner(man) 
-        _assumption_divorce(man)
-        if _divorce!(man, time, model, divorceParameters(model)) 
-            push!(divorced, man, wife) 
+verbosemsg(::Divorce) = "divorces"
+function verbosemsg(person::Person,::Divorce) 
+    return "man $(person.id) divorced"
+end 
+
+function _dodivorces!(ret, model, time, popfeature)
+    ret = init_return!(ret) 
+    divorcepars = divorceParameters(model)
+    workpars = workParameters(model)
+    people = select_population(model, nothing, popfeature, Divorce())
+    for (ind,man) in enumerate(people)    
+        if _divorce!(man, time, model, divorcepars, workpars, popfeature)  
+            ret = progress_return!(ret,(ind=ind,person=man))
         end 
     end 
-    if length(divorced) > 0
-        _verbose_dodivorce(divorced)
-    end 
-    return (divorced = divorced,) 
+    verbose(ret,Divorce())
+    return ret  
 end
 
-function _dodivorces_noret!(people, model, time)
-    #pars = fuse(divorceParameters(model),workParameters(model))
-    ndivorced = 0
-    for man in people    
-        if ! select_divorce_alive(man) continue end 
-        if _divorce!(man, time, model, divorceParameters(model))  
-            ndivorced += 2 
-            _verbose_dodivorce(man)
-        end 
-    end 
-    if ndivorced > 0 
-        _verbose_dodivorce(ndivorced, model)
-    end 
-    nothing 
-end
+dodivorces!(model, time, popfeature::PopulationFeature, ret = nothing) = 
+    _dodivorces!(ret, model, time, popfeature)
 
-dodivorces!(model, time, ::FullPopulation, ::WithReturn) = 
-    _dodivorces!(alivePeople(model) , model, time) 
-dodivorces!(model, time, ::AlivePopulation, ::WithReturn) = 
-    _dodivorces!(allPeople(model) , model, time)
-dodivorces!(model, time, ::FullPopulation, ::NoReturn) = 
-    _dodivorces_noret!(alivePeople(model) , model, time) 
-dodivorces!(model, time, ::AlivePopulation, ::NoReturn) = 
-    _dodivorces_noret!(allPeople(model) , model, time) 
-dodivorces!(model, time) = dodivorces!(model, time, AlivePopulation(),NoReturn())
+dodivorces!(model, time, ret = nothing) = dodivorces!(model, time, AlivePopulation(), nothing)

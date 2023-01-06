@@ -19,5 +19,6 @@ A library of types, components and simulation functions for establishing socio-e
    - V0.2.4  (14.12) : Minor changes for MA Version 0.4, return indicies of dead people (i.e. starting improved return values of simulation functions)
    - V0.2.5  (21.12) : fixing major performance issues (type instabilities, excessive creation of temporary arrays), tuning API of some simulation functions (dodeaths!, dobirths! and dodivorces!), improved memory allocation (2x better) and storage allocation (25% better)
    - V0.2.6 (27.12)  : improved data structure for Town, constant for undefined house (related routines can return one type), Improved implementation of allocation algorithms (no temporary arrays), tuning do marriage algorithm (memoization can be avoided), Improved runtime performance (3x faster & 4x less memory allocation and storage) 
+   - V0.2.7 (6.1.2023) : final API of four simulation functions including agent-based transition functions 
 
 

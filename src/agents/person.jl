@@ -90,7 +90,7 @@ end # struct Person
 @delegate_onefield Person info [isFemale, isMale, agestep!, agestepAlive!, hasBirthday, yearsold]
 
 @export_forward Person kinship [father, mother, partner, children]
-@delegate_onefield Person kinship [hasChildren, addChild!, isSingle, parents, siblings]
+@delegate_onefield Person kinship [hasChildren, addChild!, isSingle, parents, siblings, youngest_child]
 
 @delegate_onefield Person maternity [startMaternity!, stepMaternity!, endMaternity!, 
     isInMaternity, maternityDuration]

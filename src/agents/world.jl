@@ -5,10 +5,6 @@ export adjacent_8_towns, adjacent_inhabited_towns
 export select_random_town, create_newhouse!, create_newhouse_and_append!
 export number_of_houses
 
-# memoization not really necessary for low number of towns, but why not
-"Find all towns adjacent to `town` (von Neumann neighbourhood). Memoized for efficiency - empty cache when topology changes."
-#@memoize adjacent_8_towns(town, towns) = [ t for t in towns if isAdjacent8(town, t) ] 
-
 # effectivness of memoization is not clear 
 @memoize adjacent_inhabited_towns(town, towns) = [ t for t in towns if isAdjacent8(town, t) && t.density > 0 ] 
 
