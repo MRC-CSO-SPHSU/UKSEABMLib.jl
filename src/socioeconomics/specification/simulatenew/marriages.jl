@@ -119,17 +119,17 @@ function _join_couple!(man, woman, model, marpars)
     return true
 end
 
-const _CANDIDATES = Int[] 
-function _compute_candidates(man, eligibleWomen) 
-    empty!(_CANDIDATES)
+const _EW_CANDIDATES = Int[] 
+function _compute_ew_candidates(man, eligibleWomen) 
+    empty!(_EW_CANDIDATES)
     for (i,w) in enumerate(eligibleWomen) 
         if (age(man)-10 < age(w) < age(man)+5)  &&
             # exclude siblings as well
             !livingTogether(man, w) && !related1stDegree(man, w)
-            push!(_CANDIDATES,i)
+            push!(_EW_CANDIDATES,i)
         end
     end
-    return _CANDIDATES
+    return _EW_CANDIDATES
 end
 
 selectedfor(man, ageOfAdulthood, ::AlivePopulation, ::Marriage) = 
@@ -151,7 +151,7 @@ function _marriage!(man, time, model, eligibleWomen, ageclass, shareChildlessMen
         return false 
     end
 
-    candidates = _compute_candidates(man, eligibleWomen)
+    candidates = _compute_ew_candidates(man, eligibleWomen)
     if length(candidates) == 0
         return false 
     end

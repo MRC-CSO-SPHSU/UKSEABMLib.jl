@@ -60,9 +60,27 @@ function setDead!(person)
         resolvePartnership!(partner(person),person)
     end
 
+    #= 
+    fa = father(person)
+    mo = mother(person)
+    gs = guardians(person)
+    =# 
+
     # dead persons are no longer dependents
     setAsIndependent!(person)
 
+    #= 
+    if fa != nothing 
+        @assert !(person in dependents(fa)) 
+    end
+    if mo != nothing 
+        @assert mo != nothing && !(person in dependents(mo))
+    end 
+    for g in gs 
+        @assert !(person in dependents(g))
+    end 
+    =# 
+    
     # dead persons no longer have to be provided for
     setAsSelfproviding!(person)
 

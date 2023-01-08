@@ -11,7 +11,7 @@ module Constants
 
 const SESRCPATH = @__DIR__ 
 const SEPATH    = SESRCPATH * "/.." 
-const SEVERSION = v"0.2.7"    # could be V0.3 : tune traits-based code + adjust API of the rest of simulation functions 
+const SEVERSION = v"0.2.8"    # could be V0.3 : tune traits-based code + adjust API of the rest of simulation functions 
 const XAGENTS_GENERIC_PATH = SESRCPATH * "/generic" 
 const XAGENTS_MA_PATH      = SESRCPATH * "/multiagents"
 
