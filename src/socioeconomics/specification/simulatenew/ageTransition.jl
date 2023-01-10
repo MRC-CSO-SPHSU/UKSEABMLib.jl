@@ -41,7 +41,7 @@ function _verbose_age_transition(cntind,cntendedM)
     end
 end 
 
-verbosemsg(::AgeTransition) = "alive persons"
+verbosemsg(::AgeTransition) = "persons who became independent or ended maternity"
 
 function _do_age_transitions!(ret,model, time,popfeature)
     ret = init_return!(ret)
