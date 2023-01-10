@@ -7,7 +7,8 @@ import ....Utilities: verbose
 export PopulationFeature, FullPopulation, AlivePopulation
 export FuncReturn, NoReturn, WithReturn
 export MaxDistance, InTown, AdjTown, AnyWhere 
-export SimProcess, Death, Birth, Divorce, Marriage, AssignGuardian
+export SimProcess, Death, Birth, Divorce, Marriage, AssignGuardian, 
+        AgeTransition, WorkTransition, SocialTransition 
 export SimFullReturn
 export init_return!, progress_return!, fullreturn_object, select_population
 export verbose, verbosemsg
@@ -36,6 +37,9 @@ struct Birth <: SimProcess end
 struct Divorce <: SimProcess end 
 struct Marriage <: SimProcess end
 struct AssignGuardian <: SimProcess end
+struct AgeTransition <: SimProcess end 
+struct WorkTransition <: SimProcess end 
+struct SocialTransition <: SimProcess end 
 
 # default local simulation functions 
 

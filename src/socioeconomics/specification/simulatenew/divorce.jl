@@ -52,7 +52,7 @@ function _divorce!(man, time, model, divorcepars, workpars, popfeature) #paramet
         wife.yearDivorced.append(self.year)
         =# 
         if status(wife) == WorkStatus.student
-            startWorking_!(wife, workpars)
+            _start_working!(wife, workpars) # from workTransitions.jl
         end
 
         #peopleToMove = [man]
