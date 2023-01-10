@@ -7,12 +7,15 @@
 """
 module ModelFunc
 
-#import ..ParamTypes: populationParameters ?
+using ..Traits
+using ....XAgents
+using ....Utilities
 
 export allPeople, alivePeople, dataOf, houses, towns 
+export select_population, selectedfor
 export add_person!, add_house!, remove_person! 
-#export populationParameters    # This one implies that parameters are part of the model definition
-                               # @todo check if this is necessary 
+export verbose_houses
+export share_childless_men, eligible_women
 
 allPeople(model) = error("allPeople not implemeneted") 
 alivePeople(model)  = error("alivePeople not implemented") 
@@ -20,18 +23,40 @@ dataOf(model) = error("dataOf not implemeneted")
 houses(model) = error("houses not implemented")
 towns(model)  = error("towns not implemented")
 
+alivePeople(model,::FullPopulation) = 
+    [ person for person in allPeople(model)  if alive(person) ]
+alivePeople(model,::AlivePopulation) = allPeople(model)
+
+"select subpopulation to be examined for a particular simulation process"
+select_population(model, pars, popfeature::PopulationFeature, process::SimProcess)::Vector{Person} = 
+    allPeople(model) # Default 
+
+"examine if a person is selected to be applicable to a given simulation process"
+selectedfor(person, pars, popfeature::PopulationFeature, process::SimProcess)::Bool = 
+    error("selectedfor(person, pars, ::$(typeof(popfeatue)),  $(typeof(process)) not implemented")
+
 add_person!(model,person) = error("add_person! not implemented")
 add_house!(model,person)  = error("add_house! not implemented")
 remove_person!(model,personidx::Int) = error("remove_person! not implemented")
+remove_person!(model,personidx::Int,::FullPopulation) = nothing # don't remove
+remove_person!(model,personidx::Int,::PopulationFeature) = remove_person!(model,personidx) 
 
-# The following assumes that parameters are a part of the model definition
-# populationParameters(model) = error("populationParameters not implemeneted")
+function verbose_houses(model,msg="") 
+    delayedVerbose() do 
+        ts = towns(model)
+        ehouses,ohouses = number_of_houses(ts) 
+        println("$(msg) # empty houses : $ehouses , # occupied houses : $ohouses")
+    end 
+end 
 
-#= Examples of implementation
-# the following accessory functions to be moved to an internal module 
-allPeople(model)    = model.pop      
-alivePeople(model)   = Iterators.filter(a->alive(a), population(model))  
-populationPars(pars) = pars.poppars        
-=# 
+# help functions that can be implemented to access model variables for 
+#   storing intermediate expensive computations 
+
+share_childless_men(model,ageclass::Int) = 
+    error("share_childless_men(::$(typeof(model)),ageclass::Int) not implemented")
+
+eligible_women(model) = 
+    error("eligible_women(::$(typeof(model))) not implemented")
+
 
 end # ModelFunc

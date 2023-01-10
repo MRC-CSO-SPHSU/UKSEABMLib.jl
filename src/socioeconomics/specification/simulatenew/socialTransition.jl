@@ -1,24 +1,21 @@
 using Distributions: Normal, LogNormal
 
-export socialTransition!, selectSocialTransition, doSocialTransitions!
+export do_social_transitions!, social_transition!
 
+_working_age(person, pars) = pars.workingAge[classRank(person)+1]
 
-function selectSocialTransition(p, pars)
-    alive(p) && hasBirthday(p) && 
-    age(p) == workingAge_(p, pars) &&
-    status(p) == WorkStatus.student
-end
-
+selectedfor(person,pars,::AlivePopulation,::SocialTransition) =
+    hasBirthday(person) && age(person) == _working_age(person, pars) && status(person) == WorkStatus.student
+selectedfor(person,pars,::FullPopulation,pr::SocialTransition) =
+    alive(person) && selectedfor(person,pars,AlivePopulation(),pr)
 
 # class sensitive versions
 # TODO? 
 # * move to separate, optional module
 # * replace with non-class version here
-initialIncomeLevel_(person, pars) = pars.incomeInitialLevels[classRank(person)+1]
+_initial_income_level(person, pars) = pars.incomeInitialLevels[classRank(person)+1]
 
-workingAge_(person, pars) = pars.workingAge[classRank(person)+1]
-
-function incomeDist_(person, pars)
+function _income_dist(person, pars)
     # TODO make parameters
     if classRank(person) == 0
         LogNormal(2.5, 0.25)
@@ -38,81 +35,39 @@ end
 # TODO dummy, replace
 # or, possibly remove altogether and calibrate model 
 # properly instead
-socialClassShares_(model, class) = 0.2
+_social_class_shares(model, class) = 0.2
 
 function studyClassFactor_(person, model, pars)
     if classRank(person) == 0 
-        return socialClassShares_(model, 0) > 0.2 ?  1/0.9 : 0.85
+        return _social_class_shares(model, 0) > 0.2 ?  1/0.9 : 0.85
     end
-
-    if classRank(person) == 1 && socialClassShares_(model, 1) > 0.35
+    if classRank(person) == 1 && _social_class_shares(model, 1) > 0.35
         return 1/0.8
     end
-
-    if classRank(person) == 2 && socialClassShares_(model, 2) > 0.25
+    if classRank(person) == 2 && _social_class_shares(model, 2) > 0.25
         return 1/0.85
     end
-
-    1.0
+    return 1.0
 end
 
-doneStudying_(person, pars) = classRank(person) >= 4
-
-# TODO
-function addToWorkforce_!(person, model)
-end
-
-# move newly adult agents into study or work
-function socialTransition_!(person, time, model, pars)
-    probStudy = doneStudying_(person, pars)  ?  
-        0.0 : startStudyProb_(person, model, pars)
-
-    if rand() < probStudy
-        startStudying_!(person, pars)
-        return true 
-    else
-        startWorking_!(person, pars)
-        addToWorkforce_!(person, model)
-    end
-
-    false 
-end
-
-socialTransition!(person, time, model) =
-    socialTransition_!(person, time, model, workParameters(model))
-
-function doSocialTransitions!(model, time) 
-
-    people = alivePeople(model) 
-
-    candidates = [ person for person in people if selectSocialTransition(person, workParameters(model)) ]
-
-    for cand in candidates 
-        socialTransition!(cand, time, model)
-    end 
-
-    
-end 
-
+_done_studying(person, pars) = classRank(person) >= 4
 
 # probability to start studying instead of working
-function startStudyProb_(person, model, pars)
+function _start_studying_prob(person, model, pars)
     if father(person) == nothing && mother(person) == nothing
         return 0.0
     end
-    
     if provider(person) == nothing
         return 0.0
     end
 
-                                # renamed from python but same calculation
+    # renamed from python but same calculation
     perCapitaDisposableIncome = householdIncomePerCapita(person)
-
     if perCapitaDisposableIncome <= 0
         return 0.0
     end
 
-    forgoneSalary = initialIncomeLevel_(person, pars) * 
+    forgoneSalary = _initial_income_level(person, pars) * 
         pars.weeklyHours[careNeedLevel(person)+1]
     relCost = forgoneSalary / perCapitaDisposableIncome
     incomeEffect = (pars.constantIncomeParam+1) / 
@@ -127,20 +82,17 @@ function startStudyProb_(person, model, pars)
     educationEffect = expEdu / (expEdu + pars.constantEduParam)
 
     careEffect = 1/exp(pars.careEducationParam * (socialWork(person) + childWork(person)))
-
     pStudy = incomeEffect * educationEffect * careEffect
-
     pStudy *= studyClassFactor_(person, model, pars)
 
     return max(0.0, pStudy)
 end
 
-function startStudying_!(person, pars)
-    addClassRank!(person, 1) 
-end
+_start_studying!(person, pars) = addClassRank!(person, 1) 
+
 
 # TODO here for now, maybe not the best place?
-function resetWork_!(person, pars)
+function _reset_work!(person, pars)
     status!(person, WorkStatus.unemployed)
     newEntrant!(person, true)
     workingHours!(person, 0)
@@ -153,20 +105,14 @@ function resetWork_!(person, pars)
     outOfTownStudent!(person, true)
 end
 
-function startWorking_!(person, pars)
-
-    resetWork_!(person, pars)
-
+function _start_working!(person, pars)
+    _reset_work!(person, pars)
     dKi = rand(Normal(0, pars.wageVar))
-    initialIncome!(person, initialIncomeLevel_(person, pars) * exp(dKi))
-
-    dist = incomeDist_(person, pars)
-
+    initialIncome!(person, _initial_income_level(person, pars) * exp(dKi))
+    dist = _income_dist(person, pars)
     finalIncome!(person, rand(dist))
-
     # updates provider as well
     setAsSelfproviding!(person)
-
 # commented in original:
 #        if person.classRank < 4:
 #            dKf = np.random.normal(dKi, self.p['wageVar'])
@@ -180,3 +126,47 @@ function startWorking_!(person, pars)
 #        person.potentialIncome = person.income
 end
 
+# TODO
+function _addto_workforce!(person, model) end
+
+# move newly adult agents into study or work
+function _social_transition!(person, time, model, workpars, popfeature)
+    if !selectedfor(person, workpars, popfeature, SocialTransition()) return false end 
+    probStudy = _done_studying(person, workpars)  ?  
+        0.0 : _start_studying_prob(person, model, workpars)
+    if rand() < probStudy
+        _start_studying!(person, workpars)
+        return true 
+    else
+        _start_working!(person, workpars)
+        _addto_workforce!(person, model)
+    end
+    return false 
+end
+
+social_transition!(person, time, model, popfeature::PopulationFeature = FullPopulation()) =
+    _social_transition!(person, time, model, workParameters(model), popfeature)
+
+verbosemsg(::SocialTransition) = "social transitions"
+function verbosemsg(person::Person,::SocialTransition) 
+    y, = age2yearsmonths(age(person))
+    return "person $(person.id) of age $(y) changed social status to ..."
+end 
+
+function _do_social_transitions!(ret, model, time, popfeature) 
+    ret = init_return!(ret)
+    people = select_population(model,nothing,AlivePopulation(),WorkTransition())
+    workpars = workParameters(model)
+    for (ind,person) in enumerate(people) 
+        if _social_transition!(person, time, model, workpars, AlivePopulation())
+            ret = progress_return!(ret,(ind=ind,person=person))
+        end
+    end 
+    verbose(ret,SocialTransition())
+    return ret
+end 
+
+do_social_transitions!(model, time, popfeature::PopulationFeature, ret = nothing) = 
+    _do_social_transitions!(ret, model, time, popfeature)
+do_social_transitions!(model, time, ret = nothing) =
+    do_social_transitions!(model, time, AlivePopulation(), ret)

@@ -73,8 +73,7 @@ function _assumption_birth(woman, birthpars, birthProb)
     nothing 
 end 
 
-function _subject_to_birth(woman, currstep, data, birthpars)
-
+function _subject_to_birth(woman, currstep, data, birthpars, popfeature)
     # womanClassRank = woman.classRank
     # if woman.status == 'student':
     #     womanClassRank = woman.parentsClassRank
@@ -118,16 +117,31 @@ function _givesbirth!(woman)
     return baby
 end 
 
-function _birth!(woman, currstep, data, birthpars)
-    if _subject_to_birth(woman, currstep, data, birthpars)
-        baby = _givesbirth!(woman)
-        return baby  
+selectedfor(woman, birthpars, ::AlivePopulation, ::Birth) = isFemale(woman) && 
+    !isSingle(woman) && 
+    age(woman) >= birthpars.minPregnancyAge && 
+    age(woman) <= birthpars.maxPregnancyAge && 
+    ageYoungestAliveChild(woman) > 1 
+selectedfor(woman, birthpars, ::FullPopulation, process::Birth) = 
+    alive(woman) && selectedfor(woman, birthpars, AlivePopulation(), process)
+    
+function _birth!(woman, currstep, data, birthpars, popfeature) 
+    if !(selectedfor(woman, birthpars, popfeature, Birth())) return false end 
+    if _subject_to_birth(woman, currstep, data, birthpars, popfeature) 
+        _givesbirth!(woman)
+        verbose(woman, Birth()) 
+        return true 
     end 
-    return nothing 
-end 
+    return false 
+end
 
-birth!(woman, currstep, model, pars) = 
-    _birth!(woman, currstep, dataOf(model), birthParameters(pars))
+function birth!(woman, currstep, model, popfeature::PopulationFeature = FullPopulation()) 
+    if _birth!(woman, currstep, dataOf(model), birthParameters(model), popfeature)
+        add_person!(model,youngest_child(woman))
+        return true 
+    end
+    return false 
+end 
 
 function _verbose_dobirths(people, nbabies::Int, birthpars)
     delayedVerbose() do
@@ -178,22 +192,11 @@ end
 _verbose_dobirths(people, babies, birthpars) = 
     _verbose_dobirths(people, length(babies), birthpars)
 
-select_birth(woman, birthpars) = isFemale(woman) && 
-    !isSingle(woman) && 
-    age(woman) >= birthpars.minPregnancyAge && 
-    age(woman) <= birthpars.maxPregnancyAge && 
-    ageYoungestAliveChild(woman) > 1 
-
 function _assumption_dobirths(people, birthpars, currstep) 
     assumption() do
         #@info currstep 
-        reproductiveWomen = [ woman for woman in people if select_birth(woman, birthpars) ]
-
-        for person in people  
-            @assert alive(person) 
-        end
-
-        allFemales = [ woman for woman in people if isFemale(woman) ]
+        reproductiveWomen = [ woman for woman in people if selectedfor(woman, birthpars, FullPopulation(), Birth()) ]
+        allFemales = [ woman for woman in people if isFemale(woman) && alive(woman) ]
         adultWomen = [ aWomen for aWomen in allFemales if 
                          age(aWomen) >= birthpars.minPregnancyAge ] 
         nonadultFemale = setdiff(Set(allFemales),Set(adultWomen)) 
@@ -203,17 +206,18 @@ function _assumption_dobirths(people, birthpars, currstep)
         end
 
         for woman in allFemales 
-            if woman ∉ reproductiveWomen
+            if !(woman in reproductiveWomen)
                 @assert isSingle(woman) || 
                 age(woman) < birthpars.minPregnancyAge ||
                 age(woman) > birthpars.maxPregnancyAge  ||
                 ageYoungestAliveChild(woman) <= 1
             end
         end
-    end 
+    end
     nothing 
 end 
 
+#=
 function _dobirths!(people, currstep, data, birthpars)
 
     # numBirths =  0    # instead of [0, 0, 0, 0, 0]
@@ -221,8 +225,7 @@ function _dobirths!(people, currstep, data, birthpars)
     #reproductiveWomen = [ woman for woman in people if select_birth(woman, birthpars) ]
     _assumption_dobirths(people, birthpars, currstep)
     babies = Person[] 
-
-    #=      
+     
     adultLadies_1 = [x for x in adultWomen if x.classRank == 0]   
     marriedLadies_1 = len([x for x in adultLadies_1 if x.partner != None])
     if len(adultLadies_1) > 0:
@@ -253,53 +256,46 @@ function _dobirths!(people, currstep, data, birthpars)
         marriedPercentage.append(marriedLadies_5/float(len(adultLadies_5)))
     else:
     marriedPercentage.append(0)
+    ... 
+end  # function doBirths! 
 =#
 
-    #for woman in reproductiveWomen 
-    for woman in people 
-        if !(select_birth(woman, birthpars)) continue end 
-        if _subject_to_birth(woman, currstep, data, birthpars)
-           baby = _givesbirth!(woman)
-           push!(babies,baby)
+verbosemsg(::Birth) = "births"
+function verbosemsg(person::Person,::Birth) 
+    y, = age2yearsmonths(age(person))
+    baby = youngest_child(person)
+    @assert age(baby) == 0 
+    return "woman $(person.id) gave birth of $(baby.id) at age of $(y)"
+end 
+
+function _dobirths!(ret, model, time, popfeature)
+    ret = init_return!(ret)
+    birthpars = birthParameters(model)
+    people = select_population(model, nothing, popfeature, Birth())
+    data = dataOf(model)
+    len = length(people)
+    _assumption_dobirths(people, birthpars, time)
+    for (ind,woman) in enumerate(Iterators.reverse(people))  
+        if _birth!(woman, time, data, birthpars, popfeature)
+           @assert people[len-ind+1] === woman 
+           add_person!(model,youngest_child(woman)::Person)
+           ret = progress_return!(ret,(ind=len-ind+1,person=woman))
         end 
     end # for woman 
+    _,m = date2yearsmonths(time)
+    if m == 0 
+        nbabies = length(people) - len 
+        _verbose_dobirths(people, nbabies, birthpars)
+    end 
+    verbose(ret,Birth())
+    return ret 
+end 
 
-    _verbose_dobirths(people, babies, birthpars)
-
-    # any reason for that?
-    # return (newbabies=babies)
-    
-    return (babies = babies,)
-end  # function doBirths! 
-
-
-function _dobirths_add!(model, people, currstep, data, birthpars)
-    _assumption_dobirths(people, birthpars, currstep)
-    npeople = length(people)  
-    for woman in Iterators.reverse(people)  
-        if !(select_birth(woman, birthpars)) continue end 
-        if _subject_to_birth(woman, currstep, data, birthpars)
-           baby = _givesbirth!(woman)
-           #push!(people,baby)
-           add_person!(model,baby)
-        end 
-    end # for woman 
-    nbabies = length(people) - npeople 
-    _verbose_dobirths(people, nbabies, birthpars)
-    nothing 
-end  # function doBirths! 
-
-dobirths!(model,time,::FullPopulation, ::WithReturn)  = 
-    _dobirths!(alivePeople(model),time,dataOf(model),birthParameters(model))
-dobirths!(model,time,::AlivePopulation, ::WithReturn) =
-	_dobirths!(allPeople(model),time,dataOf(model),birthParameters(model))
-dobirths!(model,time,::FullPopulation, ::NoReturn)  = 
-    _dobirths_add!(model, alivePeople(model),time,dataOf(model),birthParameters(model))
-dobirths!(model,time,::AlivePopulation, ::NoReturn) =
-	_dobirths_add!(model, allPeople(model),time,dataOf(model),birthParameters(model))
+dobirths!(model, time, popfeature::PopulationFeature, ret = nothing) = 
+    _dobirths!(ret, model, time, popfeature)
 
 """
-    dobirths!(mode, time)
+    dobirths!(model, time)
 
 Accept a population and evaluates the birth rate upon computing
 - the population of married fertile women according to 
@@ -308,8 +304,8 @@ fixed parameters (minPregnenacyAge, maxPregnenacyAge) and
     
 Class rankes and shares are temporarily ignored.
 """
-dobirths!(model,time) =
-	dobirths!(model,time,AlivePopulation(), NoReturn())
+dobirths!(model, time, ret=nothing) =
+	dobirths!(model, time, AlivePopulation(), ret)
 
 
 

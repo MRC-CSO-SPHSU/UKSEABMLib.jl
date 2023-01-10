@@ -60,9 +60,27 @@ function setDead!(person)
         resolvePartnership!(partner(person),person)
     end
 
+    #= 
+    fa = father(person)
+    mo = mother(person)
+    gs = guardians(person)
+    =# 
+
     # dead persons are no longer dependents
     setAsIndependent!(person)
 
+    #= 
+    if fa != nothing 
+        @assert !(person in dependents(fa)) 
+    end
+    if mo != nothing 
+        @assert mo != nothing && !(person in dependents(mo))
+    end 
+    for g in gs 
+        @assert !(person in dependents(g))
+    end 
+    =# 
+    
     # dead persons no longer have to be provided for
     setAsSelfproviding!(person)
 
@@ -76,35 +94,29 @@ function setDead!(person)
     nothing
 end 
 
-
+selectedfor(p,pars,::AlivePopulation,::Death) = true 
+selectedfor(p,pars,::FullPopulation,::Death)  = alive(p)
+selectedfor(p,pars,process::Death) = selectedfor(p,pars,FullPopulation(),process)
 
 # currently leaves dead agents in population
-function _death!(person, currstep, data, poppars)
-
+function _death!(person, currstep, data, poppars, popfeature)
+    if !selectedfor(person,nothing,popfeature,Death()) return false end 
     (curryear,currmonth) = date2yearsmonths(currstep)
     currmonth += 1 # adjusting 0:11 => 1:12 
-
     agep = age(person)             
-
     if curryear >= 1950 
-                        
         agep = agep > 109 ? 109//1 : agep 
         ageindex = trunc(Int,agep)
         rawRate = isMale(person) ? data.deathMale[ageindex+1,curryear-1950+1] : 
-                                            data.deathFemale[ageindex+1,curryear-1950+1]
-                                   
+                                            data.deathFemale[ageindex+1,curryear-1950+1]                      
         # lifeExpectancy = max(90 - agep, 3 // 1)  # ??? This is a direct translation 
-                        
     else # curryear < 1950 / made-up probabilities 
-                        
         babyDieProb = agep < 1 ? poppars.babyDieProb : 0.0 # does not play any role in the code
         ageDieProb  = isMale(person) ? 
                         exp(agep / poppars.maleAgeScaling)  * poppars.maleAgeDieProb : 
                         exp(agep / poppars.femaleAgeScaling) * poppars.femaleAgeDieProb
-        rawRate = poppars.baseDieProb + babyDieProb + ageDieProb
-                                    
+        rawRate = poppars.baseDieProb + babyDieProb + ageDieProb                        
         # lifeExpectancy = max(90 - agep, 5 // 1)  # ??? Does not currently play any role
-                        
     end # currYear < 1950 
                         
     #=
@@ -124,99 +136,72 @@ function _death!(person, currstep, data, poppars)
                                 
     if rand() < p_yearly2monthly(deathProb)
         setDead!(person) 
+        verbose(person, Death())
         return true 
         # person.deadYear = self.year  
         # deaths[person.classRank] += 1
     end # rand
 
-    false
+    return false
 end 
 
-death!(person, currstep, model, pars) = 
-    _death!(person, currstep, dataOf(model), populationParameters(pars))
-
-
-function _verbose_dodeaths(people,numDeaths::Int,towns) 
-    delayedVerbose() do 
-        count = length(people)
-        println("# living people : $(count), # deaths : $(numDeaths)")
-        ehouses,ohouses = number_of_houses(towns) 
-        println("# empty houses : $ehouses , # occupied houses : $ohouses")
-    end 
-end 
-
-function _verbose_dodeaths(people,deads,towns)
-    delayedVerbose() do
-        for dead in deads 
-            y, = age2yearsmonths(age(dead))
-            println("person $(dead.id) died with age of $y")
-        end   
-        _verbose_dodeaths(people,length(deads),towns)
-    end 
+function _assumption_death(person::Person)
+    assumption() do
+        @assert alive(person)       
+        @assert isMale(person) || isFemale(person) # Assumption 
+        @assert typeof(age(person)) == Rational{Int} 
+    end
     nothing 
 end 
+
+death!(person, currstep, model, popfeature::PopulationFeature = FullPopulation()) = 
+    _death!(person, currstep, dataOf(model), populationParameters(model), popfeature)
 
 function _assumption_dodeaths(people)
     assumption() do
         for person in people 
-            @assert alive(person)       
-            @assert isMale(person) || isFemale(person) # Assumption 
-            @assert typeof(age(person)) == Rational{Int}
+            _assumption_death(person)
         end 
     end
     nothing 
 end 
 
-function _dodeaths!(people, model, time) 
-    _assumption_dodeaths(people)
-
-    deads = Person[] 
-    deadsind = Int[] 
-    for (ind,person) in enumerate(people) 
-        if _death!(person, time, dataOf(model), populationParameters(model)) 
-            push!(deadsind,ind)
-            push!(deads,person)
-        end 
-    end # for livingPeople
-    _verbose_dodeaths(people,deads,towns(model))
-    return (deads = deads, deadsind = deadsind)    
-end
-
-function _verbose_dodeaths(person) 
-    delayedVerbose() do
-        y, = age2yearsmonths(age(person))
-        println("person $(person.id) died with age of $y")
-    end 
-    nothing 
+verbosemsg(::Death) = "deads"
+function verbosemsg(person::Person,::Death) 
+    y, = age2yearsmonths(age(person))
+    return "person $(person.id) died with age of $y"
 end 
 
-function _dodeaths_removedeads!(people, model, time) 
-    _assumption_dodeaths(people)
-    ndeads = 0
+_remove_person!(model,idx,::AlivePopulation) = remove_person!(model,idx) 
+_remove_person!(model,idx,::FullPopulation)  = nothing  
+
+function _dodeaths!(ret,model,time,popfeature)
+    verbose_houses(model,"before dodeaths!")
+    ret = init_return!(ret)
+    poppars = populationParameters(model)
+    people = select_population(model,nothing,popfeature,Death())
+    data = dataOf(model)
     len = length(people)
     for (ind,person) in enumerate(Iterators.reverse(people)) 
-        if _death!(person, time, dataOf(model), populationParameters(model)) 
+        if _death!(person, time, data, poppars, popfeature) 
+            ret = progress_return!(ret,(ind=ind,person=person))
             @assert person === people[len-ind+1]
-            #deleteat!(people,len-ind+1)
-            remove_person!(model, len-ind+1) 
-            _verbose_dodeaths(person)
-            ndeads += 1
+            _remove_person!(model, len-ind+1, popfeature) 
         end 
     end 
-    if ndeads > 0 
-        _verbose_dodeaths(people,ndeads,towns(model))
-    end
-    nothing  
+    verbose(ret,Death())
+    verbose_houses(model,"after dodeaths!")
+    return ret 
 end
 
+dodeaths!(model,time,::AlivePopulation,::SimFullReturn) =
+    error("dodeaths!: returned indices are not meaningful due to deads removal")
 
-dodeaths!(model, time, ::FullPopulation, ::WithReturn) = 
-    _dodeaths!(alivePeople(model) , model, time) 
-dodeaths!(model, time, ::AlivePopulation, ::WithReturn) = 
-    _dodeaths!(allPeople(model) , model, time) 
-dodeaths!(model, time, ::FullPopulation, ::NoReturn) = 
-    _dodeaths_removedeads!(alivePeople(model), model, time)
-dodeaths!(model, time, ::AlivePopulation, ::NoReturn) = 
-    _dodeaths_removedeads!(allPeople(model), model, time)
-dodeaths!(model, time) = 
-    dodeaths!(model, time, AlivePopulation(), NoReturn())
+dodeaths!(model,time,::AlivePopulation,::Tuple{Vector{Int},Vector{Person}}) =
+    error("dodeaths!: returned indices are not meaningful due to deads removal")
+    
+dodeaths!(model, time, popfeature::PopulationFeature, ret=nothing) = 
+    _dodeaths!(ret, model, time, popfeature)
+
+dodeaths!(model, time, ret=nothing) = 
+    dodeaths!(model, time, AlivePopulation(), ret)
