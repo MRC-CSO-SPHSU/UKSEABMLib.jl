@@ -200,7 +200,7 @@ dodeaths!(model,time,::AlivePopulation,::SimFullReturn) =
 dodeaths!(model,time,::AlivePopulation,::Tuple{Vector{Int},Vector{Person}}) =
     error("dodeaths!: returned indices are not meaningful due to deads removal")
     
-dodeaths!(model, time, popfeature, ret=nothing) = 
+dodeaths!(model, time, popfeature::PopulationFeature, ret=nothing) = 
     _dodeaths!(ret, model, time, popfeature)
 
 dodeaths!(model, time, ret=nothing) = 
