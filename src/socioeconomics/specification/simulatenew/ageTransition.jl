@@ -3,7 +3,7 @@ export age_transition!, do_age_transitions!
 selectedfor(p,pars,::AlivePopulation,::AgeTransition) = true 
 selectedfor(p,pars,::FullPopulation,::AgeTransition)  = alive(p)
 
-function _age_transition!(person, time, model, maternityLeaveDuration, popfeature)
+function _age_transition!(person, time, maternityLeaveDuration, popfeature)
     if !selectedfor(person, nothing,popfeature,AgeTransition()) return false end 
     ret = false 
     if isInMaternity(person)
@@ -30,7 +30,7 @@ function _age_transition!(person, time, model, maternityLeaveDuration, popfeatur
 end
 
 age_transition!(person, time, model, popfeature::PopulationFeature = FullPopulation()) = 
-    _age_transition!(person, time, model, workParameters(model).maternityLeaveDuration, popfeature)
+    _age_transition!(person, time, workParameters(model).maternityLeaveDuration, popfeature)
 
 function _verbose_age_transition(cntind,cntendedM)
     delayedVerbose() do 
@@ -49,9 +49,9 @@ function _do_age_transitions!(ret,model, time,popfeature)
     maternityLeaveDuration = workParameters(model).maternityLeaveDuration 
     cntind = 0
     cntendedM = 0  
-    for person in people 
-        if _age_transition!(person, time, model, maternityLeaveDuration, popfeature)
-            ret += 1 
+    for (ind,person) in enumerate(people) 
+        if _age_transition!(person, time, maternityLeaveDuration, popfeature)
+            ret = progress_return!(ret,(ind=ind,person=person))
             if age(person) == 18
                 cntind += 1
             else
@@ -66,7 +66,6 @@ end
 
 do_age_transitions!(model, time, popfeature::PopulationFeature, ret=nothing) =
     _do_age_transitions!(ret, model, time, popfeature)
-
 do_age_transitions!(model, time, ret=nothing) = 
     do_age_transitions!(model, time, AlivePopulation(), ret)
 
