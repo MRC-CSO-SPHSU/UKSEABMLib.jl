@@ -1,53 +1,57 @@
-using Distributions
+export age_transition!, do_age_transitions! 
 
-export selectAgeTransition, ageTransition!, selectWorkTransition, 
-        doAgeTransitions!, workTransition!
+selectedfor(p,pars,::AlivePopulation,::AgeTransition) = true 
+selectedfor(p,pars,::FullPopulation,::AgeTransition)  = alive(p)
 
-
-selectAgeTransition(person, pars) = alive(person)
-
-
-function ageTransition_!(person, time, model, pars)
+function _age_transition!(person, time, model, maternityLeaveDuration, popfeature)
+    if !selectedfor(person, nothing,popfeature,AgeTransition()) return false end 
     ret = false 
-    
     if isInMaternity(person)
         # count maternity months
         stepMaternity!(person)
-
         # end of maternity leave
-        if maternityDuration(person) >= pars.maternityLeaveDuration
+        if maternityDuration(person) >= maternityLeaveDuration
             endMaternity!(person)
             ret = true 
         end
     end
-
         # TODO part of location module, TBD
         #if hasBirthday(person, month)
         #    person.movedThisYear = false
         #    person.yearInTown += 1
         #end
     agestep!(person)
-
     if age(person) == 18
         # also updates guardian
         setAsIndependent!(person)
         ret = true
     end
-
-    ret 
+    return ret 
 end
 
-ageTransition!(person, time, model) = 
-    ageTransition_!(person, time, model, workParameters(model))
+age_transition!(person, time, model, popfeature::PopulationFeature = FullPopulation()) = 
+    _age_transition!(person, time, model, workParameters(model).maternityLeaveDuration, popfeature)
 
-function doAgeTransitions!(model, time)
+function _verbose_age_transition(cntind,cntendedM)
+    delayedVerbose() do 
+        if cntind > 0 || cntendedM > 0 
+            println("# of persons who became independent : $(cntind)")
+            println("# of persons who ended maternity leave: $(cntendedM)")
+        end
+    end
+end 
 
-    people = alivePeople(model) 
+verbosemsg(::AgeTransition) = "alive persons"
 
+function _do_age_transitions!(ret,model, time,popfeature)
+    ret = init_return!(ret)
+    people = select_population(model,nothing,popfeature,AgeTransition())
+    maternityLeaveDuration = workParameters(model).maternityLeaveDuration 
     cntind = 0
     cntendedM = 0  
     for person in people 
-        if ageTransition!(person, time, model)
+        if _age_transition!(person, time, model, maternityLeaveDuration, popfeature)
+            ret += 1 
             if age(person) == 18
                 cntind += 1
             else
@@ -55,73 +59,15 @@ function doAgeTransitions!(model, time)
             end
         end 
     end
-
-    delayedVerbose() do 
-        println("# of persons who became independent : $(cntind)")
-        println("# of persons who ended maternity leave: $(cntendedM)")
-    end
-
-    nothing 
+    verbose(ret,AgeTransition())
+    _verbose_age_transition(cntind,cntendedM)
+    return ret 
 end 
 
+do_age_transitions!(model, time, popfeature::PopulationFeature, ret=nothing) =
+    _do_age_transitions!(ret, model, time, popfeature)
 
-selectWorkTransition(person) = 
-    alive(person) && status(person) != WorkStatus.retired && hasBirthday(person)
+do_age_transitions!(model, time, ret=nothing) = 
+    do_age_transitions!(model, time, AlivePopulation(), ret)
 
-selectWorkTransition(person, pars) = selectWorkTransition(person)
-
-function workTransition_!(person, time, model, pars)
-    if age(person) == pars.ageTeenagers
-        status!(person, WorkStatus.teenager)
-        return true 
-    end
-
-    if age(person) == pars.ageOfAdulthood
-        status!(person, WorkStatus.student)
-        #class!(person, 0)
-
-        if rand() < pars.probOutOfTownStudent
-            outOfTownStudent!(person, true)
-        end
-
-        return true 
-    end
-
-    if age(person) == pars.ageOfRetirement
-        status!(person, WorkStatus.retired)
-        setEmptyJobSchedule!(person)
-        wage!(person, 0)
-
-        shareWorkingTime = workingPeriods(person) / pars.minContributionPeriods
-
-        dK = rand(Normal(0, pars.wageVar))
-        pension!(person, shareWorkingTime * exp(dK))
-
-        return true 
-    end
-
-    false 
-end
-
-workTransition!(person, time, model) = 
-    workTransition_!(person, time, model, workParameters(model))
-
-function doWorkTransitions!(model, time)
-    people = alivePeople(model)
-
-    candidates = [ person for person in people if selectWorkTransition(person) ] 
-    
-    n = 0 
-    for cand in candidates
-        if workTransition!(cand, time, model)
-            n += 1 
-        end 
-    end
-
-    delayedVerbose() do 
-        println("# of work transitions : $(n)")
-    end
-
-    nothing 
-end 
 
