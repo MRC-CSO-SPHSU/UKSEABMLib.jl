@@ -1,7 +1,3 @@
-"""
-
-"""
-
 module Create 
 
 using Distributions
@@ -10,8 +6,7 @@ using ....Utilities
 using ....XAgents
 using ....ParamTypes 
 
-export create_towns, create_inhabited_towns, createPopulation, createPyramidPopulation
-### 
+export create_towns, create_inhabited_towns, create_population, create_pyramid_population
 
 function _create_towns(mappars)
     uktowns = PersonTown[] 
@@ -47,7 +42,7 @@ create_inhabited_towns(pars) =
 # return agents with age in interval minAge, maxAge
 # assumes pop is sorted by age
 # very simple implementation, binary search would be faster
-function ageInterval(pop, minAge, maxAge)
+function _age_interval(pop, minAge, maxAge)
     idx_start = 1
     idx_end = 0
 
@@ -69,10 +64,7 @@ function ageInterval(pop, minAge, maxAge)
     idx_start, idx_end
 end
 
-createPyramidPopulation(pars::DemographyPars) = 
-	createPyramidPopulation_(populationParameters(pars))
-
-function createPyramidPopulation_(pars)
+function _create_pyramid_population(pars)
     population = Person[]
     men = Person[]
     women = Person[]
@@ -139,7 +131,7 @@ function createPyramidPopulation_(pars)
 
         # get all women that are between 18 and 40 years older than 
         # p (and could thus be their mother)
-        start, stop = ageInterval(women, a + 18, a + 40)
+        start, stop = _age_interval(women, a + 18, a + 40)
         # check if we actually found any
         if start > length(women) || start > stop
             continue
@@ -165,17 +157,14 @@ function createPyramidPopulation_(pars)
     end
 
     @assert length(population) == pars.initialPop 
-
-    population
+    return population
 end
 
-createPopulation(pars::DemographyPars) = 
-	createPopulation_(populationParameters(pars))
+create_pyramid_population(pars::DemographyPars) = 
+	_create_pyramid_population(populationParameters(pars))
 
-function createPopulation_(pars) 
-
+function _create_population(pars) 
     population = Person[] 
-
     for i in 1 : pars.initialPop
         ageMale = rand(pars.minStartAge:pars.maxStartAge)
         ageFemale = ageMale - rand(-2:5)
@@ -199,9 +188,10 @@ function createPopulation_(pars)
 
     end # for 
 
-    population
-
+    return population
 end # createPopulation 
 
+create_population(pars::DemographyPars) = 
+	_create_population(populationParameters(pars))
 
 end # module Create 
