@@ -4,11 +4,14 @@ using Distributions: Normal
 using Random:  shuffle 
 using ....XAgents 
 using ....ParamTypes
+using ....API.ModelFunc
 import ....API.ModelFunc: init!
 import ....API.Connection: AbsInitPort, AbsInitProcess, initial_connect! 
 
 export InitHousesInTownsPort, InitCouplesToHousesPort
-export InitClassesProcess, InitWorkProcess
+export InitClassesProcess, InitWorkProcess, Init, DefaultModelInit
+
+struct DefaultModelInit <: AbsInitPort end 
 
 struct InitHousesInTownsPort <: AbsInitPort end
 struct InitCouplesToHousesPort <: AbsInitPort end  
@@ -48,7 +51,6 @@ initial_connect!(houses::Vector{PersonHouse},
                 towns::Vector{PersonTown},
                 pars) = 
     initial_connect!(houses,towns,pars,InitHousesInTownsPort())
-
 
 "Randomly assign a population of couples to non-inhebted set of houses"
 function _couples_to_houses!(population::Vector{Person}, houses::Vector{PersonHouse})
@@ -103,7 +105,6 @@ function init!(pop,pars,::InitClassesProcess)
     end 
 end 
 
-
 function _init_work!(person, pars)
     class = classRank(person)+1
     workingTime = 0
@@ -130,12 +131,18 @@ function _init_work!(person, pars)
     nothing
 end
 
-
 function init!(pop,pars,::InitWorkProcess) 
     for person in pop 
         _init_work!(person,workParameters(pars))
     end 
 end 
 
+function init!(model, mi::AbsInitPort = DefaultModelInit())
+    pars = allParameters(model)
+    initial_connect!(houses(model), towns(model), pars) 
+    initial_connect!(houses(model), allPeople(model), pars) 
+    init!(allPeople(model),pars,InitClassesProcess())
+    init!(allPeople(model),pars,InitWorkProcess())
+end
 
 end # module Initalize 

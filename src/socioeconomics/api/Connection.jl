@@ -17,9 +17,6 @@ abstract type AbsPort <: AbsProcess end
 "Port used only for initial connection"
 abstract type AbsInitPort <: AbsPort end 
 
-"Interface"
-function init!() end 
-
 "Interface" 
 function initial_connect!() end 
 

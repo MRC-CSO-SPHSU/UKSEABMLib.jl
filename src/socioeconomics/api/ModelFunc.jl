@@ -11,11 +11,14 @@ using ..Traits
 using ....XAgents
 using ....Utilities
 
+export init!
 export allPeople, alivePeople, dataOf, houses, towns 
 export select_population, selectedfor
 export add_person!, add_house!, remove_person! 
 export verbose_houses
 export share_childless_men, eligible_women
+
+init!(model) = error("init!($(typeof(model))) not implemented")
 
 allPeople(model) = error("allPeople not implemeneted") 
 alivePeople(model)  = error("alivePeople not implemented") 
