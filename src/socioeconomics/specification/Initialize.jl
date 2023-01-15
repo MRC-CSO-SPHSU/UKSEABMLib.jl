@@ -48,7 +48,7 @@ function initialConnect!(houses, towns, pars,::InitHousesInTownsPort)
 end
 
 initialConnect!(houses::Vector{PersonHouse},
-                towns::Vector{Town},
+                towns::Vector{PersonTown},
                 pars) = 
     initialConnect!(houses,towns,pars,InitHousesInTownsPort())
 
