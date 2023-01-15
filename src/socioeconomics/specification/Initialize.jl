@@ -5,13 +5,10 @@ using Random:  shuffle
 using ....XAgents 
 using ....ParamTypes
 import ....API.Connection: AbsInitPort, AbsInitProcess, 
-                            initialConnect!, init! 
-
+    initial_connect!, init! 
 
 export InitHousesInTownsPort, InitCouplesToHousesPort
-export AbsInitProcess, InitClassesProcess, InitWorkProcess
-export initialConnect!, init!
-
+export InitClassesProcess, InitWorkProcess
 
 struct InitHousesInTownsPort <: AbsInitPort end
 struct InitCouplesToHousesPort <: AbsInitPort end  
@@ -37,7 +34,7 @@ function _initialize_houses_towns(towns, houses, pars)
     return houses  
 end  # function initializeHousesInTwons 
 
-function initialConnect!(houses, towns, pars,::InitHousesInTownsPort)
+function initial_connect!(houses, towns, pars,::InitHousesInTownsPort)
     _initialize_houses_towns(towns, houses, mapParameters(pars))
     @assert length(houses) > 0
     for house in houses 
@@ -47,10 +44,10 @@ function initialConnect!(houses, towns, pars,::InitHousesInTownsPort)
     nothing 
 end
 
-initialConnect!(houses::Vector{PersonHouse},
+initial_connect!(houses::Vector{PersonHouse},
                 towns::Vector{PersonTown},
                 pars) = 
-    initialConnect!(houses,towns,pars,InitHousesInTownsPort())
+    initial_connect!(houses,towns,pars,InitHousesInTownsPort())
 
 
 "Randomly assign a population of couples to non-inhebted set of houses"
@@ -83,17 +80,17 @@ function assignCouplesToHouses_!(population::Vector{Person}, houses::Vector{Pers
     end
 end  # function assignCouplesToHouses 
 
-function initialConnect!(pop, houses, pars, ::InitCouplesToHousesPort)
+function initial_connect!(pop, houses, pars, ::InitCouplesToHousesPort)
     assignCouplesToHouses_!(pop, houses)
     nothing 
 end
 
-initialConnect!(pop::Vector{Person}, 
+initial_connect!(pop::Vector{Person}, 
                 houses::Vector{PersonHouse}, 
                 pars) = 
-    initialConnect!(pop,houses,pars,InitCouplesToHousesPort())
+    initial_connect!(pop,houses,pars,InitCouplesToHousesPort())
 
-function initClass_!(person, pars)
+function _init_class!(person, pars)
     p = rand()
     class = findfirst(x->p<x, pars.cumProbClasses)-1
     classRank!(person, class)
@@ -102,12 +99,12 @@ end
 
 function init!(pop,pars,::InitClassesProcess) 
     for person in pop 
-        initClass_!(person,populationParameters(pars))
+        _init_class!(person,populationParameters(pars))
     end 
 end 
 
 
-function initWork_!(person, pars)
+function _init_work!(person, pars)
     class = classRank(person)+1
     workingTime = 0
     for i in age(person):pars.workingAge[class]
@@ -136,7 +133,7 @@ end
 
 function init!(pop,pars,::InitWorkProcess) 
     for person in pop 
-        initWork_!(person,workParameters(pars))
+        _init_work!(person,workParameters(pars))
     end 
 end 
 

@@ -1,6 +1,6 @@
 module Connection 
 
-export AbsProc, AbsPort, initialConnect!, init! 
+export AbsProc, AbsPort, initial_connect!, init! 
 
 """
 to be used as a trait for generic functions implementing 
@@ -21,12 +21,12 @@ abstract type AbsInitPort <: AbsPort end
 function init!() end 
 
 "Interface" 
-function initialConnect!() end 
+function initial_connect!() end 
 
 "symmetry of connections"
-initialConnect!(x,y,pars) = initialConnect!(y,x,pars) 
+initial_connect!(x,y,pars) = initial_connect!(y,x,pars) 
 
-initialConnect!(x,y,pars,initPort::PType)  where PType <: AbsPort = 
-    initialConnect!(y,x,pars,initPort)
+initial_connect!(x,y,pars,initPort::PType)  where PType <: AbsPort = 
+    initial_connect!(y,x,pars,initPort)
 
 end # Connection 
