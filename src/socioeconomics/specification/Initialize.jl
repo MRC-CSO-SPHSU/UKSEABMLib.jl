@@ -4,8 +4,8 @@ using Distributions: Normal
 using Random:  shuffle 
 using ....XAgents 
 using ....ParamTypes
-import ....API.Connection: AbsInitPort, AbsInitProcess, 
-    initial_connect!, init! 
+import ....API.ModelFunc: init!
+import ....API.Connection: AbsInitPort, AbsInitProcess, initial_connect! 
 
 export InitHousesInTownsPort, InitCouplesToHousesPort
 export InitClassesProcess, InitWorkProcess
@@ -51,7 +51,7 @@ initial_connect!(houses::Vector{PersonHouse},
 
 
 "Randomly assign a population of couples to non-inhebted set of houses"
-function assignCouplesToHouses_!(population::Vector{Person}, houses::Vector{PersonHouse})
+function _couples_to_houses!(population::Vector{Person}, houses::Vector{PersonHouse})
     women = [ person for person in population if isFemale(person) ]
 
     randomhouses = shuffle(houses)
@@ -81,7 +81,7 @@ function assignCouplesToHouses_!(population::Vector{Person}, houses::Vector{Pers
 end  # function assignCouplesToHouses 
 
 function initial_connect!(pop, houses, pars, ::InitCouplesToHousesPort)
-    assignCouplesToHouses_!(pop, houses)
+    _couples_to_houses!(pop, houses)
     nothing 
 end
 
