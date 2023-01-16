@@ -20,25 +20,27 @@ struct InitClassesProcess <: AbsInitProcess end
 struct InitWorkProcess <: AbsInitProcess end 
 
 "initialize houses in a given set of towns"
-function _initialize_houses_towns(towns, houses, pars)
+function _initialize_houses_towns(towns, houses, pars, popsize)
     @assert length(houses) == 0  
-    for town in towns
-        if town.density > 0
-            adjustedDensity = town.density * pars.mapDensityModifier
-            for hx in 1:pars.townGridDimension  
-                for hy in 1:pars.townGridDimension 
-                    if(rand() < adjustedDensity)
-                        house = create_newhouse_and_append!(town,houses,hx,hy)
-                    end
-                end # for hy 
-            end # for hx 
-        end # if town.density 
-    end # for town 
+    while length(houses) < popsize 
+        for town in towns
+            if town.density > 0
+                adjustedDensity = town.density * pars.mapDensityModifier
+                for hx in 1:pars.townGridDimension  
+                    for hy in 1:pars.townGridDimension 
+                        if(rand() < adjustedDensity)
+                            house = create_newhouse_and_append!(town,houses,hx,hy)
+                        end
+                    end # for hy 
+                end # for hx 
+            end # if town.density 
+        end # for town 
+    end # while 
     return houses  
 end  # function initializeHousesInTwons 
 
 function initial_connect!(houses, towns, pars,::InitHousesInTownsPort)
-    _initialize_houses_towns(towns, houses, mapParameters(pars))
+    _initialize_houses_towns(towns, houses, mapParameters(pars), populationParameters(pars).initialPop)
     @assert length(houses) > 0
     for house in houses 
         @assert getHomeTown(house) != nothing
@@ -54,18 +56,16 @@ initial_connect!(houses::Vector{PersonHouse},
 
 "Randomly assign a population of couples to non-inhebted set of houses"
 function _couples_to_houses!(population::Vector{Person}, houses::Vector{PersonHouse})
+    
     women = [ person for person in population if isFemale(person) ]
-
     randomhouses = shuffle(houses)
 
     for woman in women
         house = pop!(randomhouses) 
-        
         moveToHouse!(woman, house) 
         if !isSingle(woman)
             moveToHouse!(partner(woman), house)
         end
-
         #for child in dependents(woman)
         for child in children(woman)
             moveToHouse!(child, house)
