@@ -143,13 +143,13 @@ function _create_pyramid_population(pars)
         mother = women[rand(start:stop)]
         
         setAsParentChild!(p, mother)
-        if !isSingle(mother)
+        if !issingle(mother)
             setAsParentChild!(p, partner(mother))
         end
 
         if age(p) < 18
             setAsGuardianDependent!(mother, p)
-            if !isSingle(mother) # currently not an option
+            if !issingle(mother) # currently not an option
                 setAsGuardianDependent!(partner(mother), p)
             end
             setAsProviderProvidee!(mother, p)

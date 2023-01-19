@@ -1,6 +1,6 @@
 using ....Utilities: age2yearsmonths
 
-export isfemale, ismale, agestep!, agestep_ifalive!, hasbirthday, yearsold
+export isfemale, ismale, agestep!, agestep_ifalive!, has_birthday, yearsold
 export Gender, male, female, unknown
 
 #"Gender type enumeration"
@@ -35,7 +35,7 @@ function agestep_ifalive!(person::BasicInfoBlock, dt=1//12)
     person.age += person.alive ? dt : 0  
 end 
 
-hasbirthday(person::BasicInfoBlock) = person.age % 1 == 0
+has_birthday(person::BasicInfoBlock) = person.age % 1 == 0
 
 function yearsold(person::BasicInfoBlock) 
     years, = age2yearsmonths(person.age)

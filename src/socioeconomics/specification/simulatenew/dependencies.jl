@@ -53,7 +53,7 @@ function _guardian_candidates(model,norphans,popfeature)
     empty!(_G_CANDIDATES)
     people = allPeople(model) # select_population(model,nothing,popfeature,AssignGuardian())
     for p in people 
-        if _valid_guardian(p,popfeature) && isfemale(p) && !isSingle(p) 
+        if _valid_guardian(p,popfeature) && isfemale(p) && !issingle(p) 
               # &&  (status(p) == WorkStatus.worker || status(partner(p)) == WorkStatus.worker) ]
             push!(_G_CANDIDATES,p)
             if length(_G_CANDIDATES) > norphans return _G_CANDIDATES end 
@@ -70,7 +70,7 @@ function _find_random_guardian(model,popfeature)
     error("no guardian was found for $(person)")
     #=people = alivePeople(model,popfeature) 
     g = rand(people) 
-    while !_valid_guardian(g,popfeature) || !isfemale(g) || !isSingle(g) 
+    while !_valid_guardian(g,popfeature) || !isfemale(g) || !issingle(g) 
         g = rand(people)
     end
     return g =# 
@@ -80,7 +80,7 @@ end
 function _adopt!(guard, person)
     move_person_to_person_house!(person, guard)
     setAsGuardianDependent!(guard, person)
-    if ! isSingle(guard)
+    if ! issingle(guard)
         setAsGuardianDependent!(partner(guard), person)
     end
 end

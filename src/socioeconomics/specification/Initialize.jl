@@ -63,7 +63,7 @@ function _couples_to_houses!(population::Vector{Person}, houses::Vector{PersonHo
     for woman in women
         house = pop!(randomhouses) 
         moveToHouse!(woman, house) 
-        if !isSingle(woman)
+        if !issingle(woman)
             moveToHouse!(partner(woman), house)
         end
         #for child in dependents(woman)

@@ -56,7 +56,7 @@ function setDead!(person)
     person.info.alive = false    # this statement is a sign that this function does not belong here!
     house = home(person) 
     resetHouse!(person)
-    if !isSingle(person) 
+    if !issingle(person) 
         resolvePartnership!(partner(person),person)
     end
 

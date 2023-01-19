@@ -10,8 +10,8 @@ export householdIncomePerCapita
 
 export home, livingTogether
 export setAsParentChild!, setAsPartners!, setParent!
-export hasAliveChild, ageYoungestAliveChild, hasbirthday, yearsold
-export hasChildrenAtHome, areParentChild, related1stDegree, areSiblings
+export ageYoungestAliveChild, yearsold
+export has_childrenAtHome, areParentChild, related1stDegree, areSiblings
 export canLiveAlone, isOrphan, setAsGuardianDependent!, setAsProviderProvidee!
 export hasDependents, isDependent, hasProvidees
 export setAsIndependent!, setAsSelfproviding!, resolveDependency!
@@ -63,10 +63,10 @@ mutable struct Person <: AbstractXAgent
             addOccupant!(pos, person)
         end
         if kinship.father != nothing 
-            addChild!(kinship.father,person) 
+            add_child!(kinship.father,person) 
         end 
         if kinship.mother != nothing 
-            addChild!(kinship.mother,person) 
+            add_child!(kinship.mother,person) 
         end 
         if kinship.partner != nothing
             resetPartner!(kinship.partner)
@@ -87,10 +87,10 @@ end # struct Person
 @delegate_onefield Person pos [hometown]
 
 @export_forward Person info [age, gender, alive]
-@delegate_onefield Person info [isfemale, ismale, agestep!, agestep_ifalive!, hasbirthday, yearsold]
+@delegate_onefield Person info [isfemale, ismale, agestep!, agestep_ifalive!, has_birthday, yearsold]
 
 @export_forward Person kinship [father, mother, partner, children]
-@delegate_onefield Person kinship [hasChildren, addChild!, isSingle, parents, siblings, youngest_child]
+@delegate_onefield Person kinship [has_children, add_child!, issingle, parents, siblings, youngest_child]
 
 @delegate_onefield Person maternity [startMaternity!, stepMaternity!, endMaternity!, 
     isInMaternity, maternityDuration]
@@ -191,7 +191,7 @@ function setAsParentChild!(child::Person,parent::Person)
     @assert (ismale(parent) && father(child) == nothing) ||
         (isfemale(parent) && mother(child) == nothing) 
 
-    addChild!(parent, child)
+    add_child!(parent, child)
     setParent!(child, parent) 
     # would be nice to ensure consistency of dependence/provision at this point as well
     # but there are so many specific situations that it is easier to do that in simulation
@@ -248,7 +248,7 @@ function hasAliveChild(person)
     false 
 end
 
-function hasChildrenAtHome(person)
+function has_childrenAtHome(person)
     for c in children(person)
         if alive(c) && c.pos == person.pos
             return true

@@ -20,7 +20,7 @@ using XAgents: alive, setDead!, age, agestep!, agestepAlive!
 using XAgents: isfemale, ismale
 
 # Kinship Module 
-using XAgents: father, mother, children, partner, isSingle 
+using XAgents: father, mother, children, partner, issingle 
 using XAgents: setAsParentChild!, setAsPartners!, resolvePartnership!, resetPartner!
 
 # Person type 
@@ -100,9 +100,9 @@ using Utilities: Gender, male, female, unknown
         @test mother(person2) === person4
         @test person2 in person4.kinship.children 
 
-        @test isSingle(person1)
+        @test issingle(person1)
         setAsPartners!(person1,person4)
-        @test !isSingle(person4) 
+        @test !issingle(person4) 
         @test partner(person1) === person4 && partner(person4) === person1 
 
         @test_throws InvalidStateException setAsPartners!(person3,person4) # same gender 
@@ -112,7 +112,7 @@ using Utilities: Gender, male, female, unknown
         @test_throws ArgumentError setAsParentChild!(person2,person3)          # person 2 has a mother 
 
         resolvePartnership!(person4,person1) 
-        @test isSingle(person4)
+        @test issingle(person4)
         @test partner(person1) !== person4 && partner(person4) != person1
         @test_throws ArgumentError resolvePartnership!(person1,person4) 
 
@@ -123,8 +123,8 @@ using Utilities: Gender, male, female, unknown
         @test getHomeTownName(person1) == "Edinbrugh"    
 
         setAsPartners!(person4,person6) 
-        @test !isSingle(person6)
-        @test !isSingle(person4)
+        @test !issingle(person6)
+        @test !issingle(person4)
 
         person7 = Person(pos=person4.pos,gender=male,mother=person4,father=person6)
         @test father(person7) === person6
@@ -133,8 +133,8 @@ using Utilities: Gender, male, female, unknown
         @test person7 ∈ children(person6)
         
         resetPartner!(person4) 
-        @test isSingle(person6)
-        @test isSingle(person4)
+        @test issingle(person6)
+        @test issingle(person4)
     end 
 
     @testset verbose=true "Type House" begin

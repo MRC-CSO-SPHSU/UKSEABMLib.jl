@@ -5,7 +5,7 @@ export do_social_transitions!, social_transition!
 _working_age(person, pars) = pars.workingAge[classRank(person)+1]
 
 selectedfor(person,pars,::AlivePopulation,::SocialTransition) =
-    hasbirthday(person) && age(person) == _working_age(person, pars) && status(person) == WorkStatus.student
+    has_birthday(person) && age(person) == _working_age(person, pars) && status(person) == WorkStatus.student
 selectedfor(person,pars,::FullPopulation,pr::SocialTransition) =
     alive(person) && selectedfor(person,pars,AlivePopulation(),pr)
 

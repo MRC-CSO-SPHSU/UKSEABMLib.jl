@@ -65,7 +65,7 @@ function _assumption_birth(woman, birthpars, birthProb)
     assumption() do
         @assert isfemale(woman) 
         @assert ageYoungestAliveChild(woman) > 1 
-        @assert !isSingle(woman)
+        @assert !issingle(woman)
         @assert age(woman) >= birthpars.minPregnancyAge 
         @assert age(woman) <= birthpars.maxPregnancyAge
         @assert birthProb >= 0 
@@ -109,7 +109,7 @@ function _givesbirth!(woman)
     _effects_maternity!(woman)
 
     setAsGuardianDependent!(woman, baby)
-    if !isSingle(woman) # currently not an option
+    if !issingle(woman) # currently not an option
         setAsGuardianDependent!(partner(woman), baby)
     end
     setAsProviderProvidee!(woman, baby)
@@ -118,7 +118,7 @@ function _givesbirth!(woman)
 end 
 
 selectedfor(woman, birthpars, ::AlivePopulation, ::Birth) = isfemale(woman) && 
-    !isSingle(woman) && 
+    !issingle(woman) && 
     age(woman) >= birthpars.minPregnancyAge && 
     age(woman) <= birthpars.maxPregnancyAge && 
     ageYoungestAliveChild(woman) > 1 
@@ -154,14 +154,14 @@ function _verbose_dobirths(people, nbabies::Int, birthpars)
                                 age(rWoman) <= birthpars.maxPregnancyAge ]
         marriedWomenOfReproductiveAge = 
                     [ rmWoman for rmWoman in womenOfReproductiveAge if 
-                                !isSingle(rmWoman) ]
+                                !issingle(rmWoman) ]
         womenWithRecentChild = [ rcWoman for rcWoman in adultWomen if 
                                 ageYoungestAliveChild(rcWoman) <= 1 ]
         reproductiveWomen = [ rWoman for rWoman in marriedWomenOfReproductiveAge if 
                                 ageYoungestAliveChild(rWoman) > 1 ] 
         womenOfReproductiveAgeButNotMarried = 
                     [ rnmWoman for rnmWoman in womenOfReproductiveAge if 
-                                isSingle(rnmWoman) ]
+                                issingle(rnmWoman) ]
 
         #   for person in self.pop.livingPeople:
     #           
@@ -201,13 +201,13 @@ function _assumption_dobirths(people, birthpars, currstep)
                          age(aWomen) >= birthpars.minPregnancyAge ] 
         nonadultFemale = setdiff(Set(allFemales),Set(adultWomen)) 
         for woman in nonadultFemale
-            @assert(isSingle(woman))   
-            @assert !hasChildren(woman) 
+            @assert(issingle(woman))   
+            @assert !has_children(woman) 
         end
 
         for woman in allFemales 
             if !(woman in reproductiveWomen)
-                @assert isSingle(woman) || 
+                @assert issingle(woman) || 
                 age(woman) < birthpars.minPregnancyAge ||
                 age(woman) > birthpars.maxPregnancyAge  ||
                 ageYoungestAliveChild(woman) <= 1

@@ -27,7 +27,7 @@ function _share_childless_men(people, popfeature)
     return _SNC 
 end 
 
-_is_eligible(f,minPregnancyAge,::AlivePopulation) = isfemale(f) && isSingle(f) && age(f) > minPregnancyAge
+_is_eligible(f,minPregnancyAge,::AlivePopulation) = isfemale(f) && issingle(f) && age(f) > minPregnancyAge
 _is_eligible(f,minPregnancyAge,::FullPopulation) = alive(f) && _is_eligible(f,minPregnancyAge,AlivePopulation())
 
 const _ELIGIBLE_WOMEN = Person[] 
@@ -133,7 +133,7 @@ function _compute_ew_candidates(man, eligibleWomen)
 end
 
 selectedfor(man, ageOfAdulthood, ::AlivePopulation, ::Marriage) = 
-    ismale(man) && isSingle(man) && age(man) > ageOfAdulthood && careNeedLevel(man) < 4
+    ismale(man) && issingle(man) && age(man) > ageOfAdulthood && careNeedLevel(man) < 4
 selectedfor(man, ageOfAdulthood, ::FullPopulation, process::Marriage) = 
     alive(man) && selectedfor(man, ageOfAdulthood, AlivePopulation(), process)
 

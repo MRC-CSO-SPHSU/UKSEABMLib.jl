@@ -1,5 +1,5 @@
 export KinshipBlock
-export hasChildren, addChild!, isSingle, parents, siblings, youngest_child
+export has_children, add_child!, issingle, parents, siblings, youngest_child
 
 mutable struct KinshipBlock{P} 
   father::Union{P,Nothing}
@@ -8,14 +8,14 @@ mutable struct KinshipBlock{P}
   children::Vector{P}
 end 
 
-hasChildren(parent::KinshipBlock{P}) where{P} = length(parent.children) > 0
+has_children(parent::KinshipBlock{P}) where{P} = length(parent.children) > 0
 
-addChild!(parent::KinshipBlock{P}, child::P) where{P} = push!(parent.children, child)
+add_child!(parent::KinshipBlock{P}, child::P) where{P} = push!(parent.children, child)
 
 youngest_child(person::KinshipBlock) = 
     length(person.children) == 0 ? nothing : person.children[end]
 
-isSingle(person::KinshipBlock) = person.partner == nothing 
+issingle(person::KinshipBlock) = person.partner == nothing 
 
 parents(person::KinshipBlock) = [person.father, person.mother]
 
