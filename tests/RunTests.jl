@@ -17,7 +17,7 @@ using MultiAgents: verifyAgentsJLContract
 
 # BasicInfo module 
 using XAgents: alive, setDead!, age, agestep!, agestepAlive!
-using XAgents: isFemale, isMale
+using XAgents: isfemale, ismale
 
 # Kinship Module 
 using XAgents: father, mother, children, partner, isSingle 
@@ -75,8 +75,8 @@ using Utilities: Gender, male, female, unknown
     @testset verbose=true "BasicInfo Module" begin 
 
         @test typeof(age(person1)) == Rational{Int64} 
-        @test isMale(person1)
-        @test !isFemale(person1)
+        @test ismale(person1)
+        @test !isfemale(person1)
         @test alive(person1) 
         
         person7 = Person(house1,25,gender=male) 

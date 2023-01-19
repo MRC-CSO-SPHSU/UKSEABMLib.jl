@@ -8,9 +8,9 @@ export UNDEFINED_HOUSE, UNDEFINED_TOWN
 export moveToHouse!, resetHouse!, resolvePartnership!, householdIncome
 export householdIncomePerCapita
 
-export home, hometown, agestepAlive!, livingTogether
+export home, livingTogether
 export setAsParentChild!, setAsPartners!, setParent!
-export hasAliveChild, ageYoungestAliveChild, hasBirthday, yearsold
+export hasAliveChild, ageYoungestAliveChild, hasbirthday, yearsold
 export hasChildrenAtHome, areParentChild, related1stDegree, areSiblings
 export canLiveAlone, isOrphan, setAsGuardianDependent!, setAsProviderProvidee!
 export hasDependents, isDependent, hasProvidees
@@ -87,7 +87,7 @@ end # struct Person
 @delegate_onefield Person pos [hometown]
 
 @export_forward Person info [age, gender, alive]
-@delegate_onefield Person info [isFemale, isMale, agestep!, agestepAlive!, hasBirthday, yearsold]
+@delegate_onefield Person info [isfemale, ismale, agestep!, agestep_ifalive!, hasbirthday, yearsold]
 
 @export_forward Person kinship [father, mother, partner, children]
 @delegate_onefield Person kinship [hasChildren, addChild!, isSingle, parents, siblings, youngest_child]
@@ -186,10 +186,10 @@ householdIncomePerCapita(person) = householdIncome(person) / length(person.pos.o
 
 "set the father of a child"
 function setAsParentChild!(child::Person,parent::Person) 
-    @assert isMale(parent) || isFemale(parent)
+    @assert ismale(parent) || isfemale(parent)
     @assert age(child) < age(parent)
-    @assert (isMale(parent) && father(child) == nothing) ||
-        (isFemale(parent) && mother(child) == nothing) 
+    @assert (ismale(parent) && father(child) == nothing) ||
+        (isfemale(parent) && mother(child) == nothing) 
 
     addChild!(parent, child)
     setParent!(child, parent) 
@@ -218,7 +218,7 @@ end
 
 "set two persons to be a partner"
 function setAsPartners!(person1::Person,person2::Person)
-    @assert isMale(person1) == isFemale(person2)
+    @assert ismale(person1) == isfemale(person2)
 
     resetPartner!(person1) 
     resetPartner!(person2)
@@ -230,9 +230,9 @@ end
 
 "set child of a parent" 
 function setParent!(child, parent)
-    @assert isFemale(parent) || isMale(parent)
+    @assert isfemale(parent) || ismale(parent)
 
-    if isFemale(parent) 
+    if isfemale(parent) 
         mother!(child, parent)
     else 
         father!(child, parent)

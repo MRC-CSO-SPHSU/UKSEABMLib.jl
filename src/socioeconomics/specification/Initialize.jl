@@ -57,7 +57,7 @@ initial_connect!(houses::Vector{PersonHouse},
 "Randomly assign a population of couples to non-inhebted set of houses"
 function _couples_to_houses!(population::Vector{Person}, houses::Vector{PersonHouse})
     
-    women = [ person for person in population if isFemale(person) ]
+    women = [ person for person in population if isfemale(person) ]
     randomhouses = shuffle(houses)
 
     for woman in women
@@ -74,7 +74,7 @@ function _couples_to_houses!(population::Vector{Person}, houses::Vector{PersonHo
 
     for person in population
         if home(person) === UNDEFINED_HOUSE
-            @assert isMale(person)
+            @assert ismale(person)
             @assert length(randomhouses) >= 1
             house = pop!(randomhouses)
             moveToHouse!(person, house)

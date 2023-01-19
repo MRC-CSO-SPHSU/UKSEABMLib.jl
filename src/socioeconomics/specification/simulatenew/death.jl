@@ -9,7 +9,7 @@ function _death_probability(baseRate,person,poppars)
             classRank = person.parentsClassRank
     =# 
 
-    mortalityBias = isMale(person) ? 
+    mortalityBias = ismale(person) ? 
         poppars.maleMortalityBias :
         poppars.femaleMortalityBias 
 
@@ -107,12 +107,12 @@ function _death!(person, currstep, data, poppars, popfeature)
     if curryear >= 1950 
         agep = agep > 109 ? 109//1 : agep 
         ageindex = trunc(Int,agep)
-        rawRate = isMale(person) ? data.deathMale[ageindex+1,curryear-1950+1] : 
+        rawRate = ismale(person) ? data.deathMale[ageindex+1,curryear-1950+1] : 
                                             data.deathFemale[ageindex+1,curryear-1950+1]                      
         # lifeExpectancy = max(90 - agep, 3 // 1)  # ??? This is a direct translation 
     else # curryear < 1950 / made-up probabilities 
         babyDieProb = agep < 1 ? poppars.babyDieProb : 0.0 # does not play any role in the code
-        ageDieProb  = isMale(person) ? 
+        ageDieProb  = ismale(person) ? 
                         exp(agep / poppars.maleAgeScaling)  * poppars.maleAgeDieProb : 
                         exp(agep / poppars.femaleAgeScaling) * poppars.femaleAgeDieProb
         rawRate = poppars.baseDieProb + babyDieProb + ageDieProb                        
@@ -148,7 +148,7 @@ end
 function _assumption_death(person::Person)
     assumption() do
         @assert alive(person)       
-        @assert isMale(person) || isFemale(person) # Assumption 
+        @assert ismale(person) || isfemale(person) # Assumption 
         @assert typeof(age(person)) == Rational{Int} 
     end
     nothing 

@@ -63,7 +63,7 @@ end
 
 function _assumption_birth(woman, birthpars, birthProb)
     assumption() do
-        @assert isFemale(woman) 
+        @assert isfemale(woman) 
         @assert ageYoungestAliveChild(woman) > 1 
         @assert !isSingle(woman)
         @assert age(woman) >= birthpars.minPregnancyAge 
@@ -117,7 +117,7 @@ function _givesbirth!(woman)
     return baby
 end 
 
-selectedfor(woman, birthpars, ::AlivePopulation, ::Birth) = isFemale(woman) && 
+selectedfor(woman, birthpars, ::AlivePopulation, ::Birth) = isfemale(woman) && 
     !isSingle(woman) && 
     age(woman) >= birthpars.minPregnancyAge && 
     age(woman) <= birthpars.maxPregnancyAge && 
@@ -145,7 +145,7 @@ end
 
 function _verbose_dobirths(people, nbabies::Int, birthpars)
     delayedVerbose() do
-        allFemales = [ woman for woman in people if isFemale(woman) ]
+        allFemales = [ woman for woman in people if isfemale(woman) ]
         adultWomen = [ aWoman for aWoman in allFemales if 
                                 age(aWoman) >= birthpars.minPregnancyAge ] 
         notFertiledWomen = [ nfWoman for nfWoman in adultWomen if 
@@ -196,7 +196,7 @@ function _assumption_dobirths(people, birthpars, currstep)
     assumption() do
         #@info currstep 
         reproductiveWomen = [ woman for woman in people if selectedfor(woman, birthpars, FullPopulation(), Birth()) ]
-        allFemales = [ woman for woman in people if isFemale(woman) && alive(woman) ]
+        allFemales = [ woman for woman in people if isfemale(woman) && alive(woman) ]
         adultWomen = [ aWomen for aWomen in allFemales if 
                          age(aWomen) >= birthpars.minPregnancyAge ] 
         nonadultFemale = setdiff(Set(allFemales),Set(adultWomen)) 

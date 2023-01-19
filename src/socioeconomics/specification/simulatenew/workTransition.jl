@@ -1,7 +1,7 @@
 export doWorkTransitions! 
 
 selectedfor(person,pars,::AlivePopulation,::WorkTransition) = 
-    status(person) != WorkStatus.retired && hasBirthday(person)
+    status(person) != WorkStatus.retired && hasbirthday(person)
 selectedfor(p,pars,::FullPopulation,pr::WorkTransition) = 
     alive(p) && selectedfor(p,pars,AlivePopulation(),pr)
 

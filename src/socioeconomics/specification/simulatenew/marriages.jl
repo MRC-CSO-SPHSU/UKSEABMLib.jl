@@ -7,13 +7,13 @@ _age_class(person) = trunc(Int, age(person)/10)
 # Is this share childless mens among mens or among all people ?
 _share_childless_men(people, ageclass::Int, ::AlivePopulation) = 
     length(people) == 0 ? 0 : 
-        count( x -> isMale(x) && !hasDependents(x) && _age_class(x) == ageclass , people) / length(people)
+        count( x -> ismale(x) && !hasDependents(x) && _age_class(x) == ageclass , people) / length(people)
 
 function _share_childless_men(people, ageclass::Int, ::FullPopulation)  
     nalive = count(x -> alive(x) , people)
     ret = nalive == 0 ?  
         0 : 
-        count( x -> alive(x) && isMale(x) && !hasDependents(x) && _age_class(x) == ageclass , people) / nalive 
+        count( x -> alive(x) && ismale(x) && !hasDependents(x) && _age_class(x) == ageclass , people) / nalive 
     return ret    
 end
 
@@ -27,7 +27,7 @@ function _share_childless_men(people, popfeature)
     return _SNC 
 end 
 
-_is_eligible(f,minPregnancyAge,::AlivePopulation) = isFemale(f) && isSingle(f) && age(f) > minPregnancyAge
+_is_eligible(f,minPregnancyAge,::AlivePopulation) = isfemale(f) && isSingle(f) && age(f) > minPregnancyAge
 _is_eligible(f,minPregnancyAge,::FullPopulation) = alive(f) && _is_eligible(f,minPregnancyAge,AlivePopulation())
 
 const _ELIGIBLE_WOMEN = Person[] 
@@ -133,7 +133,7 @@ function _compute_ew_candidates(man, eligibleWomen)
 end
 
 selectedfor(man, ageOfAdulthood, ::AlivePopulation, ::Marriage) = 
-    isMale(man) && isSingle(man) && age(man) > ageOfAdulthood && careNeedLevel(man) < 4
+    ismale(man) && isSingle(man) && age(man) > ageOfAdulthood && careNeedLevel(man) < 4
 selectedfor(man, ageOfAdulthood, ::FullPopulation, process::Marriage) = 
     alive(man) && selectedfor(man, ageOfAdulthood, AlivePopulation(), process)
 
@@ -167,7 +167,7 @@ function _marriage!(man, time, model, eligibleWomen, ageclass, shareChildlessMen
     end
     selectedIdx = candidates[selected]
     selectedWoman = eligibleWomen[selectedIdx]
-    @assert isFemale(selectedWoman) && alive(selectedWoman)
+    @assert isfemale(selectedWoman) && alive(selectedWoman)
     setAsPartners!(man, selectedWoman)
     # remove from cached list
     remove_unsorted!(eligibleWomen, selectedIdx)

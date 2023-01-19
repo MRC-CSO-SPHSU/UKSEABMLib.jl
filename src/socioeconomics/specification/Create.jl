@@ -116,7 +116,7 @@ function _create_pyramid_population(pars)
 
     # get all adult women
     women = filter(population) do p
-        isFemale(p) && age(p) >= 18
+        isfemale(p) && age(p) >= 18
     end
 
     # sort by age so that we can easily get age intervals

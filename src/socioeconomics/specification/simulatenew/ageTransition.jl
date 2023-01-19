@@ -16,7 +16,7 @@ function _age_transition!(person, time, maternityLeaveDuration, popfeature)
         end
     end
         # TODO part of location module, TBD
-        #if hasBirthday(person, month)
+        #if hasbirthday(person, month)
         #    person.movedThisYear = false
         #    person.yearInTown += 1
         #end

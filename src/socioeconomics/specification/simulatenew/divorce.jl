@@ -15,7 +15,7 @@ end
 
 function _assumption_divorce(man)
     assumption() do
-        @assert isMale(man) 
+        @assert ismale(man) 
         @assert !isSingle(man)
         agem = age(man)
         @assert typeof(agem) == Rational{Int}
@@ -24,7 +24,7 @@ function _assumption_divorce(man)
 end 
 
 selectedfor(person,pars,::AlivePopulation,::Divorce) = 
-    isMale(person) && !isSingle(person)
+    ismale(person) && !isSingle(person)
 selectedfor(person, pars,::FullPopulation,process::Divorce) = 
     alive(person) && selectedfor(person,pars,AlivePopulation(),process)
 
