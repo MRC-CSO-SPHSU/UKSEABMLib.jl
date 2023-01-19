@@ -36,7 +36,7 @@ end # computeBirthProb
 
 
 function _effects_maternity!(woman)
-    startMaternity!(woman)
+    start_maternity!(woman)
     
     workingHours!(woman, 0)
     income!(woman, 0)

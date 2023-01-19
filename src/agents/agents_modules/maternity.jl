@@ -1,25 +1,25 @@
 export MaternityBlock
-export startMaternity!, stepMaternity!, endMaternity!, isInMaternity, maternityDuration
+export start_maternity!, step_maternity!, end_maternity!, is_in_maternity, maternity_Duration
 
 mutable struct MaternityBlock
     maternityStatus :: Bool
     monthsSinceBirth :: Int
 end
 
-isInMaternity(mat) = mat.maternityStatus
-maternityDuration(mat) = mat.monthsSinceBirth
+is_in_maternity(mat) = mat.maternityStatus
+maternity_duration(mat) = mat.monthsSinceBirth
 
-function startMaternity!(mat)
+function start_maternity!(mat)
     mat.maternityStatus = true
     mat.monthsSinceBirth = 0
+    nothing 
 end
 
-function stepMaternity!(mat)
-    mat.monthsSinceBirth += 1
-end
+step_maternity!(mat) = mat.monthsSinceBirth += 1
 
-function endMaternity!(mat)
+function end_maternity!(mat)
     mat.maternityStatus = false
     mat.monthsSinceBirth = 0
+    nothing 
 end
 

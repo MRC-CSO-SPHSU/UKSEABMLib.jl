@@ -92,8 +92,8 @@ end # struct Person
 @export_forward Person kinship [father, mother, partner, children]
 @delegate_onefield Person kinship [has_children, add_child!, issingle, parents, siblings, youngest_child]
 
-@delegate_onefield Person maternity [startMaternity!, stepMaternity!, endMaternity!, 
-    isInMaternity, maternityDuration]
+@delegate_onefield Person maternity [start_maternity!, step_maternity!, end_maternity!, 
+    is_in_maternity, maternity_duration]
 
 @export_forward Person work [status, outOfTownStudent, newEntrant, initialIncome, finalIncome, 
     wage, income, potentialIncome, jobTenure, schedule, workingHours, weeklyTime, 

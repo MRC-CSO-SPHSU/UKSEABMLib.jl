@@ -6,12 +6,12 @@ selectedfor(p,pars,::FullPopulation,::AgeTransition)  = alive(p)
 function _age_transition!(person, time, maternityLeaveDuration, popfeature)
     if !selectedfor(person, nothing,popfeature,AgeTransition()) return false end 
     ret = false 
-    if isInMaternity(person)
+    if is_in_maternity(person)
         # count maternity months
-        stepMaternity!(person)
+        step_maternity!(person)
         # end of maternity leave
-        if maternityDuration(person) >= maternityLeaveDuration
-            endMaternity!(person)
+        if maternity_Duration(person) >= maternityLeaveDuration
+            end_maternity!(person)
             ret = true 
         end
     end
