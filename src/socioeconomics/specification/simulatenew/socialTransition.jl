@@ -101,7 +101,7 @@ function _reset_work!(person, pars)
     # TODO
     # monthHired
     # jobShift
-    setEmptyJobSchedule!(person)
+    set_empty_job_schedule!(person)
     outOfTownStudent!(person, true)
 end
 

@@ -10,7 +10,7 @@ function _age_transition!(person, time, maternityLeaveDuration, popfeature)
         # count maternity months
         step_maternity!(person)
         # end of maternity leave
-        if maternity_Duration(person) >= maternityLeaveDuration
+        if maternity_duration(person) >= maternityLeaveDuration
             end_maternity!(person)
             ret = true 
         end

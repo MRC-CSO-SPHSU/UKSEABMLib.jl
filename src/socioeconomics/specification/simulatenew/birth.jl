@@ -46,7 +46,7 @@ function _effects_maternity!(woman)
     # woman.weeklyTime = [[0]*12+[1]*12, [0]*12+[1]*12, [0]*12+[1]*12, [0]*12+[1]*12, [0]*12+[1]*12, [0]*12+[1]*12, [0]*12+[1]*12]
     # sets all weeklyTime slots to 1
     # TODO copied from the python code, but does it make sense?
-    setFullWeeklyTime!(woman)
+    set_full_weekly_time!(woman)
     #= TODO
     woman.maxWeeklySupplies = [0, 0, 0, 0]
     woman.residualDailySupplies = [0]*7

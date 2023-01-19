@@ -32,7 +32,7 @@ function _work_transition!(person, time, pars, popfeature)
 
     if age(person) == pars.ageOfRetirement
         status!(person, WorkStatus.retired)
-        setEmptyJobSchedule!(person)
+        set_empty_job_schedule!(person)
         wage!(person, 0)
         shareWorkingTime = workingPeriods(person) / pars.minContributionPeriods
         dK = rand(Normal(0, pars.wageVar))
