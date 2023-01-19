@@ -56,7 +56,7 @@ function move_person_to_emptyhouse!(person::Person,
     # TODO 
     # - yearInTown (used in relocation cost)
     # - movedThisYear
-    newhouse = get_or_create_emptyhouse!(getHomeTown(person), model, dmax)
+    newhouse = get_or_create_emptyhouse!(hometown(person), model, dmax)
     move_person_to_emptyhouse!(person, newhouse)
     nothing
 end

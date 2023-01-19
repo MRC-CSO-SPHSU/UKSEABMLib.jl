@@ -59,7 +59,7 @@ function _delta_age(delta)
 end
 
 _geo_distance(m, w, mappars) = 
-    manhattanDistance(getHomeTown(m), getHomeTown(w)) /
+    manhattanDistance(hometown(m), hometown(w)) /
     (mappars.mapGridXDimension + mappars.mapGridYDimension)
 
 function _marry_weight(man, woman, marpars, mappars, poppars)

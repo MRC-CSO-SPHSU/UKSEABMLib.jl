@@ -43,7 +43,7 @@ function initial_connect!(houses, towns, pars,::InitHousesInTownsPort)
     _initialize_houses_towns(towns, houses, mapParameters(pars), populationParameters(pars).initialPop)
     @assert length(houses) > 0
     for house in houses 
-        @assert getHomeTown(house) != nothing
+        @assert hometown(house) != nothing
     end 
     @info "# of initialized houses $(length(houses))"
     nothing 

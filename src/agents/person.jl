@@ -8,7 +8,7 @@ export UNDEFINED_HOUSE, UNDEFINED_TOWN
 export moveToHouse!, resetHouse!, resolvePartnership!, householdIncome
 export householdIncomePerCapita
 
-export home, getHomeTown, getHomeTownName, agestepAlive!, livingTogether
+export home, hometown, agestepAlive!, livingTogether
 export setAsParentChild!, setAsPartners!, setParent!
 export hasAliveChild, ageYoungestAliveChild, hasBirthday, yearsold
 export hasChildrenAtHome, areParentChild, related1stDegree, areSiblings
@@ -84,7 +84,7 @@ end # struct Person
 # delegate functions to components
 # and export accessors
 
-@delegate_onefield Person pos [getHomeTown, getHomeTownName]
+@delegate_onefield Person pos [hometown]
 
 @export_forward Person info [age, gender, alive]
 @delegate_onefield Person info [isFemale, isMale, agestep!, agestepAlive!, hasBirthday, yearsold]

@@ -75,7 +75,7 @@ end
 
 function make_emptyhouse_occupied!(house) 
     # println("house $(house.id) become occupied")
-    town = getHomeTown(house)
+    town = hometown(house)
     @assert house in emptyhouses(town)
     make_emptyhouse_occupied!(town,findfirst(x -> x === house, town.emptyHouses))
 end
@@ -91,8 +91,8 @@ function make_occupiedhouse_empty!(town,idx::Int)
 end
 
 function make_occupiedhouse_empty!(house) 
-    town = getHomeTown(house)
-    @assert house in getHomeTown(house).occupiedHouses
+    town = hometown(house)
+    @assert house in hometown(house).occupiedHouses
     make_occupiedhouse_empty!(town,findfirst(x -> x === house, town.occupiedHouses))
 end
 
