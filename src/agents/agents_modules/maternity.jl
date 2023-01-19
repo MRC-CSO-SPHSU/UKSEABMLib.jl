@@ -1,5 +1,5 @@
 export MaternityBlock
-export start_maternity!, step_maternity!, end_maternity!, is_in_maternity, maternity_Duration
+export start_maternity!, step_maternity!, end_maternity!, is_in_maternity, maternity_duration
 
 mutable struct MaternityBlock
     maternityStatus :: Bool
