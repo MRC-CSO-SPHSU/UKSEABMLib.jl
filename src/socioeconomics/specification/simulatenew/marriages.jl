@@ -7,13 +7,13 @@ _age_class(person) = trunc(Int, age(person)/10)
 # Is this share childless mens among mens or among all people ?
 _share_childless_men(people, ageclass::Int, ::AlivePopulation) = 
     length(people) == 0 ? 0 : 
-        count( x -> ismale(x) && !hasDependents(x) && _age_class(x) == ageclass , people) / length(people)
+        count( x -> ismale(x) && !has_dependents(x) && _age_class(x) == ageclass , people) / length(people)
 
 function _share_childless_men(people, ageclass::Int, ::FullPopulation)  
     nalive = count(x -> alive(x) , people)
     ret = nalive == 0 ?  
         0 : 
-        count( x -> alive(x) && ismale(x) && !hasDependents(x) && _age_class(x) == ageclass , people) / nalive 
+        count( x -> alive(x) && ismale(x) && !has_dependents(x) && _age_class(x) == ageclass , people) / nalive 
     return ret    
 end
 
@@ -145,7 +145,7 @@ function _marriage!(man, time, model, eligibleWomen, ageclass, shareChildlessMen
         manMarriageProb *= marpars.notWorkingMarriageBias
     end
     den = shareChildlessMens + (1 - shareChildlessMens) * marpars.manWithChildrenBias
-    prob = manMarriageProb / den * (hasDependents(man) ? marpars.manWithChildrenBias : 1)
+    prob = manMarriageProb / den * (has_dependents(man) ? marpars.manWithChildrenBias : 1)
 
     if rand() >= p_yearly2monthly(prob) 
         return false 

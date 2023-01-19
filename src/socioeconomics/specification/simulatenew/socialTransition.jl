@@ -88,7 +88,7 @@ function _start_studying_prob(person, model, pars)
     return max(0.0, pStudy)
 end
 
-_start_studying!(person, pars) = addClassRank!(person, 1) 
+_start_studying!(person, pars) = increment_class_rank!(person) 
 
 
 # TODO here for now, maybe not the best place?

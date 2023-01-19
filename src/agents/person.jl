@@ -13,7 +13,6 @@ export setAsParentChild!, setAsPartners!, setParent!
 export ageYoungestAliveChild, yearsold
 export has_childrenAtHome, areParentChild, related1stDegree, areSiblings
 export canLiveAlone, isOrphan, setAsGuardianDependent!, setAsProviderProvidee!
-export hasDependents, isDependent, hasProvidees
 export setAsIndependent!, setAsSelfproviding!, resolveDependency!
 export checkConsistencyDependents
 export maxParentRank
@@ -103,10 +102,10 @@ end # struct Person
 @export_forward Person care [careNeedLevel, socialWork, childWork]
 
 @export_forward Person class [classRank]
-@delegate_onefield Person class [addClassRank!]
+@delegate_onefield Person class [increment_class_rank!]
 
 @export_forward Person dependencies [guardians, dependents, provider, providees]
-@delegate_onefield Person dependencies [isDependent, hasDependents, hasProvidees]
+@delegate_onefield Person dependencies [isdependent, has_dependents, has_providees]
 
 "costum @show method for Agent person"
 function Base.show(io::IO,  person::Person)
@@ -115,9 +114,6 @@ function Base.show(io::IO,  person::Person)
     print(person.kinship)
     println() 
 end
-
-#Base.show(io::IO, ::MIME"text/plain", person::Person) = Base.show(io,person)
-
 
 const PersonHouse = House{Person, Town}
 const PersonTown = Town{PersonHouse} 
@@ -271,7 +267,7 @@ end
 
 
 canLiveAlone(person) = age(person) >= 18
-isOrphan(person) = !canLiveAlone(person) && !isDependent(person)
+isOrphan(person) = !canLiveAlone(person) && !isdependent(person)
 
 function setAsGuardianDependent!(guardian, dependent)
     push!(dependents(guardian), dependent)
@@ -298,7 +294,7 @@ end
 
 
 function setAsIndependent!(person)
-    if !isDependent(person) 
+    if !isdependent(person) 
         return
     end
 
