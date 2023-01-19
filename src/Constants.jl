@@ -11,7 +11,7 @@ module Constants
 
 const SESRCPATH = @__DIR__ 
 const SEPATH    = SESRCPATH * "/.." 
-const SEVERSION = v"0.3.1"    # Arbitrary initial population size
+const SEVERSION = v"0.3.2"    # blue style coding conventions 
 const XAGENTS_GENERIC_PATH = SESRCPATH * "/generic" 
 const XAGENTS_MA_PATH      = SESRCPATH * "/multiagents"
 
