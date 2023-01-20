@@ -1,9 +1,9 @@
 export ClassBlock
 
-export addClassRank!
+export increment_class_rank!
 
 mutable struct ClassBlock
     classRank :: Int
 end
 
-addClassRank!(class, n) = class.classRank += 1
+increment_class_rank!(class, n=1) = class.classRank += n

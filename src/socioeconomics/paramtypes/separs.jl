@@ -1,17 +1,13 @@
 """
-This file is included within the Module ParamTypes 
+This file is included within the Module ParamTypes
 """
 
-import ..API.ParamFunc: allParameters, populationParameters, birthParameters, marriageParameters,
-							divorceParameters, mapParameters, workParameters 
+export MapXPars, PopulationPars, DemographyPars, DivorcePars, WorkPars
+export population, birth, divorce, marriage, mapx, work
 
-export MapPars, PopulationPars, DemographyPars, DivorcePars, WorkPars
-export populationParameters, birthParameters, divorceParameters, marriageParameters,
-		 mapParameters, workParameters, allParameters 
-
-"Parameters describing map properties"
-@with_kw mutable struct MapPars 
-    mapDensityModifier::Float64 = 0.6   # for allocating houses in towns 
+" describing map properties"
+@with_kw mutable struct MapXPars
+    mapDensityModifier::Float64 = 0.6   # for allocating houses in towns
     mapGridXDimension::Int      = 8
     mapGridYDimension::Int      = 12
     townGridDimension::Int      = 25
@@ -26,14 +22,14 @@ export populationParameters, birthParameters, divorceParameters, marriageParamet
                                     0.0 0.0 0.1 0.2 1.0 0.6 0.3 0.4;
                                     0.0 0.0 0.5 0.7 0.5 1.0 1.0 0.0;
                                     0.0 0.0 0.2 0.4 0.6 1.0 1.0 0.0;
-                                    0.0 0.2 0.3 0.0 0.0 0.0 0.0 0.0]         
-                                    # Relative population density of UK.  
-                                    #   A density of 1.0 corresponds to 
-                                    #   the cell with the highest density 
-end # UKMapPars
-   
-    #= not considered yet 
-    # ?? looks like deviation from the average 
+                                    0.0 0.2 0.3 0.0 0.0 0.0 0.0 0.0]
+                                    # Relative population density of UK.
+                                    #   A density of 1.0 corresponds to
+                                    #   the cell with the highest density
+end # UKMapXPars
+
+    #= not considered yet
+    # ?? looks like deviation from the average
     meta[:ukClassBias] = [0.0  -0.05 -0.05 -0.05  0.0   0.0  0.0  0.0;
                           -0.05 -0.05  0.0   0.0   0.0   0.0  0.0  0.0;
                            0.0  -0.05 -0.05  0.0   0.0   0.0  0.0  0.0;
@@ -45,10 +41,10 @@ end # UKMapPars
                            0.0   0.0  -0.05  0.0  -0.05  0.0  0.0  0.0;
                            0.0   0.0   0.0  -0.05  0.0   0.2  0.15 0.0;
                            0.0   0.0   0.0   0.0   0.1   0.2  0.15 0.0;
-                           0.0   0.0   0.1   0.0   0.0   0.0  0.0  0.0] 
-    
+                           0.0   0.0   0.1   0.0   0.0   0.0  0.0  0.0]
+
     #
-    # Local house allowances for houses with 1,2,3 and 4-bed room houses 
+    # Local house allowances for houses with 1,2,3 and 4-bed room houses
     meta[:lha_1] = [0.0    91.81  91.81  91.81  0.0    0.0    0.0    0.0;
                      91.81  91.81  91.81  91.81  97.81  0.0    0.0    0.0;
                      0.0    91.81  91.81  79.24  0.0    0.0    0.0    0.0;
@@ -61,8 +57,8 @@ end # UKMapPars
                      0.0    0.0    103.56 132.43 163.67 276.51 165.05 0.0;
                      0.0    0.0    116.52 105.94 120.03 222.54 170.83 0.0;
                      0.0    104.89 96.98  0.0    0.0    0.0    0.0    0.0]
-    
-    # ?? 
+
+    # ??
     meta[:lha_2] = [0.0    110.72 110.72 110.72 0.0    0.0    0.0    0.0;
                      110.72 110.72 110.72 110.72 133.48 0.0    0.0    0.0;
                      0.0    110.72 110.72 103.85 0.0    0.0    0.0    0.0;
@@ -75,7 +71,7 @@ end # UKMapPars
                      0.0    0.0    126.92 160.73 192.48 320.74 204.35 0.0;
                      0.0    0.0    141.24 136.93 161.07 280.60 210.17 0.0;
                      0.0    132.32 122.36 0.0    0.0    0.0    0.0    0.0]
-    
+
     # ??
     meta[:lha_3] = [0.0    126.92 126.92 126.92 0.0    0.0    0.0    0.0;
                      126.92 126.92 126.92 126.92 172.60 0.0    0.0    0.0;
@@ -89,7 +85,7 @@ end # UKMapPars
                      0.0    0.0    150.00 192.03 230.14 376.04 257.16 0.0;
                      0.0    0.0    164.79 161.10 190.02 336.96 257.16 0.0;
                      0.0    151.50 145.43 0.0    0.0    0.0    0.0    0.0]
-    
+
     # ??
     meta[:lha_4] = [0.0    160.38 160.38 160.38 0.0    0.0    0.0    0.0;
                      160.38 160.38 160.38 160.38 228.99 0.0    0.0    0.0;
@@ -103,43 +99,40 @@ end # UKMapPars
                      0.0    0.0    190.38 257.09 299.18 442.42 331.81 0.0;
                      0.0    0.0    218.63 200.09 242.40 429.53 322.15 0.0;
                      0.0    185.29 182.45 0.0    0.0    0.0    0.0    0.0]
-    
-    =#                   
-    
-"Parameters related to population setup and dynamics"
-@with_kw mutable struct PopulationPars
-    baseDieProb::Float64            = 0.0001 
-    babyDieProb::Float64            = 0.005 
-    femaleAgeDieProb::Float64       = 0.00019   
-    femaleAgeScaling::Float64       = 15.5 
-    femaleMortalityBias::Float64    = 0.85  
-    initialPop::Int                 = 5000    # Number of females or males  in the initial population
-    maleAgeDieProb::Float64         = 0.00021 
-    maleAgeScaling::Float64         = 14.0 
-    maleMortalityBias::Float64      = 0.8 
-    # a population of males to be randomly generated in the 
-    # range of minStartAge - maxStartAge
-    maxStartAge::Int                = 45  
-    minStartAge::Int                = 25  
 
+    =#
+
+" related to population setup and dynamics"
+@with_kw mutable struct PopulationPars
+    baseDieProb::Float64            = 0.0001
+    babyDieProb::Float64            = 0.005
+    femaleAgeDieProb::Float64       = 0.00019
+    femaleAgeScaling::Float64       = 15.5
+    femaleMortalityBias::Float64    = 0.85
+    # Number of females or males  in the initial population
+    initialPop::Int                 = 5000
+    maleAgeDieProb::Float64         = 0.00021
+    maleAgeScaling::Float64         = 14.0
+    maleMortalityBias::Float64      = 0.8
+    # a population of males to be randomly generated in the
+    #  if a naive startgy is used range of minStartAge - maxStartAge
+    maxStartAge::Int                = 45
+    minStartAge::Int                = 25
     startBabySurplus::Int           = 100
     startProbMarried::Float64       = 0.8
     startProbOrphan::Float64        = 0.01
-
     cumProbClasses::Vector{Float64} = cumsum([0.2, 0.35, 0.25, 0.15, 0.05])
-end # PopulationPars 
+end # PopulationPars
 
-
-"Parameters related to reproduction"
+" related to reproduction"
 @with_kw mutable struct BirthPars
     fertilityBias::Float64          =  0.9
     growingPopBirthProb::Float64    =  0.215
     maxPregnancyAge::Int            =  42
     minPregnancyAge::Int            =  17
-end 
+end
 
-
-"Parameters related to work and education"
+" related to work and education"
 @with_kw mutable struct WorkPars
     maternityLeaveDuration :: Rational{Int}  = 9//12
     ageTeenagers :: Int                 = 13
@@ -150,7 +143,8 @@ end
     wageVar :: Float64                  = 0.2
     incomeInitialLevels :: Vector{Float64} = [6.0, 8.0, 10.0, 12.0, 15.0]
     incomeFinalLevels :: Vector{Float64} = [12.0, 16.0, 25.0, 40.0, 60.0]
-    incomeGrowthRate :: Vector{Float64} = [0.4/12.0, 0.35/12.0, 0.3/12.0, 0.25/12.0, 0.2/12.0]
+    incomeGrowthRate :: Vector{Float64} =
+        [0.4/12.0, 0.35/12.0, 0.3/12.0, 0.25/12.0, 0.2/12.0]
     workingAge :: Vector{Int}           = [16, 18, 20, 22, 24]
     weeklyHours :: Vector{Float64}      = [40.0, 20.0, 10.0, 0.0, 0.0]
     constantIncomeParam :: Float64      = 50.0
@@ -160,23 +154,24 @@ end
     careEducationParam :: Float64       = 0.0
     workDiscountingTime :: Float64      = 1.0
 end
-    
 
 "Divorce"
 @with_kw mutable struct DivorcePars
     basicDivorceRate :: Float64             = 0.06
-    divorceModifierByDecade :: Vector{Float64}   = [0.0, 1.0, 0.9, 0.5, 0.4, 0.2, 0.1, 0.03, 0.01, 0.001, 0.001, 0.001, 0.0, 0.0, 0.0, 0.0] 
+    divorceModifierByDecade :: Vector{Float64} =
+        [0.0, 1.0, 0.9, 0.5, 0.4, 0.2, 0.1, 0.03, 0.01, 0.001, 0.001, 0.001, 0.0, 0.0, 0.0, 0.0]
     probChildrenWithFather  :: Float64      = 0.1
     thePresent :: Int                       = 2012
     variableDivorce :: Float64              = 0.06
     divorceBias :: Float64                  = 0.9
-end 
-
+end
 
 "Marriage"
 @with_kw mutable struct MarriagePars
     basicMaleMarriageProb :: Float64            = 0.7
-    maleMarriageModifierByDecade :: Vector{Float64} = [ 0.0, 0.16, 0.5, 1.0, 0.8, 0.7, 0.66, 0.5, 0.4, 0.2, 0.1, 0.05, 0.01, 0.0, 0.0, 0.0 ]
+    maleMarriageModifierByDecade :: Vector{Float64} =
+        [ 0.0, 0.16, 0.5, 1.0, 0.8, 0.7, 0.66, 0.5,
+          0.4, 0.2, 0.1, 0.05, 0.01, 0.0, 0.0, 0.0 ]
     notWorkingMarriageBias :: Float64           = 0.5
     manWithChildrenBias :: Float64              = 0.9
     probApartWillMoveTogether :: Float64        = 1.0
@@ -202,27 +197,23 @@ end
 end
 =#
 
-struct DemographyPars 
-    mappars     ::  MapPars
+struct DemographyPars
+    mappars     ::  MapXPars
     poppars     ::  PopulationPars
     birthpars   ::  BirthPars
     workpars    ::  WorkPars
-    divorcepars ::  DivorcePars 
+    divorcepars ::  DivorcePars
     marriagepars :: MarriagePars
     #datapars    :: DataPars
-end 
+end
 
+DemographyPars() = DemographyPars(MapXPars(), PopulationPars(),
+    BirthPars(), WorkPars(),
+    DivorcePars(), MarriagePars())
 
-DemographyPars() = DemographyPars(MapPars(), PopulationPars(), BirthPars(), WorkPars(), 
-                                  DivorcePars(), MarriagePars())
-
-populationParameters(pars)  = pars.poppars
-birthParameters(pars)       = pars.birthpars
-divorceParameters(pars)		= pars.divorcepars 
-mapParameters(pars)			= pars.mappars
-workParameters(pars)        = pars.workpars
-marriageParameters(pars)    = pars.marriagepars 
-allParameters(pars)         = pars  # This is needed due to the method allParameters(model)
-
-# TODO .. could make sense to have a parameter interface here 
-#         so that models can 
+population(pars)  = pars.poppars
+birth(pars)  = pars.birthpars
+divorce(pars) = pars.divorcepars
+mapx(pars) = pars.mappars
+work(pars) = pars.workpars
+marriage(pars) = pars.marriagepars

@@ -1,7 +1,7 @@
 using EnumX
 
 export WorkBlock
-export setEmptyJobSchedule!, setFullWeeklyTime!
+export set_empty_job_schedule!, set_full_weekly_time!
 
 export WorkStatus
 
@@ -38,10 +38,10 @@ end
 WorkBlock() = WorkBlock(WorkStatus.child, false, true, 0, 0, 0, 0, 0, 0, zeros(Int, 7, 24),
                         0, zeros(Int, 7, 24), 0, 0, 0)
 
-function setEmptyJobSchedule!(work)
+function set_empty_job_schedule!(work)
     work.schedule = zeros(Int, 7, 24)
 end
 
-function setFullWeeklyTime!(work)
+function set_full_weekly_time!(work)
     work.weeklyTime = ones(Int, 7, 24)
 end

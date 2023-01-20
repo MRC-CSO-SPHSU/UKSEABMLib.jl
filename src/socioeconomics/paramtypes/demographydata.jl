@@ -3,7 +3,7 @@ using Tables
 
 using ....Constants: SEPATH
 
-export loadDemographyData, DemographyData, DataPars 
+export load_demography_data, DemographyData, DataPars 
 
 "Data files"
 @with_kw mutable struct DataPars
@@ -19,12 +19,11 @@ struct DemographyData
     deathMale   :: Matrix{Float64}  
 end
 
-function loadDemographyData(fertFName, deathFFName, deathMFName) 
+function load_demography_data(fertFName, deathFFName, deathMFName) 
     fert = CSV.File(fertFName, header=0) |> Tables.matrix
     deathFemale = CSV.File(deathFFName, header=0) |> Tables.matrix
     deathMale = CSV.File(deathMFName, header=0) |> Tables.matrix
-
-    DemographyData(fert,deathFemale,deathMale)
+    return DemographyData(fert,deathFemale,deathMale)
 end
 
 """
@@ -32,9 +31,9 @@ load demography data from the data directory
     datapars :: DataPars 
     sepath :: Path of Socio Economic Library 
 """
-function loadDemographyData(datapars)
+function load_demography_data(datapars)
     dir = datapars.datadir 
-    ukDemoData   = loadDemographyData(dir * "/" * datapars.fertFName, 
+    ukDemoData = load_demography_data(dir * "/" * datapars.fertFName, 
                                       dir * "/" * datapars.deathFFName,
                                       dir * "/" * datapars.deathMFName)
 end
