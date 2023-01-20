@@ -29,9 +29,10 @@ struct Town{H} <: AbstractXAgent
     density::Float64
     occupiedHouses::Vector{H}
     emptyHouses::Vector{H}
+    adjacentInhabitedTowns::Vector{Town{H}}
 
     Town{H}(pos::TownLocation,density::Float64) where H =
-        new{H}(getIDCOUNTER(),pos,density,H[],H[])
+        new{H}(getIDCOUNTER(),pos,density,H[],H[],Town{H}[])
 end  # Town
 
 "costum show method for Town"
@@ -50,6 +51,7 @@ undefined(town::Town{H}) where H =
     town.pos == UNDEFINED_2DLOCATION
 
 isadjacent8(town1, town2) =
+    town1 !== town2 &&
     abs(town1.pos[1] - town2.pos[1]) <= 1 &&
     abs(town1.pos[2] - town2.pos[2]) <= 1
 
@@ -65,6 +67,8 @@ end
 has_emptyhouses(town) = length(town.emptyHouses) > 0
 emptyhouses(town::Town{H}) where H = town.emptyHouses
 occupiedhouses(town)    = town.occupiedHouses
+adjacent_inhabited_towns(town) = town.adjacentInhabitedTowns
+
 
 function make_emptyhouse_occupied!(town,idx::Int)
     house = town.emptyHouses[idx]
