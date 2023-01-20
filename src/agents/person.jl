@@ -85,15 +85,18 @@ end # struct Person
 @delegate_onefield Person pos [hometown]
 
 @export_forward Person info [age, gender, alive]
-@delegate_onefield Person info [isfemale, ismale, agestep!, agestep_ifalive!, has_birthday, yearsold]
+@delegate_onefield Person info [isfemale, ismale, agestep!, agestep_ifalive!,
+    has_birthday, yearsold]
 
 @export_forward Person kinship [father, mother, partner, children]
-@delegate_onefield Person kinship [has_children, add_child!, issingle, parents, siblings, youngest_child]
+@delegate_onefield Person kinship [has_children, add_child!, issingle, parents,
+    siblings, youngest_child]
 
 @delegate_onefield Person maternity [start_maternity!, step_maternity!, end_maternity!,
     is_in_maternity, maternity_duration]
 
-@export_forward Person work [status, outOfTownStudent, newEntrant, initialIncome, finalIncome,
+@export_forward Person work [status, outOfTownStudent, newEntrant,
+    initialIncome, finalIncome,
     wage, income, potentialIncome, jobTenure, schedule, workingHours, weeklyTime,
     availableWorkingHours, workingPeriods, pension]
 @delegate_onefield Person work [set_empty_job_schedule!, set_full_weekly_time!]

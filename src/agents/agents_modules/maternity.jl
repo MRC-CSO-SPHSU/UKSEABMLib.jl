@@ -12,7 +12,7 @@ maternity_duration(mat) = mat.monthsSinceBirth
 function start_maternity!(mat)
     mat.maternityStatus = true
     mat.monthsSinceBirth = 0
-    nothing 
+    nothing
 end
 
 step_maternity!(mat) = mat.monthsSinceBirth += 1
@@ -20,6 +20,5 @@ step_maternity!(mat) = mat.monthsSinceBirth += 1
 function end_maternity!(mat)
     mat.maternityStatus = false
     mat.monthsSinceBirth = 0
-    nothing 
+    nothing
 end
-

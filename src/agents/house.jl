@@ -1,5 +1,4 @@
-export  House, HouseLocation
-
+export House, HouseLocation
 export hometown, getHouseLocation, undefined, isEmpty, town, number_of_occupants
 
 using ....Utilities: removefirst!
@@ -7,29 +6,27 @@ using ....Utilities: removefirst!
 const HouseLocation  = NTuple{2,Int}
 
 """
-Specification of a House Agent Type. 
-
-This file is included in the module XAgents 
-
+Specification of a House Agent Type.
+This file is included in the module XAgents
 Type House to extend from AbstracXAgent.
-""" 
+"""
 mutable struct House{P, T} <: AbstractXAgent
     id :: Int
     town :: T
-    pos :: HouseLocation     # location in the town    
-    # size::String                     # TODO enumeration type / at the moment not yet necessary  
-    occupants::Vector{P}                           
+    pos :: HouseLocation     # location in the town
+    # size::String                     # TODO enumeration type / at the moment not yet necessary
+    occupants::Vector{P}
 
     House{P, T}(town, pos) where {P, T} = new(getIDCOUNTER(),town, pos,P[])
-end # House 
+end # House
 
-undefined(house::House{P,T}) where {P,T} = 
+undefined(house::House{P,T}) where {P,T} =
     undefined(house.town) && house.pos == UNDEFINED_2DLOCATION
 
 number_of_occupants(house) = length(house.occupants)
 isEmpty(house) = length(house.occupants) == 0
 
-town(house) = house.town 
+town(house) = house.town
 
 # to replace the functions below in order to unify style across agents APIs
 "town associated with house"
@@ -47,30 +44,30 @@ function addOccupant!(house::House{P}, person::P) where {P}
 	    push!(house.occupants, person)
         @assert house in emptyhouses(hometown(house))
         make_emptyhouse_occupied!(house)
-    else 
+    else
         push!(house.occupants,person)
-    end 
+    end
 	nothing
 end
 
 "remove an occupant from a house"
 function removeOccupant!(house::House{P}, person::P) where {P}
-    removefirst!(house.occupants, person) 
+    removefirst!(house.occupants, person)
     @assert !(person in house.occupants)
-    if isEmpty(house) 
+    if isEmpty(house)
         @assert house in occupiedhouses(hometown(house))
         make_occupiedhouse_empty!(house)
-    end 
-    nothing 
+    end
+    nothing
 end
 
 "Costum print function for agents"
 function Base.show(io::IO, house::House{P}) where P
     town = hometown(house)
     print("House $(house.id) pos: $(house.pos) @ town $(town.id) pos: $(town.pos)  ")
-    length(house.occupants) == 0 ? nothing : print(" occupants: ") 
+    length(house.occupants) == 0 ? nothing : print(" occupants: ")
     for person in house.occupants
         print(" $(person.id) ")
     end
-    println() 
-end 
+    println()
+end

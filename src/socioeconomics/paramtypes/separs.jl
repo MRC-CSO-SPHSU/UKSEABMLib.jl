@@ -2,8 +2,6 @@
 This file is included within the Module ParamTypes
 """
 
-# import ..API.ParamFunc: all, birth, marriage, divorce, map, work
-
 export MapXPars, PopulationPars, DemographyPars, DivorcePars, WorkPars
 export population, birth, divorce, marriage, mapx, work
 
@@ -157,7 +155,6 @@ end
     workDiscountingTime :: Float64      = 1.0
 end
 
-
 "Divorce"
 @with_kw mutable struct DivorcePars
     basicDivorceRate :: Float64             = 0.06
@@ -168,7 +165,6 @@ end
     variableDivorce :: Float64              = 0.06
     divorceBias :: Float64                  = 0.9
 end
-
 
 "Marriage"
 @with_kw mutable struct MarriagePars
@@ -210,7 +206,6 @@ struct DemographyPars
     marriagepars :: MarriagePars
     #datapars    :: DataPars
 end
-
 
 DemographyPars() = DemographyPars(MapXPars(), PopulationPars(),
     BirthPars(), WorkPars(),
