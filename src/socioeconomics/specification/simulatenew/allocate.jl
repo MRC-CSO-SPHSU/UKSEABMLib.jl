@@ -47,7 +47,7 @@ get_or_create_emptyhouse!(model,::AnyWhere) =
 
 function move_person_to_emptyhouse!(person, house) 
     @assert isEmpty(house)
-    moveToHouse!(person, house) 
+    move_to_house!(person, house) 
 end
  
 function move_person_to_emptyhouse!(person::Person, 
@@ -62,12 +62,12 @@ function move_person_to_emptyhouse!(person::Person,
 end
 
 move_person_to_person_house!(personToMove,personWithAHouse) =
-    moveToHouse!(personToMove, home(personWithAHouse))
+    move_to_house!(personToMove, home(personWithAHouse))
 
 function move_people_to_house!(people, house)
     @assert house !== UNDEFINED_HOUSE
     for person in people
-        moveToHouse!(person, house)
+        move_to_house!(person, house)
     end
     nothing 
 end

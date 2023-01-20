@@ -1,17 +1,17 @@
-module Create 
+module Create
 
 using Distributions
 
 using ....Utilities
 using ....XAgents
-using ....ParamTypes 
+using ....ParamTypes
 
 export create_towns, create_inhabited_towns, create_population, create_pyramid_population
 
 function _create_towns(mappars)
-    uktowns = PersonTown[] 
+    uktowns = PersonTown[]
     for y in 1:mappars.mapGridYDimension
-        for x in 1:mappars.mapGridXDimension 
+        for x in 1:mappars.mapGridXDimension
             town = PersonTown((x,y),density=mappars.map[y,x])
             push!(uktowns,town)
         end
@@ -21,22 +21,22 @@ end
 
 create_towns(pars::DemographyPars) = _create_towns(mapParameters(pars))
 
-function _create_inhabited_towns(mappars) 
-    uktowns = PersonTown[] 
+function _create_inhabited_towns(mappars)
+    uktowns = PersonTown[]
     for y in 1:mappars.mapGridYDimension
-        for x in 1:mappars.mapGridXDimension 
-            density = mappars.map[y,x] 
-            if density > 0 
+        for x in 1:mappars.mapGridXDimension
+            density = mappars.map[y,x]
+            if density > 0
                 town = PersonTown((x,y),density=density)
                 push!(uktowns,town)
-            end 
+            end
         end
     end
     @info "# of towns : $(length(uktowns))"
     return uktowns
-end 
+end
 
-create_inhabited_towns(pars) = 
+create_inhabited_towns(pars) =
     _create_inhabited_towns(mapParameters(pars))
 
 # return agents with age in interval minAge, maxAge
@@ -79,7 +79,7 @@ function _create_pyramid_population(pars)
         else
             age = floor(Int, rand(dist)) // 12
         end
-        
+
         gender = Bool(rand(0:1)) ? male : female
 
         person = Person(UNDEFINED_HOUSE, age; gender)
@@ -98,7 +98,7 @@ function _create_pyramid_population(pars)
         # find woman of the right age
         for (j, woman) in enumerate(women)
             if age(man)+2 >= age(woman) >= age(man)-5
-                setAsPartners!(man, woman)
+                set_as_partners!(man, woman)
                 push!(population, man)
                 push!(population, woman)
                 remove_unsorted!(men, 1)
@@ -129,7 +129,7 @@ function _create_pyramid_population(pars)
             continue
         end
 
-        # get all women that are between 18 and 40 years older than 
+        # get all women that are between 18 and 40 years older than
         # p (and could thus be their mother)
         start, stop = _age_interval(women, a + 18, a + 40)
         # check if we actually found any
@@ -141,57 +141,57 @@ function _create_pyramid_population(pars)
         @assert age(women[start]) >= a+18
 
         mother = women[rand(start:stop)]
-        
-        setAsParentChild!(p, mother)
+
+        set_as_parent_child!(p, mother)
         if !issingle(mother)
-            setAsParentChild!(p, partner(mother))
+            set_as_parent_child!(p, partner(mother))
         end
 
         if age(p) < 18
-            setAsGuardianDependent!(mother, p)
+            set_as_guardian_dependent!(mother, p)
             if !issingle(mother) # currently not an option
-                setAsGuardianDependent!(partner(mother), p)
+                set_as_guardian_dependent!(partner(mother), p)
             end
-            setAsProviderProvidee!(mother, p)
+            set_as_provider_providee!(mother, p)
         end
     end
 
-    @assert length(population) == pars.initialPop 
+    @assert length(population) == pars.initialPop
     return population
 end
 
-create_pyramid_population(pars::DemographyPars) = 
+create_pyramid_population(pars::DemographyPars) =
 	_create_pyramid_population(populationParameters(pars))
 
-function _create_population(pars) 
-    population = Person[] 
+function _create_population(pars)
+    population = Person[]
     for i in 1 : pars.initialPop
         ageMale = rand(pars.minStartAge:pars.maxStartAge)
         ageFemale = ageMale - rand(-2:5)
         ageFemale = ageFemale < 24 ? 24 : ageFemale
-        
-        rageMale = ageMale + rand(0:11) // 12     
-        rageFemale = ageFemale + rand(0:11) // 12 
 
-        # From the old code: 
-        #    the following is direct translation but it does not ok 
+        rageMale = ageMale + rand(0:11) // 12
+        rageFemale = ageFemale + rand(0:11) // 12
+
+        # From the old code:
+        #    the following is direct translation but it does not ok
         #    birthYear = properties[:startYear] - rand((properties[:minStartAge]:properties[:maxStartAge]))
-        #    why not 
-        #    birthYear = properties[:startYear]  - ageMale/Female 
+        #    why not
+        #    birthYear = properties[:startYear]  - ageMale/Female
         #    birthMonth = rand((1:12))
 
         newMan = Person(UNDEFINED_HOUSE,rageMale,gender=male)
-        newWoman = Person(UNDEFINED_HOUSE,rageFemale,gender=female)   
-        setAsPartners!(newMan,newWoman) 
-        
-        push!(population,newMan);  push!(population,newWoman) 
+        newWoman = Person(UNDEFINED_HOUSE,rageFemale,gender=female)
+        set_as_partners!(newMan,newWoman)
 
-    end # for 
+        push!(population,newMan);  push!(population,newWoman)
+
+    end # for
 
     return population
-end # createPopulation 
+end # createPopulation
 
-create_population(pars::DemographyPars) = 
+create_population(pars::DemographyPars) =
 	_create_population(populationParameters(pars))
 
-end # module Create 
+end # module Create

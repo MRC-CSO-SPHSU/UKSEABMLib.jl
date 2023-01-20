@@ -5,37 +5,37 @@ export resetCacheMarriages, marriage!, domarriages!
 _age_class(person) = trunc(Int, age(person)/10)
 
 # Is this share childless mens among mens or among all people ?
-_share_childless_men(people, ageclass::Int, ::AlivePopulation) = 
-    length(people) == 0 ? 0 : 
+_share_childless_men(people, ageclass::Int, ::AlivePopulation) =
+    length(people) == 0 ? 0 :
         count( x -> ismale(x) && !has_dependents(x) && _age_class(x) == ageclass , people) / length(people)
 
-function _share_childless_men(people, ageclass::Int, ::FullPopulation)  
+function _share_childless_men(people, ageclass::Int, ::FullPopulation)
     nalive = count(x -> alive(x) , people)
-    ret = nalive == 0 ?  
-        0 : 
-        count( x -> alive(x) && ismale(x) && !has_dependents(x) && _age_class(x) == ageclass , people) / nalive 
-    return ret    
+    ret = nalive == 0 ?
+        0 :
+        count( x -> alive(x) && ismale(x) && !has_dependents(x) && _age_class(x) == ageclass , people) / nalive
+    return ret
 end
 
-const _SNC_SIZE = 20 
+const _SNC_SIZE = 20
 const _SNC = Vector{Float64}(undef,_SNC_SIZE)
 function _share_childless_men(people, popfeature)
     for i in 1:_SNC_SIZE
         _SNC[i] = _share_childless_men(people, i-1, popfeature)
-    end 
-    @assert _SNC[_SNC_SIZE] == 0 
-    return _SNC 
-end 
+    end
+    @assert _SNC[_SNC_SIZE] == 0
+    return _SNC
+end
 
 _is_eligible(f,minPregnancyAge,::AlivePopulation) = isfemale(f) && issingle(f) && age(f) > minPregnancyAge
 _is_eligible(f,minPregnancyAge,::FullPopulation) = alive(f) && _is_eligible(f,minPregnancyAge,AlivePopulation())
 
-const _ELIGIBLE_WOMEN = Person[] 
-function _compute_eligible_women(people, minPregnancyAge,popfeature) 
+const _ELIGIBLE_WOMEN = Person[]
+function _compute_eligible_women(people, minPregnancyAge,popfeature)
     # [f for f in people if _is_eligible(f,minPregnancyAge,popfeature)]
-    empty!(_ELIGIBLE_WOMEN) 
-    for f in people  
-        if _is_eligible(f,minPregnancyAge,popfeature) 
+    empty!(_ELIGIBLE_WOMEN)
+    for f in people
+        if _is_eligible(f,minPregnancyAge,popfeature)
             push!(_ELIGIBLE_WOMEN,f)
         end
     end
@@ -58,15 +58,15 @@ function _delta_age(delta)
     end
 end
 
-_geo_distance(m, w, mappars) = 
+_geo_distance(m, w, mappars) =
     manhattanDistance(hometown(m), hometown(w)) /
     (mappars.mapGridXDimension + mappars.mapGridYDimension)
 
 function _marry_weight(man, woman, marpars, mappars, poppars)
     geoFactor = 1/exp(marpars.betaGeoExp * _geo_distance(man, woman, mappars))
-    if status(woman) == WorkStatus.student 
+    if status(woman) == WorkStatus.student
         studentFactor = marpars.studentFactorParam
-        womanRank = maxParentRank(woman)
+        womanRank = max_parent_rank(woman)
     else
         studentFactor = 1.0
         womanRank = classRank(woman)
@@ -81,15 +81,15 @@ function _marry_weight(man, woman, marpars, mappars, poppars)
     return geoFactor * socFactor * ageFactor * childrenFactor * studentFactor
 end
 
-const _WEIGHTS = Float64[] 
-function _compute_weights(man, eligibleWomen, candidates, marpars, mappars, poppars) 
+const _WEIGHTS = Float64[]
+function _compute_weights(man, eligibleWomen, candidates, marpars, mappars, poppars)
     # [_marry_weight(man, eligibleWomen[idx], pars) for idx in candidates]
-    empty!(_WEIGHTS) 
+    empty!(_WEIGHTS)
     for idx in candidates
         push!(_WEIGHTS, _marry_weight(man, eligibleWomen[idx], marpars, mappars, poppars))
-    end 
+    end
     return _WEIGHTS
-end 
+end
 
 function _join_couple!(man, woman, model, marpars)
     # they stay apart
@@ -97,21 +97,21 @@ function _join_couple!(man, woman, model, marpars)
         return false
     end
     # decide who leads the move
-    (decider , follower) = number_of_occupants(home(man)) > number_of_occupants(home(woman)) ? 
-        (man , woman) : (woman , man)  
-    if rand() < marpars.couplesMoveToExistingHousehold  
-        targetHouse = house(decider) 
+    (decider , follower) = number_of_occupants(home(man)) > number_of_occupants(home(woman)) ?
+        (man , woman) : (woman , man)
+    if rand() < marpars.couplesMoveToExistingHousehold
+        targetHouse = house(decider)
         for person in dependents(follower)
             @assert home(person) === home(follower)
         end
         move_people_to_house!(dependents(follower),targetHouse)
-        move_person_to_person_house!(follower,decider) 
+        move_person_to_person_house!(follower,decider)
         @assert home(decider) === home(follower)
     else
-        distance = rand((InTown(),AdjTown())) 
-        move_person_to_emptyhouse!(decider,model,distance) 
+        distance = rand((InTown(),AdjTown()))
+        move_person_to_emptyhouse!(decider,model,distance)
         move_person_to_person_house!(follower,decider)
-        move_people_to_house!(dependents(decider),home(decider)) 
+        move_people_to_house!(dependents(decider),home(decider))
         move_people_to_house!(dependents(follower),home(decider))
     end
     # TODO movedThisYear
@@ -119,27 +119,27 @@ function _join_couple!(man, woman, model, marpars)
     return true
 end
 
-const _EW_CANDIDATES = Int[] 
-function _compute_ew_candidates(man, eligibleWomen) 
+const _EW_CANDIDATES = Int[]
+function _compute_ew_candidates(man, eligibleWomen)
     empty!(_EW_CANDIDATES)
-    for (i,w) in enumerate(eligibleWomen) 
+    for (i,w) in enumerate(eligibleWomen)
         if (age(man)-10 < age(w) < age(man)+5)  &&
             # exclude siblings as well
-            !livingTogether(man, w) && !related1stDegree(man, w)
+            !are_living_together(man, w) && !related_first_degreeree(man, w)
             push!(_EW_CANDIDATES,i)
         end
     end
     return _EW_CANDIDATES
 end
 
-selectedfor(man, ageOfAdulthood, ::AlivePopulation, ::Marriage) = 
+selectedfor(man, ageOfAdulthood, ::AlivePopulation, ::Marriage) =
     ismale(man) && issingle(man) && age(man) > ageOfAdulthood && careNeedLevel(man) < 4
-selectedfor(man, ageOfAdulthood, ::FullPopulation, process::Marriage) = 
+selectedfor(man, ageOfAdulthood, ::FullPopulation, process::Marriage) =
     alive(man) && selectedfor(man, ageOfAdulthood, AlivePopulation(), process)
 
-function _marriage!(man, time, model, eligibleWomen, ageclass, shareChildlessMens, popfeature) 
+function _marriage!(man, time, model, eligibleWomen, ageclass, shareChildlessMens, popfeature)
     if !selectedfor(man,workParameters(model).ageOfAdulthood,popfeature,Marriage()) return false end
-    marpars = marriageParameters(model) 
+    marpars = marriageParameters(model)
     manMarriageProb = marpars.basicMaleMarriageProb * marpars.maleMarriageModifierByDecade[ageclass]
     if status(man) != WorkStatus.worker || careNeedLevel(man) > 1
         manMarriageProb *= marpars.notWorkingMarriageBias
@@ -147,16 +147,16 @@ function _marriage!(man, time, model, eligibleWomen, ageclass, shareChildlessMen
     den = shareChildlessMens + (1 - shareChildlessMens) * marpars.manWithChildrenBias
     prob = manMarriageProb / den * (has_dependents(man) ? marpars.manWithChildrenBias : 1)
 
-    if rand() >= p_yearly2monthly(prob) 
-        return false 
+    if rand() >= p_yearly2monthly(prob)
+        return false
     end
 
     candidates = _compute_ew_candidates(man, eligibleWomen)
     if length(candidates) == 0
-        return false 
+        return false
     end
 
-    weights =  _compute_weights(man, eligibleWomen, candidates, marpars, mapParameters(model), populationParameters(model)) # this worthen memory 
+    weights =  _compute_weights(man, eligibleWomen, candidates, marpars, mapParameters(model), populationParameters(model)) # this worthen memory
     cumsum!(weights, weights)
     if weights[end] == 0
         selected = rand(1:length(weights))
@@ -168,7 +168,7 @@ function _marriage!(man, time, model, eligibleWomen, ageclass, shareChildlessMen
     selectedIdx = candidates[selected]
     selectedWoman = eligibleWomen[selectedIdx]
     @assert isfemale(selectedWoman) && alive(selectedWoman)
-    setAsPartners!(man, selectedWoman)
+    set_as_partners!(man, selectedWoman)
     # remove from cached list
     remove_unsorted!(eligibleWomen, selectedIdx)
     _join_couple!(man, selectedWoman, model, marpars)
@@ -176,48 +176,48 @@ function _marriage!(man, time, model, eligibleWomen, ageclass, shareChildlessMen
     dep_woman = dependents(selectedWoman)
     # all dependents become joint dependents
     for child in dep_man
-        setAsGuardianDependent!(selectedWoman, child)
+        set_as_guardian_dependent!(selectedWoman, child)
     end
     for child in dep_woman
-        setAsGuardianDependent!(man, child)
+        set_as_guardian_dependent!(man, child)
     end
     verbose(man,Marriage())
-    return true 
-end 
+    return true
+end
 
-function marriage!(man, time, model, popfeatue::PopulationFeature = FullPopulation()) 
-    ageclass = _age_class(man) 
+function marriage!(man, time, model, popfeatue::PopulationFeature = FullPopulation())
+    ageclass = _age_class(man)
     snc =  share_childless_men(model, ageclass)
     ewomen = eligible_women(model)
     return _marriage!(man, time, model, ewomen, ageclass, snc, popfeatue)
-end 
+end
 
 verbosemsg(::Marriage) = "marriages"
 verbosemsg(person::Person,::Marriage) =
-    "person $(person.id) married to $(partner(person).id)" 
+    "person $(person.id) married to $(partner(person).id)"
 
 function _domarriages!(ret,model,time, popfeature)
     verbose_houses(model,"before domarriages!")
-    ret = init_return!(ret) 
+    ret = init_return!(ret)
     people = select_population(model,nothing,popfeature,Marriage())
     minPregnancyAge = birthParameters(model).minPregnancyAge
-    # pars = fuse(populationParameters(model), marriageParameters(model), 
+    # pars = fuse(populationParameters(model), marriageParameters(model),
     #            birthParameters(model), mapParameters(model))
     ewomen = _compute_eligible_women(people, minPregnancyAge, popfeature)
     snc = _share_childless_men(people, popfeature)
-    for (ind,man) in enumerate(people) 
-        ageclass = _age_class(man) 
+    for (ind,man) in enumerate(people)
+        ageclass = _age_class(man)
         if _marriage!(man, time, model, ewomen, ageclass, snc[ageclass+1], popfeature)
             ret = progress_return!(ret,(ind=ind,person=man))
-        end 
-    end 
+        end
+    end
     verbose(ret,Marriage())
     verbose_houses(model,"after domarriages!")
-    return ret 
-end 
+    return ret
+end
 
 domarriages!(model, time, popfeature::PopulationFeature, ret=nothing) =
     _domarriages!(ret, model, time, popfeature)
 
-domarriages!(model,time,ret=nothing) = 
+domarriages!(model,time,ret=nothing) =
     domarriages!(model, time, AlivePopulation(),ret)

@@ -62,13 +62,13 @@ function _couples_to_houses!(population::Vector{Person}, houses::Vector{PersonHo
 
     for woman in women
         house = pop!(randomhouses) 
-        moveToHouse!(woman, house) 
+        move_to_house!(woman, house) 
         if !issingle(woman)
-            moveToHouse!(partner(woman), house)
+            move_to_house!(partner(woman), house)
         end
         #for child in dependents(woman)
         for child in children(woman)
-            moveToHouse!(child, house)
+            move_to_house!(child, house)
         end
     end # for person     
 
@@ -77,7 +77,7 @@ function _couples_to_houses!(population::Vector{Person}, houses::Vector{PersonHo
             @assert ismale(person)
             @assert length(randomhouses) >= 1
             house = pop!(randomhouses)
-            moveToHouse!(person, house)
+            move_to_house!(person, house)
         end
     end
 end  # function assignCouplesToHouses 
