@@ -19,7 +19,7 @@ function _create_towns(mappars)
     return uktowns
 end
 
-create_towns(pars::DemographyPars) = _create_towns(mapParameters(pars))
+create_towns(pars::DemographyPars) = _create_towns(mapx(pars))
 
 function _create_inhabited_towns(mappars)
     uktowns = PersonTown[]
@@ -37,7 +37,7 @@ function _create_inhabited_towns(mappars)
 end
 
 create_inhabited_towns(pars) =
-    _create_inhabited_towns(mapParameters(pars))
+    _create_inhabited_towns(mapx(pars))
 
 # return agents with age in interval minAge, maxAge
 # assumes pop is sorted by age
@@ -161,7 +161,7 @@ function _create_pyramid_population(pars)
 end
 
 create_pyramid_population(pars::DemographyPars) =
-	_create_pyramid_population(populationParameters(pars))
+	_create_pyramid_population(population(pars))
 
 function _create_population(pars)
     population = Person[]
@@ -192,6 +192,6 @@ function _create_population(pars)
 end # createPopulation
 
 create_population(pars::DemographyPars) =
-	_create_population(populationParameters(pars))
+	_create_population(population(pars))
 
 end # module Create

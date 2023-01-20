@@ -155,7 +155,7 @@ function _assumption_death(person::Person)
 end
 
 death!(person, currstep, model, popfeature::PopulationFeature = FullPopulation()) =
-    _death!(person, currstep, data_of(model), populationParameters(model), popfeature)
+    _death!(person, currstep, data_of(model), population_pars(model), popfeature)
 
 function _assumption_dodeaths(people)
     assumption() do
@@ -178,7 +178,7 @@ _remove_person!(model,idx,::FullPopulation)  = nothing
 function _dodeaths!(ret,model,time,popfeature)
     verbose_houses(model,"before dodeaths!")
     ret = init_return!(ret)
-    poppars = populationParameters(model)
+    poppars = population_pars(model)
     people = select_population(model,nothing,popfeature,Death())
     data = data_of(model)
     len = length(people)

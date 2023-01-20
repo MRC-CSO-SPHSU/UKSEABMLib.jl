@@ -136,7 +136,7 @@ function _birth!(woman, currstep, data, birthpars, popfeature)
 end
 
 function birth!(woman, currstep, model, popfeature::PopulationFeature = FullPopulation())
-    if _birth!(woman, currstep, data_of(model), birthParameters(model), popfeature)
+    if _birth!(woman, currstep, data_of(model), birth_pars(model), popfeature)
         add_person!(model,youngest_child(woman))
         return true
     end
@@ -270,7 +270,7 @@ end
 
 function _dobirths!(ret, model, time, popfeature)
     ret = init_return!(ret)
-    birthpars = birthParameters(model)
+    birthpars = birth_pars(model)
     people = select_population(model, nothing, popfeature, Birth())
     data = data_of(model)
     len = length(people)

@@ -30,7 +30,7 @@ function _age_transition!(person, time, maternityLeaveDuration, popfeature)
 end
 
 age_transition!(person, time, model, popfeature::PopulationFeature = FullPopulation()) =
-    _age_transition!(person, time, workParameters(model).maternityLeaveDuration, popfeature)
+    _age_transition!(person, time, work_pars(model).maternityLeaveDuration, popfeature)
 
 function _verbose_age_transition(cntind,cntendedM)
     delayedVerbose() do
@@ -46,7 +46,7 @@ verbosemsg(::AgeTransition) = "persons who became independent or ended maternity
 function _do_age_transitions!(ret,model, time,popfeature)
     ret = init_return!(ret)
     people = select_population(model,nothing,popfeature,AgeTransition())
-    maternityLeaveDuration = workParameters(model).maternityLeaveDuration
+    maternityLeaveDuration = work_pars(model).maternityLeaveDuration
     cntind = 0
     cntendedM = 0
     for (ind,person) in enumerate(people)

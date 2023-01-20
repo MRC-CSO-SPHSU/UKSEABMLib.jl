@@ -145,7 +145,7 @@ function _social_transition!(person, time, model, workpars, popfeature)
 end
 
 social_transition!(person, time, model, popfeature::PopulationFeature = FullPopulation()) =
-    _social_transition!(person, time, model, workParameters(model), popfeature)
+    _social_transition!(person, time, model, work_pars(model), popfeature)
 
 verbosemsg(::SocialTransition) = "social transitions"
 function verbosemsg(person::Person,::SocialTransition)
@@ -156,7 +156,7 @@ end
 function _do_social_transitions!(ret, model, time, popfeature)
     ret = init_return!(ret)
     people = select_population(model,nothing,AlivePopulation(),WorkTransition())
-    workpars = workParameters(model)
+    workpars = work_pars(model)
     for (ind,person) in enumerate(people)
         if _social_transition!(person, time, model, workpars, AlivePopulation())
             ret = progress_return!(ret,(ind=ind,person=person))

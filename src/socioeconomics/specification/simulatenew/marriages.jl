@@ -138,8 +138,8 @@ selectedfor(man, ageOfAdulthood, ::FullPopulation, process::Marriage) =
     alive(man) && selectedfor(man, ageOfAdulthood, AlivePopulation(), process)
 
 function _marriage!(man, time, model, eligibleWomen, ageclass, shareChildlessMens, popfeature)
-    if !selectedfor(man,workParameters(model).ageOfAdulthood,popfeature,Marriage()) return false end
-    marpars = marriageParameters(model)
+    if !selectedfor(man,work_pars(model).ageOfAdulthood,popfeature,Marriage()) return false end
+    marpars = marriage_pars(model)
     manMarriageProb = marpars.basicMaleMarriageProb * marpars.maleMarriageModifierByDecade[ageclass]
     if status(man) != WorkStatus.worker || careNeedLevel(man) > 1
         manMarriageProb *= marpars.notWorkingMarriageBias
@@ -156,7 +156,7 @@ function _marriage!(man, time, model, eligibleWomen, ageclass, shareChildlessMen
         return false
     end
 
-    weights =  _compute_weights(man, eligibleWomen, candidates, marpars, mapParameters(model), populationParameters(model)) # this worthen memory
+    weights =  _compute_weights(man, eligibleWomen, candidates, marpars, map_pars(model), population_pars(model)) # this worthen memory
     cumsum!(weights, weights)
     if weights[end] == 0
         selected = rand(1:length(weights))
@@ -200,9 +200,9 @@ function _domarriages!(ret,model,time, popfeature)
     verbose_houses(model,"before domarriages!")
     ret = init_return!(ret)
     people = select_population(model,nothing,popfeature,Marriage())
-    minPregnancyAge = birthParameters(model).minPregnancyAge
-    # pars = fuse(populationParameters(model), marriageParameters(model),
-    #            birthParameters(model), mapParameters(model))
+    minPregnancyAge = birth_pars(model).minPregnancyAge
+    # pars = fuse(population_pars(model), marriage_pars(model),
+    #            birth_pars(model), map_pars(model))
     ewomen = _compute_eligible_women(people, minPregnancyAge, popfeature)
     snc = _share_childless_men(people, popfeature)
     for (ind,man) in enumerate(people)

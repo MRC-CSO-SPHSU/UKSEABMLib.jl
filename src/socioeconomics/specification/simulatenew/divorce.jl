@@ -84,8 +84,8 @@ divorce!(man, time, model, popfeature::PopulationFeature = FullPopulation()) =
     _divorce!(man,
             time,
             model,
-            divorceParameters(model),
-            workParameters(model),
+            divorce_pars(model),
+            work_pars(model),
             popfeature)
 
 function _verbose_dodivorce(ndivorced::Int, model)
@@ -115,8 +115,8 @@ end
 
 function _dodivorces!(ret, model, time, popfeature)
     ret = init_return!(ret)
-    divorcepars = divorceParameters(model)
-    workpars = workParameters(model)
+    divorcepars = divorce_pars(model)
+    workpars = work_pars(model)
     people = select_population(model, nothing, popfeature, Divorce())
     for (ind,man) in enumerate(people)
         if _divorce!(man, time, model, divorcepars, workpars, popfeature)

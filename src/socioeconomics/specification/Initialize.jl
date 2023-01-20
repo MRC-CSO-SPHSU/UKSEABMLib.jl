@@ -5,6 +5,8 @@ using Random:  shuffle
 using ....XAgents
 using ....ParamTypes
 using ....API.ModelFunc
+using ....API.ParamFunc
+
 import ....API.ModelFunc: init!
 import ....API.Connection: AbsInitPort, AbsInitProcess, initial_connect!
 
@@ -40,7 +42,7 @@ function _initialize_houses_towns(towns, houses, pars, popsize)
 end  # function initializeHousesInTwons
 
 function initial_connect!(houses, towns, pars,::InitHousesInTownsPort)
-    _initialize_houses_towns(towns, houses, mapParameters(pars), populationParameters(pars).initialPop)
+    _initialize_houses_towns(towns, houses, mapx(pars), population(pars).initialPop)
     @assert length(houses) > 0
     for house in houses
         @assert hometown(house) != nothing
@@ -101,7 +103,7 @@ end
 
 function init!(pop,pars,::InitClassesProcess)
     for person in pop
-        _init_class!(person,populationParameters(pars))
+        _init_class!(person,population(pars))
     end
 end
 
@@ -133,12 +135,12 @@ end
 
 function init!(pop,pars,::InitWorkProcess)
     for person in pop
-        _init_work!(person,workParameters(pars))
+        _init_work!(person,work(pars))
     end
 end
 
 function init!(model, mi::AbsInitPort = DefaultModelInit())
-    pars = allParameters(model)
+    pars = all_pars(model)
     initial_connect!(houses(model), towns(model), pars)
     initial_connect!(houses(model), all_people(model), pars)
     init!(all_people(model),pars,InitClassesProcess())
