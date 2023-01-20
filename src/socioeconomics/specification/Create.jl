@@ -16,6 +16,16 @@ function _create_towns(mappars)
             push!(uktowns,town)
         end
     end
+
+    for uktown in uktowns
+        if uktown.density == 0 continue end
+        for t in uktowns
+            if isadjacent8(uktown,t) && t.density > 0
+                push!(uktown.adjacentInhabitedTowns,t)
+            end
+        end
+    end
+
     return uktowns
 end
 
@@ -32,6 +42,15 @@ function _create_inhabited_towns(mappars)
             end
         end
     end
+
+    for uktown in uktowns
+        for t in uktowns
+            if isadjacent8(uktown,t)
+                push!(uktown.adjacentInhabitedTowns,t)
+            end
+        end
+    end
+
     @info "# of towns : $(length(uktowns))"
     return uktowns
 end

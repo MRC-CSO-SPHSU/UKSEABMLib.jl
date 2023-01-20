@@ -5,10 +5,6 @@ export adjacent_8_towns, adjacent_inhabited_towns
 export select_random_town, create_newhouse!, create_newhouse_and_append!
 export number_of_houses
 
-# effectivness of memoization is not clear
-@memoize adjacent_inhabited_towns(town, towns) =
-    [ t for t in towns if isadjacent8(town, t) && t.density > 0 ]
-
 # memoization does not help
 function _weights(towns)
     w = Vector{Float64}(undef,length(towns))

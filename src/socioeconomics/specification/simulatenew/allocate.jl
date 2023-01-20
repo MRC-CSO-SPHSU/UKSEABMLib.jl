@@ -37,7 +37,7 @@ function _get_or_create_emptyhouse!(towns, model)
 end
 
 get_or_create_emptyhouse!(town, model, ::AdjTown) =
-    _get_or_create_emptyhouse!(adjacent_inhabited_towns(town, towns(model)), model)
+    _get_or_create_emptyhouse!(adjacent_inhabited_towns(town), model)
 
 get_or_create_emptyhouse!(::PersonTown, model, loc::AnyWhere) =
     get_or_create_emptyhouse!(model,loc)
