@@ -58,7 +58,7 @@ mutable struct Person <: AbstractXAgent
     function Person(pos, info, kinship, maternity, work, care, class, dependencies)
         person = new(getIDCOUNTER(),pos,info,kinship, maternity, work, care, class, dependencies)
         if !undefined(pos)
-            addOccupant!(pos, person)
+            add_occupant!(pos, person)
         end
         if kinship.father != nothing
             add_child!(kinship.father,person)
@@ -152,16 +152,16 @@ home(person) = person.pos
 "associate a house to a person, removes person from previous house"
 function move_to_house!(person::Person,house)
     if ! undefined(person.pos)
-        removeOccupant!(person.pos, person)
+        remove_occupant!(person.pos, person)
     end
     person.pos = house
-    addOccupant!(house, person)
+    add_occupant!(house, person)
 end
 
 "reset house of a person (e.g. became dead)"
 function reset_house!(person::Person)
     if ! undefined(person.pos)
-        removeOccupant!(person.pos, person)
+        remove_occupant!(person.pos, person)
     end
     person.pos = UNDEFINED_HOUSE
     nothing

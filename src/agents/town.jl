@@ -1,5 +1,5 @@
 export Town, TownLocation
-export undefined, isAdjacent8, adjacent8Towns, manhattanDistance
+export undefined, isadjacent8, adjacent8Towns, manhattan_distance
 export add_emptyhouse!, make_emptyhouse_occupied!, make_occupiedhouse_empty!
 export has_emptyhouses, emptyhouses, occupiedhouses
 
@@ -49,11 +49,11 @@ Town{H}(pos;density=0.0) where H = Town{H}(pos,density)
 undefined(town::Town{H}) where H =
     town.pos == UNDEFINED_2DLOCATION
 
-isAdjacent8(town1, town2) =
+isadjacent8(town1, town2) =
     abs(town1.pos[1] - town2.pos[1]) <= 1 &&
     abs(town1.pos[2] - town2.pos[2]) <= 1
 
-manhattanDistance(town1, town2) =
+manhattan_distance(town1, town2) =
     abs(town1.pos[1] - town2.pos[1]) +
     abs(town1.pos[2] - town2.pos[2])
 
@@ -98,9 +98,9 @@ function make_occupiedhouse_empty!(house)
     make_occupiedhouse_empty!(town,findfirst(x -> x === house, town.occupiedHouses))
 end
 
-
 function verify_consistency(town::Town)
     # check the empty houses are empty
     # check that allocated houses are not empty
     # check that occupants are alive verify_consistency(house)
+    error("not implemented")
 end

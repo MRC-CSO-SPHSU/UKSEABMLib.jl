@@ -31,8 +31,10 @@ alive_people(model,::FullPopulation) =
 alive_people(model,::AlivePopulation) = all_people(model)
 
 "select subpopulation to be examined for a particular simulation process"
-select_population(model, pars, popfeature::PopulationFeature, process::SimProcess)::Vector{Person} =
-    all_people(model) # Default
+select_population(model,
+                    pars,
+                    popfeature::PopulationFeature,
+                    process::SimProcess)::Vector{Person} = all_people(model) # Default
 
 "examine if a person is selected to be applicable to a given simulation process"
 selectedfor(person, pars, popfeature::PopulationFeature, process::SimProcess)::Bool =
@@ -60,6 +62,5 @@ share_childless_men(model,ageclass::Int) =
 
 eligible_women(model) =
     error("eligible_women(::$(typeof(model))) not implemented")
-
 
 end # ModelFunc

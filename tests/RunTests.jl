@@ -24,7 +24,7 @@ using XAgents: father, mother, children, partner, issingle
 using XAgents: set_as_parent_child!, set_as_partners!, resolve_partnership!, reset_partner!
 
 # Person type
-using XAgents: setHouse!, getHomeTown, getHomeTownName, getHouseLocation, reset_house!, undefined
+using XAgents: setHouse!, getHomeTown, getHomeTownName, house_location, reset_house!, undefined
 
 using Utilities: HouseLocation
 
@@ -142,7 +142,7 @@ using Utilities: Gender, male, female, unknown
         @test house1.id > 0
         @test house1.pos != nothing
         @test getHomeTown(house1) === edinbrugh
-        @test getHouseLocation(house1) == (1,2)
+        @test house_location(house1) == (1,2)
 
         setHouse!(person1,house2) # person1.pos = house2
         @test getHomeTown(person1) === aberdeen

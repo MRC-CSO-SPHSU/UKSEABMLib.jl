@@ -1,5 +1,5 @@
 export House, HouseLocation
-export hometown, getHouseLocation, undefined, isEmpty, town, number_of_occupants
+export hometown, house_location, undefined, isEmpty, town, number_of_occupants
 
 using ....Utilities: removefirst!
 
@@ -14,7 +14,7 @@ mutable struct House{P, T} <: AbstractXAgent
     id :: Int
     town :: T
     pos :: HouseLocation     # location in the town
-    # size::String                     # TODO enumeration type / at the moment not yet necessary
+    # size::String           # TODO enumeration type / at the moment not yet necessary
     occupants::Vector{P}
 
     House{P, T}(town, pos) where {P, T} = new(getIDCOUNTER(),town, pos,P[])
@@ -25,20 +25,16 @@ undefined(house::House{P,T}) where {P,T} =
 
 number_of_occupants(house) = length(house.occupants)
 isEmpty(house) = length(house.occupants) == 0
-
 town(house) = house.town
 
-# to replace the functions below in order to unify style across agents APIs
 "town associated with house"
 hometown(house::House) = house.town
 
 "house location in the associated town"
-function getHouseLocation(house::House)
-    house.pos
-end
+house_location(house::House) = house.pos
 
 "add an occupant to a house"
-function addOccupant!(house::House{P}, person::P) where {P}
+function add_occupant!(house::House{P}, person::P) where {P}
     @assert !(person in house.occupants)
     if isEmpty(house)
 	    push!(house.occupants, person)
@@ -51,7 +47,7 @@ function addOccupant!(house::House{P}, person::P) where {P}
 end
 
 "remove an occupant from a house"
-function removeOccupant!(house::House{P}, person::P) where {P}
+function remove_occupant!(house::House{P}, person::P) where {P}
     removefirst!(house.occupants, person)
     @assert !(person in house.occupants)
     if isEmpty(house)
@@ -64,7 +60,7 @@ end
 "Costum print function for agents"
 function Base.show(io::IO, house::House{P}) where P
     town = hometown(house)
-    print("House $(house.id) pos: $(house.pos) @ town $(town.id) pos: $(town.pos)  ")
+    print("House $(house.id) pos: $(house.pos) @ town $(town.id) pos: $(town.pos)")
     length(house.occupants) == 0 ? nothing : print(" occupants: ")
     for person in house.occupants
         print(" $(person.id) ")
