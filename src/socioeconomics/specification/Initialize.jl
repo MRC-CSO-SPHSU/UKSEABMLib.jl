@@ -1,68 +1,68 @@
 module Initialize
 
 using Distributions: Normal
-using Random:  shuffle 
-using ....XAgents 
+using Random:  shuffle
+using ....XAgents
 using ....ParamTypes
 using ....API.ModelFunc
 import ....API.ModelFunc: init!
-import ....API.Connection: AbsInitPort, AbsInitProcess, initial_connect! 
+import ....API.Connection: AbsInitPort, AbsInitProcess, initial_connect!
 
 export InitHousesInTownsPort, InitCouplesToHousesPort
 export InitClassesProcess, InitWorkProcess, Init, DefaultModelInit
 
-struct DefaultModelInit <: AbsInitPort end 
+struct DefaultModelInit <: AbsInitPort end
 
 struct InitHousesInTownsPort <: AbsInitPort end
-struct InitCouplesToHousesPort <: AbsInitPort end  
+struct InitCouplesToHousesPort <: AbsInitPort end
 
-struct InitClassesProcess <: AbsInitProcess end 
-struct InitWorkProcess <: AbsInitProcess end 
+struct InitClassesProcess <: AbsInitProcess end
+struct InitWorkProcess <: AbsInitProcess end
 
 "initialize houses in a given set of towns"
 function _initialize_houses_towns(towns, houses, pars, popsize)
-    @assert length(houses) == 0  
-    while length(houses) < popsize 
+    @assert length(houses) == 0
+    while length(houses) < popsize
         for town in towns
             if town.density > 0
                 adjustedDensity = town.density * pars.mapDensityModifier
-                for hx in 1:pars.townGridDimension  
-                    for hy in 1:pars.townGridDimension 
+                for hx in 1:pars.townGridDimension
+                    for hy in 1:pars.townGridDimension
                         if(rand() < adjustedDensity)
                             house = create_newhouse_and_append!(town,houses,hx,hy)
                         end
-                    end # for hy 
-                end # for hx 
-            end # if town.density 
-        end # for town 
-    end # while 
-    return houses  
-end  # function initializeHousesInTwons 
+                    end # for hy
+                end # for hx
+            end # if town.density
+        end # for town
+    end # while
+    return houses
+end  # function initializeHousesInTwons
 
 function initial_connect!(houses, towns, pars,::InitHousesInTownsPort)
     _initialize_houses_towns(towns, houses, mapParameters(pars), populationParameters(pars).initialPop)
     @assert length(houses) > 0
-    for house in houses 
+    for house in houses
         @assert hometown(house) != nothing
-    end 
+    end
     @info "# of initialized houses $(length(houses))"
-    nothing 
+    nothing
 end
 
 initial_connect!(houses::Vector{PersonHouse},
                 towns::Vector{PersonTown},
-                pars) = 
+                pars) =
     initial_connect!(houses,towns,pars,InitHousesInTownsPort())
 
 "Randomly assign a population of couples to non-inhebted set of houses"
 function _couples_to_houses!(population::Vector{Person}, houses::Vector{PersonHouse})
-    
+
     women = [ person for person in population if isfemale(person) ]
     randomhouses = shuffle(houses)
 
     for woman in women
-        house = pop!(randomhouses) 
-        move_to_house!(woman, house) 
+        house = pop!(randomhouses)
+        move_to_house!(woman, house)
         if !issingle(woman)
             move_to_house!(partner(woman), house)
         end
@@ -70,7 +70,7 @@ function _couples_to_houses!(population::Vector{Person}, houses::Vector{PersonHo
         for child in children(woman)
             move_to_house!(child, house)
         end
-    end # for person     
+    end # for person
 
     for person in population
         if home(person) === UNDEFINED_HOUSE
@@ -80,16 +80,16 @@ function _couples_to_houses!(population::Vector{Person}, houses::Vector{PersonHo
             move_to_house!(person, house)
         end
     end
-end  # function assignCouplesToHouses 
+end  # function assignCouplesToHouses
 
 function initial_connect!(pop, houses, pars, ::InitCouplesToHousesPort)
     _couples_to_houses!(pop, houses)
-    nothing 
+    nothing
 end
 
-initial_connect!(pop::Vector{Person}, 
-                houses::Vector{PersonHouse}, 
-                pars) = 
+initial_connect!(pop::Vector{Person},
+                houses::Vector{PersonHouse},
+                pars) =
     initial_connect!(pop,houses,pars,InitCouplesToHousesPort())
 
 function _init_class!(person, pars)
@@ -99,11 +99,11 @@ function _init_class!(person, pars)
     nothing
 end
 
-function init!(pop,pars,::InitClassesProcess) 
-    for person in pop 
+function init!(pop,pars,::InitClassesProcess)
+    for person in pop
         _init_class!(person,populationParameters(pars))
-    end 
-end 
+    end
+end
 
 function _init_work!(person, pars)
     class = classRank(person)+1
@@ -131,18 +131,18 @@ function _init_work!(person, pars)
     nothing
 end
 
-function init!(pop,pars,::InitWorkProcess) 
-    for person in pop 
+function init!(pop,pars,::InitWorkProcess)
+    for person in pop
         _init_work!(person,workParameters(pars))
-    end 
-end 
+    end
+end
 
 function init!(model, mi::AbsInitPort = DefaultModelInit())
     pars = allParameters(model)
-    initial_connect!(houses(model), towns(model), pars) 
-    initial_connect!(houses(model), allPeople(model), pars) 
-    init!(allPeople(model),pars,InitClassesProcess())
-    init!(allPeople(model),pars,InitWorkProcess())
+    initial_connect!(houses(model), towns(model), pars)
+    initial_connect!(houses(model), all_people(model), pars)
+    init!(all_people(model),pars,InitClassesProcess())
+    init!(all_people(model),pars,InitWorkProcess())
 end
 
-end # module Initalize 
+end # module Initalize

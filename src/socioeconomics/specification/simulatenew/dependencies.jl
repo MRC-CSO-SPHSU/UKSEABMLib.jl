@@ -51,7 +51,7 @@ end
 const _G_CANDIDATES = Person[]
 function _guardian_candidates(model,norphans,popfeature)
     empty!(_G_CANDIDATES)
-    people = allPeople(model) # select_population(model,nothing,popfeature,AssignGuardian())
+    people = all_people(model) # select_population(model,nothing,popfeature,AssignGuardian())
     for p in people
         if _valid_guardian(p,popfeature) && isfemale(p) && !issingle(p)
               # &&  (status(p) == WorkStatus.worker || status(partner(p)) == WorkStatus.worker) ]
@@ -68,7 +68,7 @@ function _find_random_guardian(model,popfeature)
         return rand(candidates)
     end
     error("no guardian was found for $(person)")
-    #=people = alivePeople(model,popfeature)
+    #=people = alive_people(model,popfeature)
     g = rand(people)
     while !_valid_guardian(g,popfeature) || !isfemale(g) || !issingle(g)
         g = rand(people)

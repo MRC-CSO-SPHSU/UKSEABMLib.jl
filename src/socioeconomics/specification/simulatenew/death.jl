@@ -155,7 +155,7 @@ function _assumption_death(person::Person)
 end
 
 death!(person, currstep, model, popfeature::PopulationFeature = FullPopulation()) =
-    _death!(person, currstep, dataOf(model), populationParameters(model), popfeature)
+    _death!(person, currstep, data_of(model), populationParameters(model), popfeature)
 
 function _assumption_dodeaths(people)
     assumption() do
@@ -180,7 +180,7 @@ function _dodeaths!(ret,model,time,popfeature)
     ret = init_return!(ret)
     poppars = populationParameters(model)
     people = select_population(model,nothing,popfeature,Death())
-    data = dataOf(model)
+    data = data_of(model)
     len = length(people)
     for (ind,person) in enumerate(Iterators.reverse(people))
         if _death!(person, time, data, poppars, popfeature)
