@@ -18,8 +18,8 @@ Type Town to extend from AbstractAXgent.
 const TownLocation  = NTuple{2,Int}
 const UNDEFINED_2DLOCATION = (-1,-1)
 
-struct Town{H} <: AbstractXAgent
-    id::Int
+struct Town{H} <: AbstractXSpace
+    #id::Int (this field was there when it was declared as an agent)
     pos::TownLocation
     # name::String            # does not look necessary
     # local house allowance
@@ -32,14 +32,13 @@ struct Town{H} <: AbstractXAgent
     adjacentInhabitedTowns::Vector{Town{H}}
 
     Town{H}(pos::TownLocation,density::Float64) where H =
-        new{H}(getIDCOUNTER(),pos,density,H[],H[],Town{H}[])
+        new{H}(pos,density,H[],H[],Town{H}[])
 end  # Town
 
 "costum show method for Town"
 function Base.show(io::IO,  town::Town)
-    print(" Town $(town.id) ")
+    print(" Town $(town.pos) ")
     #isempty(town.name) ? nothing : print(" $(town.name) ")
-    print("@ $(town.pos)")
     println(" density: $(town.density)")
 end
 

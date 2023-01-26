@@ -10,14 +10,14 @@ Specification of a House Agent Type.
 This file is included in the module XAgents
 Type House to extend from AbstracXAgent.
 """
-mutable struct House{P, T} <: AbstractXAgent
-    id :: Int
+mutable struct House{P, T} <: AbstractXSpace # AbstractXAgent
+    # id :: Int
     town :: T
     pos :: HouseLocation     # location in the town
     # size::String           # TODO enumeration type / at the moment not yet necessary
     occupants::Vector{P}
 
-    House{P, T}(town, pos) where {P, T} = new(getIDCOUNTER(),town, pos,P[])
+    House{P, T}(town, pos) where {P, T} = new(town, pos,P[])
 end # House
 
 undefined(house::House{P,T}) where {P,T} =
@@ -60,7 +60,7 @@ end
 "Costum print function for agents"
 function Base.show(io::IO, house::House{P}) where P
     town = hometown(house)
-    print("House $(house.id) pos: $(house.pos) @ town $(town.id) pos: $(town.pos)")
+    print("House @ pos: $(house.pos) @ town pos: $(town.pos)")
     length(house.occupants) == 0 ? nothing : print(" occupants: ")
     for person in house.occupants
         print(" $(person.id) ")
