@@ -2,7 +2,7 @@
 Implemenation of get_or_create_emptyhouse! & move_person_to_empty_house
 =#
 
-export get_or_create_emptyhouse!, move_person_to_emptyhouse!
+export get_or_create_emptyhouse!, move_person_to_emptyhouse!, random_position
 
 function _get_random_emptyhouse(town)
     @assert has_emptyhouses(town)
@@ -82,4 +82,9 @@ function move_people_to_emptyhouse!(people, model,dmax)
     others = people[2:end]
     move_people_to_person_house!(others,head)
     nothing
+end
+
+function random_position(model)
+    town = select_random_town(towns(model))
+    return _get_or_create_emptyhouse(town,model)
 end

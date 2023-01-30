@@ -9,6 +9,7 @@ module ModelFunc
 
 using ..Traits
 using ....XAgents
+import ....XAgents: random_position
 using ....Utilities
 
 export init!

@@ -5,6 +5,7 @@ Module for defining a supertype, AbstractAgent for all Agent types
 module XAgents
 
     using MultiAgents: AbstractAgent, AbstractXAgent, AbstractXSpace, getIDCOUNTER
+    import MultiAgents: random_position
 
     include("../agents/town.jl")
     include("../agents/house.jl")
