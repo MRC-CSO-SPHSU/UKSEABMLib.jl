@@ -6,10 +6,6 @@ pre-request: MultiAgents.jl should be loadable or within LOAD_PATH
 
 module SocioEconomics
 
-# ensuring consistent version of MultiAgents.jl library
-using MultiAgents: MAVERSION
-@assert MAVERSION == v"0.4"
-
 include("Constants.jl")
 using .Constants: SESRCPATH, SEPATH, SEVERSION,
                     XAGENTS_GENERIC_PATH, XAGENTS_MA_PATH
