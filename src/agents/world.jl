@@ -1,5 +1,4 @@
 using StatsBase
-using Memoization
 
 export adjacent_8_towns, adjacent_inhabited_towns
 export select_random_town, create_newhouse!, create_newhouse_and_append!
