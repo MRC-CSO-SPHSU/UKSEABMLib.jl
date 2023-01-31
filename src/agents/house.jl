@@ -1,5 +1,5 @@
 export House, HouseLocation
-export hometown, house_location, undefined, isEmpty, town, number_of_occupants
+export hometown, house_location, undefined, isempty, town, number_of_occupants
 
 using ....Utilities: removefirst!
 
@@ -24,7 +24,7 @@ undefined(house::House{P,T}) where {P,T} =
     undefined(house.town) && house.pos == UNDEFINED_2DLOCATION
 
 number_of_occupants(house) = length(house.occupants)
-isEmpty(house) = length(house.occupants) == 0
+isempty(house) = length(house.occupants) == 0
 town(house) = house.town
 
 "town associated with house"
@@ -36,7 +36,7 @@ house_location(house::House) = house.pos
 "add an occupant to a house"
 function add_occupant!(house::House{P}, person::P) where {P}
     @assert !(person in house.occupants)
-    if isEmpty(house)
+    if isempty(house)
 	    push!(house.occupants, person)
         @assert house in emptyhouses(hometown(house))
         make_emptyhouse_occupied!(house)
@@ -50,7 +50,7 @@ end
 function remove_occupant!(house::House{P}, person::P) where {P}
     removefirst!(house.occupants, person)
     @assert !(person in house.occupants)
-    if isEmpty(house)
+    if isempty(house)
         @assert house in occupiedhouses(hometown(house))
         make_occupiedhouse_empty!(house)
     end

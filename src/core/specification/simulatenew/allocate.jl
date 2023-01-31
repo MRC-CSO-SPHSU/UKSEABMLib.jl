@@ -46,7 +46,7 @@ get_or_create_emptyhouse!(model,::AnyWhere) =
     _get_or_create_emptyhouse!(towns(model), model)
 
 function move_person_to_emptyhouse!(person, house)
-    @assert isEmpty(house)
+    @assert isempty(house)
     move_to_house!(person, house)
 end
 
