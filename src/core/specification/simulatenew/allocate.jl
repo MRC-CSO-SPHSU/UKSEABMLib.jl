@@ -1,8 +1,8 @@
-#=
-Implemenation of get_or_create_emptyhouse! & move_person_to_empty_house
-=#
+"""
+Set of routines related to people allocatiom to empty potentially new
+"""
 
-export get_or_create_emptyhouse!, move_person_to_emptyhouse!, random_position
+export get_or_create_emptyhouse!, move_person_to_emptyhouse!
 
 function _get_random_emptyhouse(town)
     @assert has_emptyhouses(town)
@@ -88,3 +88,8 @@ function random_position(model)
     town = select_random_town(towns(model))
     return _get_or_create_emptyhouse(town,model)
 end
+
+nearby_ids(::PersonHouse, model, r=1) =
+    error("nearby_ids(::PersonHouse,$(typeof(model)),r=1) not implemented")
+nearby_ids(::PersonTown, model, r=1) =
+    error("nearby_ids(::PersonTown,$(typeof(model)),r=1) not implemented")
