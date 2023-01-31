@@ -1,6 +1,7 @@
 export House, HouseLocation
-export hometown, house_location, undefined, isempty, town, number_of_occupants
+export hometown, house_location, undefined, town, number_of_occupants
 
+import Base.isempty
 using ....Utilities: removefirst!
 
 const HouseLocation  = NTuple{2,Int}
@@ -24,7 +25,7 @@ undefined(house::House{P,T}) where {P,T} =
     undefined(house.town) && house.pos == UNDEFINED_2DLOCATION
 
 number_of_occupants(house) = length(house.occupants)
-isempty(house) = length(house.occupants) == 0
+isempty(house::House) = length(house.occupants) == 0
 town(house) = house.town
 
 "town associated with house"
