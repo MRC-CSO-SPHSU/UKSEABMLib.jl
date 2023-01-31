@@ -4,12 +4,13 @@ Module for defining a supertype, AbstractAgent for all Agent types
 """
 module XAgents
 
-    using MultiAgents: AbstractAgent, AbstractXAgent, AbstractXSpace, getIDCOUNTER
-    import MultiAgents: random_position, nearby_ids
+using MultiAgents: AbstractAgent, AbstractXAgent, AbstractXSpace, getIDCOUNTER
+import MultiAgents: random_position, nearby_ids,
+    add_agent_to_space!, remove_agent_from_space!
 
-    include("../agents/town.jl")
-    include("../agents/house.jl")
-    include("../agents/person.jl")
-    include("../agents/world.jl")
+include("../agents/town.jl")
+include("../agents/house.jl")
+include("../agents/person.jl")
+include("../agents/world.jl")
 
 end  # XAgents
