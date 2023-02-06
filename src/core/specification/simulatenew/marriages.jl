@@ -125,7 +125,7 @@ function _compute_ew_candidates(man, eligibleWomen)
     for (i,w) in enumerate(eligibleWomen)
         if (age(man)-10 < age(w) < age(man)+5)  &&
             # exclude siblings as well
-            !are_living_together(man, w) && !related_first_degreeree(man, w)
+            !are_living_together(man, w) && !related_first_degree(man, w)
             push!(_EW_CANDIDATES,i)
         end
     end
