@@ -38,7 +38,7 @@ Person ties various agent modules into one compound agent type.
 
 # vvv More classification of attributes (Basic, Demography, Relatives, Economy )
 mutable struct Person <: AbstractXAgent
-    id::Int
+    const id::Int
     """
     location of a parson's house in a map which implicitly
     - (x-y coordinates of a house)
