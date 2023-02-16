@@ -1,11 +1,11 @@
 """
-various utilities employed accross the library 
+various utilities employed accross the library
 
-This source file is included within the Utilities module 
-""" 
+This source file is included within the Utilities module
+"""
 
 # Functions
-export createTimeStampedFolder, p_yearly2monthly, remove_unsorted! 
+export createTimeStampedFolder, p_yearly2monthly, remove_unsorted!
 export removefirst!, date2yearsmonths, age2yearsmonths
 export checkAssumptions!, ignoreAssumptions!, assumption, setDelay!, delay
 export setVerbose!, unsetVerbose!, verbose, verbosePrint, delayedVerbose
@@ -14,19 +14,20 @@ export fuse
 
 "remove first occurance of e in list"
 function removefirst!(list, e)
-    e ∉ list ? throw(ArgumentError("element $(e) not in $(list)")) : nothing 
-    deleteat!(list, findfirst(x -> x == e, list)) 
-    nothing 
+    e ∉ list ? throw(ArgumentError("element $(e) not in $(list)")) : nothing
+    deleteat!(list, findfirst(x -> x == e, list))
+    nothing
 end
 
 "convert date in rational representation to (years, months) as tuple"
 function date2yearsmonths(date::Rational{Int})
-    date < 0 ? throw(ArgumentError("Negative age")) : nothing 
-    12 % denominator(date) != 0 ? throw(ArgumentError("$(date) not in age format")) : nothing 
-    years  = trunc(Int, numerator(date) / denominator(date)) 
-    months = trunc(Int, numerator(date) % denominator(date) * 12 / denominator(date) )
-    (years , months)
-end 
+    #date < 0 ? throw(ArgumentError("Negative age")) : nothing
+    #12 % denominator(date) != 0 ? throw(ArgumentError("$(date) not in age format")) : nothing
+    years  = trunc(Int, numerator(date) / denominator(date))
+    months = trunc(Int,12 *(date - years))
+    # months = trunc(Int, numerator(date) % denominator(date) * 12 / denominator(date) )
+    return (years , months)
+end
 
 age2yearsmonths(age) = date2yearsmonths(age)
 
@@ -37,7 +38,7 @@ function remove_unsorted!(list, index)
     list[index] = list[end]
     pop!(list)
 end
- 
+
 mutable struct Debug
     checkAssumptions :: Bool
     verbose :: Bool
@@ -88,7 +89,7 @@ end
 @generated function fuse(args...)
 	# constructor call
 	tuptyp = Expr(:quote, tuple_type(args...))
-	
+
 	# constructor arguments
 	tup = Expr(:tuple)
     # iterate indices, @generated only catches 'args'
@@ -97,7 +98,7 @@ end
             push!(tup.args, :(getfield(args[$a], $i)) )
         end
     end
-	
+
 	# both put together
 	:($tuptyp($tup))
 end
