@@ -1,4 +1,4 @@
-export select_birth, dobirths!, birth!
+export dobirths!, birth!
 
 function _birth_probability(rWoman,birthpars,data,currstep)
 
