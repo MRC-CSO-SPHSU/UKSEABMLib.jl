@@ -187,16 +187,6 @@ end
     bridesChildrenExp :: Float64                = 0.5
 end
 
-#=
-"Data files"
-@with_kw mutable struct DataPars
-    datadir     :: String = "data"
-    fertFName   :: String = "babyrate.txt.csv"
-    deathFFName :: String = "deathrate.fem.csv"
-    deathMFName :: String = "deathrate.male.csv"
-end
-=#
-
 struct DemographyPars
     mappars     ::  MapXPars
     poppars     ::  PopulationPars
