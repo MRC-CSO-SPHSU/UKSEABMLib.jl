@@ -73,7 +73,7 @@ function _assumption_birth(woman, birthpars, birthProb)
     nothing
 end
 
-function _subject_to_birth(woman, currstep, data, birthpars, popfeature)
+function _subject_to_birth(woman, currstep, data, birthpars)
     # womanClassRank = woman.classRank
     # if woman.status == 'student':
     #     womanClassRank = woman.parentsClassRank
@@ -127,7 +127,7 @@ selectedfor(woman, birthpars, ::FullPopulation, process::Birth) =
 
 function _birth!(woman, currstep, data, birthpars, popfeature)
     if !(selectedfor(woman, birthpars, popfeature, Birth())) return false end
-    if _subject_to_birth(woman, currstep, data, birthpars, popfeature)
+    if _subject_to_birth(woman, currstep, data, birthpars)
         _givesbirth!(woman)
         verbose(woman, Birth())
         return true
