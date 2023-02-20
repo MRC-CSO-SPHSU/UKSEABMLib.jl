@@ -78,7 +78,7 @@ function _find_random_guardian(model,popfeature)
 end
 
 function _adopt!(guard, person)
-    move_person_to_person_house!(person, guard)
+    move_to_person_house!(person, guard)
     set_as_guardian_dependent!(guard, person)
     if ! issingle(guard)
         set_as_guardian_dependent!(partner(guard), person)

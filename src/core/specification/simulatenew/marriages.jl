@@ -104,15 +104,15 @@ function _join_couple!(man, woman, model, marpars)
         for person in dependents(follower)
             @assert home(person) === home(follower)
         end
-        move_people_to_house!(dependents(follower),targetHouse)
-        move_person_to_person_house!(follower,decider)
+        move_to_house!(dependents(follower),targetHouse)
+        move_to_person_house!(follower,decider)
         @assert home(decider) === home(follower)
     else
         distance = rand((InTown(),AdjTown()))
-        move_person_to_emptyhouse!(decider,model,distance)
-        move_person_to_person_house!(follower,decider)
-        move_people_to_house!(dependents(decider),home(decider))
-        move_people_to_house!(dependents(follower),home(decider))
+        move_to_emptyhouse!(decider,model,distance)
+        move_to_person_house!(follower,decider)
+        move_to_house!(dependents(decider),home(decider))
+        move_to_house!(dependents(follower),home(decider))
     end
     # TODO movedThisYear
     # required by moving around (I think)

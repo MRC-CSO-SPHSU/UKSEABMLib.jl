@@ -158,6 +158,14 @@ function move_to_house!(person::Person,house)
     add_occupant!(house, person)
 end
 
+function move_to_house!(people::Vector{Person}, house)
+    @assert house !== UNDEFINED_HOUSE
+    for person in people
+        move_to_house!(person, house)
+    end
+    nothing
+end
+
 "reset house of a person (e.g. became dead)"
 function reset_house!(person::Person)
     if ! undefined(person.pos)

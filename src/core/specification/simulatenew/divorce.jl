@@ -1,4 +1,4 @@
-export dodivorces!, select_divorce, divorce!
+export dodivorces!, divorce!
 
 function _divorce_probability(rawRate, pars) # ,classRank)
     #=
@@ -56,7 +56,7 @@ function _divorce!(man, time, model, divorcepars, workpars, popfeature) #paramet
         end
 
         #peopleToMove = [man]
-        move_person_to_emptyhouse!(man, model,
+        move_to_emptyhouse!(man, model,
                                     #rand(_DIST_CHOICES))
                                     rand((InTown(),AdjTown(),AnyWhere())))
         for child in dependents(man)
@@ -68,7 +68,7 @@ function _divorce!(man, time, model, divorcepars, workpars, popfeature) #paramet
                  rand() < divorcepars.probChildrenWithFather)
                 #push!(peopleToMove, child)
                 resolve_dependency!(wife, child)
-                move_person_to_person_house!(child,man)
+                move_to_person_house!(child,man)
             else
                 resolve_dependency!(man, child)
             end
