@@ -36,9 +36,11 @@ function _divorce!(man, time, model, divorcepars, workpars, popfeature) #paramet
     ## but only for the years after 2012
     if time < divorcepars.thePresent
         # Not sure yet if the following is parameter or data
-        rawRate = divorcepars.basicDivorceRate * divorcepars.divorceModifierByDecade[ceil(Int, agem / 10 )]
+        rawRate = divorcepars.basicDivorceRate *
+            divorcepars.divorceModifierByDecade[ceil(Int, agem / 10 )]
     else
-        rawRate = divorcepars.variableDivorce  * divorcepars.divorceModifierByDecade[ceil(Int, agem / 10 )]
+        rawRate = divorcepars.variableDivorce  *
+            divorcepars.divorceModifierByDecade[ceil(Int, agem / 10 )]
     end
 
     divorceProb = _divorce_probability(rawRate, divorcepars) # TODO , man.classRank)
@@ -91,8 +93,9 @@ divorce!(man, time, model, popfeature::PopulationFeature = FullPopulation()) =
 function _verbose_dodivorce(ndivorced::Int, model)
     delayedVerbose() do
         println("# of divorced : $ndivorced")
-        nempty, nocc = number_of_houses(towns(model))
-        println("# of houses : $(length(houses(model))) out of which $nempty empty and $nocc occupied")
+        nempty, nocc = num_houses(towns(model))
+        println("# of houses : $(length(houses(model))) \
+                    out of which $nempty empty and $nocc occupied")
     end
     nothing
 end
@@ -130,4 +133,5 @@ end
 dodivorces!(model, time, popfeature::PopulationFeature, ret = nothing) =
     _dodivorces!(ret, model, time, popfeature)
 
-dodivorces!(model, time, ret = nothing) = dodivorces!(model, time, AlivePopulation(), nothing)
+dodivorces!(model, time, ret = nothing) =
+    dodivorces!(model, time, AlivePopulation(), nothing)

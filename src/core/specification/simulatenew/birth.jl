@@ -195,7 +195,9 @@ _verbose_dobirths(people, babies, birthpars) =
 function _assumption_dobirths(people, birthpars, currstep)
     assumption() do
         #@info currstep
-        reproductiveWomen = [ woman for woman in people if selectedfor(woman, birthpars, FullPopulation(), Birth()) ]
+        reproductiveWomen =
+            [ woman for woman in people if
+                selectedfor(woman, birthpars, FullPopulation(), Birth()) ]
         allFemales = [ woman for woman in people if isfemale(woman) && alive(woman) ]
         adultWomen = [ aWomen for aWomen in allFemales if
                          age(aWomen) >= birthpars.minPregnancyAge ]

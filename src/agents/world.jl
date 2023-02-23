@@ -2,7 +2,7 @@ using StatsBase
 
 export adjacent_8_towns, adjacent_inhabited_towns
 export select_random_town, create_newhouse!, create_newhouse_and_append!
-export number_of_houses
+export num_houses
 
 # memoization does not help
 _weights(towns) = [ town.density for town in towns ]
@@ -24,7 +24,7 @@ function create_newhouse_and_append!(town, allHouses, xdim, ydim)
     nothing
 end
 
-function number_of_houses(towns)
+function num_houses(towns)
     nempty = 0
     noccupied = 0
     for town in towns  # can be expressed better
