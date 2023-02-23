@@ -29,7 +29,7 @@ function num_houses(towns)
     noccupied = 0
     for town in towns  # can be expressed better
         nempty += length(empty_houses(town))
-        noccupied += length(occupiedhouses(town))
+        noccupied += length(occupied_houses(town))
     end
    return (nempty, noccupied)
 end

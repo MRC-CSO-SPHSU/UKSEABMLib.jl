@@ -52,8 +52,8 @@ function remove_occupant!(house::House{P}, person::P) where {P}
     removefirst!(house.occupants, person)
     @assert !(person in house.occupants)
     if isempty(house)
-        @assert house in occupiedhouses(hometown(house))
-        make_occupiedhouse_empty!(house)
+        @assert house in occupied_houses(hometown(house))
+        make_occupied_house_empty!(house)
     end
     nothing
 end
