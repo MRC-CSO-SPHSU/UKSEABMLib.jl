@@ -1,4 +1,4 @@
-export dodivorces!, select_divorce, divorce!
+export dodivorces!, divorce!
 
 function _divorce_probability(rawRate, pars) # ,classRank)
     #=
@@ -36,9 +36,11 @@ function _divorce!(man, time, model, divorcepars, workpars, popfeature) #paramet
     ## but only for the years after 2012
     if time < divorcepars.thePresent
         # Not sure yet if the following is parameter or data
-        rawRate = divorcepars.basicDivorceRate * divorcepars.divorceModifierByDecade[ceil(Int, agem / 10 )]
+        rawRate = divorcepars.basicDivorceRate *
+            divorcepars.divorceModifierByDecade[ceil(Int, agem / 10 )]
     else
-        rawRate = divorcepars.variableDivorce  * divorcepars.divorceModifierByDecade[ceil(Int, agem / 10 )]
+        rawRate = divorcepars.variableDivorce  *
+            divorcepars.divorceModifierByDecade[ceil(Int, agem / 10 )]
     end
 
     divorceProb = _divorce_probability(rawRate, divorcepars) # TODO , man.classRank)
@@ -56,7 +58,7 @@ function _divorce!(man, time, model, divorcepars, workpars, popfeature) #paramet
         end
 
         #peopleToMove = [man]
-        move_person_to_emptyhouse!(man, model,
+        move_to_emptyhouse!(man, model,
                                     #rand(_DIST_CHOICES))
                                     rand((InTown(),AdjTown(),AnyWhere())))
         for child in dependents(man)
@@ -68,7 +70,7 @@ function _divorce!(man, time, model, divorcepars, workpars, popfeature) #paramet
                  rand() < divorcepars.probChildrenWithFather)
                 #push!(peopleToMove, child)
                 resolve_dependency!(wife, child)
-                move_person_to_person_house!(child,man)
+                move_to_person_house!(child,man)
             else
                 resolve_dependency!(man, child)
             end
@@ -91,8 +93,9 @@ divorce!(man, time, model, popfeature::PopulationFeature = FullPopulation()) =
 function _verbose_dodivorce(ndivorced::Int, model)
     delayedVerbose() do
         println("# of divorced : $ndivorced")
-        nempty, nocc = number_of_houses(towns(model))
-        println("# of houses : $(length(houses(model))) out of which $nempty empty and $nocc occupied")
+        nempty, nocc = num_houses(towns(model))
+        println("# of houses : $(length(houses(model))) \
+                    out of which $nempty empty and $nocc occupied")
     end
     nothing
 end
@@ -130,4 +133,5 @@ end
 dodivorces!(model, time, popfeature::PopulationFeature, ret = nothing) =
     _dodivorces!(ret, model, time, popfeature)
 
-dodivorces!(model, time, ret = nothing) = dodivorces!(model, time, AlivePopulation(), nothing)
+dodivorces!(model, time, ret = nothing) =
+    dodivorces!(model, time, AlivePopulation(), nothing)

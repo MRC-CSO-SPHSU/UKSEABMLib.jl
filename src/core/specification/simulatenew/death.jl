@@ -1,5 +1,5 @@
 
-export dodeaths!, setDead!, death!!
+export dodeaths!, set_dead!, death!!
 
 function _death_probability(baseRate,person,poppars)
     #=
@@ -52,7 +52,7 @@ function _death_probability(baseRate,person,poppars)
 end # function deathProb
 
 # Atiyah: Does not this rather belong to person.jl?
-function setDead!(person)
+function set_dead!(person)
     person.info.alive = false    # this statement is a sign that this function does not belong here!
     house = home(person)
     reset_house!(person)
@@ -135,7 +135,7 @@ function _death!(person, currstep, data, poppars, popfeature)
     =#
 
     if rand() < p_yearly2monthly(deathProb)
-        setDead!(person)
+        set_dead!(person)
         verbose(person, Death())
         return true
         # person.deadYear = self.year

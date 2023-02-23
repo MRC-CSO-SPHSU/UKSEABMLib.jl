@@ -18,8 +18,8 @@ Type Town to extend from AbstractAXgent.
 const TownLocation  = NTuple{2,Int}
 const UNDEFINED_2DLOCATION = (-1,-1)
 
-struct Town{H} <: AbstractXAgent
-    id::Int
+struct Town{H} <: AbstractXSpace
+    #id::Int (this field was there when it was declared as an agent)
     pos::TownLocation
     # name::String            # does not look necessary
     # local house allowance
@@ -32,14 +32,13 @@ struct Town{H} <: AbstractXAgent
     adjacentInhabitedTowns::Vector{Town{H}}
 
     Town{H}(pos::TownLocation,density::Float64) where H =
-        new{H}(getIDCOUNTER(),pos,density,H[],H[],Town{H}[])
+        new{H}(pos,density,H[],H[],Town{H}[])
 end  # Town
 
 "costum show method for Town"
 function Base.show(io::IO,  town::Town)
-    print(" Town $(town.id) ")
+    print(" Town $(town.pos) ")
     #isempty(town.name) ? nothing : print(" $(town.name) ")
-    print("@ $(town.pos)")
     println(" density: $(town.density)")
 end
 
@@ -60,7 +59,7 @@ manhattan_distance(town1, town2) =
     abs(town1.pos[2] - town2.pos[2])
 
 function add_emptyhouse!(town,house)
-    @assert isEmpty(house)
+    @assert isempty(house)
     push!(town.emptyHouses,house)
 end
 
@@ -72,7 +71,7 @@ adjacent_inhabited_towns(town) = town.adjacentInhabitedTowns
 
 function make_emptyhouse_occupied!(town,idx::Int)
     house = town.emptyHouses[idx]
-    @assert !isEmpty(house)
+    @assert !isempty(house)
     town.emptyHouses[idx] = town.emptyHouses[end]
     pop!(town.emptyHouses)
     push!(town.occupiedHouses,house)
@@ -89,7 +88,7 @@ end
 function make_occupiedhouse_empty!(town,idx::Int)
     house = town.occupiedHouses[idx]
     #println("house $(house.id) become empty")
-    @assert isEmpty(house)
+    @assert isempty(house)
     town.occupiedHouses[idx] = town.occupiedHouses[end]
     pop!(town.occupiedHouses)
     push!(town.emptyHouses,house)

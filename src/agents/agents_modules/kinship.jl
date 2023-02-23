@@ -12,8 +12,7 @@ has_children(parent::KinshipBlock{P}) where{P} = length(parent.children) > 0
 
 add_child!(parent::KinshipBlock{P}, child::P) where{P} = push!(parent.children, child)
 
-youngest_child(person::KinshipBlock) =
-    length(person.children) == 0 ? nothing : person.children[end]
+youngest_child(person::KinshipBlock) = person.children[end]
 
 issingle(person::KinshipBlock) = person.partner == nothing
 

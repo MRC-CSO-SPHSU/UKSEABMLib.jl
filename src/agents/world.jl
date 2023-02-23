@@ -1,18 +1,11 @@
 using StatsBase
-using Memoization
 
 export adjacent_8_towns, adjacent_inhabited_towns
 export select_random_town, create_newhouse!, create_newhouse_and_append!
-export number_of_houses
+export num_houses
 
 # memoization does not help
-function _weights(towns)
-    w = Vector{Float64}(undef,length(towns))
-    for (i,town) in enumerate(towns)
-        w[i] = town.density
-    end
-    return w
-end
+_weights(towns) = [ town.density for town in towns ]
 
 function select_random_town(towns)
     ws = _weights(towns)
@@ -31,7 +24,7 @@ function create_newhouse_and_append!(town, allHouses, xdim, ydim)
     nothing
 end
 
-function number_of_houses(towns)
+function num_houses(towns)
     nempty = 0
     noccupied = 0
     for town in towns  # can be expressed better

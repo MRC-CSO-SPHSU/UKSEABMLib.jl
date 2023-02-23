@@ -4,14 +4,14 @@ export isfemale, ismale, agestep!, agestep_ifalive!, has_birthday, yearsold
 export Gender, male, female, unknown
 
 #"Gender type enumeration"
-@enum Gender unknown female male 
+@enum Gender unknown female male
 
 # TODO think about whether to make this immutable
 mutable struct BasicInfoBlock
-    age::Rational{Int} 
+    age::Rational{Int}
     # (birthyear, birthmonth)
-    gender::Gender  
-    alive::Bool 
+    const gender::Gender
+    alive::Bool
 end
 
 "Default constructor"
@@ -24,20 +24,20 @@ ismale(person::BasicInfoBlock) = person.gender == male
 function Base.show(io::IO,  info::BasicInfoBlock)
   year, month = age2yearsmonths(info.age)
   print(" $(year) years & $(month) months, $(info.gender) ")
-  info.alive ? print(" alive ") : print(" dead ")  
+  info.alive ? print(" alive ") : print(" dead ")
 end
 
 "increment an age for a person to be used in typical stepping functions"
-agestep!(person::BasicInfoBlock, dt=1//12) = person.age += dt  
+agestep!(person::BasicInfoBlock, dt=1//12) = person.age += dt
 
 "increment an age for a person to be used in typical stepping functions"
-function agestep_ifalive!(person::BasicInfoBlock, dt=1//12) 
-    person.age += person.alive ? dt : 0  
-end 
+function agestep_ifalive!(person::BasicInfoBlock, dt=1//12)
+    person.age += person.alive ? dt : 0
+end
 
 has_birthday(person::BasicInfoBlock) = person.age % 1 == 0
 
-function yearsold(person::BasicInfoBlock) 
+function yearsold(person::BasicInfoBlock)
     years, = age2yearsmonths(person.age)
-    return years 
-end 
+    return years
+end

@@ -54,7 +54,7 @@ function _guardian_candidates(model,norphans,popfeature)
     people = all_people(model) # select_population(model,nothing,popfeature,AssignGuardian())
     for p in people
         if _valid_guardian(p,popfeature) && isfemale(p) && !issingle(p)
-              # &&  (status(p) == WorkStatus.worker || status(partner(p)) == WorkStatus.worker) ]
+        # &&  (status(p) == WorkStatus.worker || status(partner(p)) == WorkStatus.worker) ]
             push!(_G_CANDIDATES,p)
             if length(_G_CANDIDATES) > norphans return _G_CANDIDATES end
         end
@@ -78,7 +78,7 @@ function _find_random_guardian(model,popfeature)
 end
 
 function _adopt!(guard, person)
-    move_person_to_person_house!(person, guard)
+    move_to_person_house!(person, guard)
     set_as_guardian_dependent!(guard, person)
     if ! issingle(guard)
         set_as_guardian_dependent!(partner(guard), person)

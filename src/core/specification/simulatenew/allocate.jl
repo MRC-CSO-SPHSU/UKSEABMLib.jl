@@ -1,8 +1,8 @@
-#=
-Implemenation of get_or_create_emptyhouse! & move_person_to_empty_house
-=#
+"""
+Set of routines related to people allocatiom to empty potentially new
+"""
 
-export get_or_create_emptyhouse!, move_person_to_emptyhouse!
+export get_or_create_emptyhouse!, move_to_emptyhouse!
 
 function _get_random_emptyhouse(town)
     @assert has_emptyhouses(town)
@@ -45,41 +45,56 @@ get_or_create_emptyhouse!(::PersonTown, model, loc::AnyWhere) =
 get_or_create_emptyhouse!(model,::AnyWhere) =
     _get_or_create_emptyhouse!(towns(model), model)
 
-function move_person_to_emptyhouse!(person, house)
-    @assert isEmpty(house)
+function move_to_emptyhouse!(person, house)
+    @assert isempty(house)
     move_to_house!(person, house)
 end
 
-function move_person_to_emptyhouse!(person::Person,
+function move_to_emptyhouse!(person::Person,
                                     model,
                                     dmax)
     # TODO
     # - yearInTown (used in relocation cost)
     # - movedThisYear
     newhouse = get_or_create_emptyhouse!(hometown(person), model, dmax)
-    move_person_to_emptyhouse!(person, newhouse)
+    move_to_emptyhouse!(person, newhouse)
     nothing
 end
 
-move_person_to_person_house!(personToMove,personWithAHouse) =
+move_to_person_house!(personToMove,personWithAHouse) =
     move_to_house!(personToMove, home(personWithAHouse))
 
-function move_people_to_house!(people, house)
-    @assert house !== UNDEFINED_HOUSE
-    for person in people
-        move_to_house!(person, house)
-    end
-    nothing
-end
-
-move_people_to_person_house!(peopleToMove,personWithAHouse) =
-    move_people_to_house!(peopleToMove,home(personWithAHouse))
+move_to_person_house!(peopleToMove::Vector{Person},personWithAHouse) =
+    move_to_house!(peopleToMove,home(personWithAHouse))
 
 # people[1] determines centre of search radius
-function move_people_to_emptyhouse!(people, model,dmax)
+function move_to_emptyhouse!(people::Vector{Person}, model,dmax)
     head = people[1]
-    move_person_to_emptyhouse!(head,model,dmax)
+    move_to_emptyhouse!(head,model,dmax)
     others = people[2:end]
-    move_people_to_person_house!(others,head)
+    move_to_person_house!(others,head)
     nothing
 end
+
+# some Agents.jl stuffs
+
+function random_position(model)
+    town = select_random_town(towns(model))
+    return _get_or_create_emptyhouse(town,model)
+end
+
+#=
+Shallow implementation of some Agents.jl functions.
+They shall be implemented if needed particulary by some Agents.jl functionalities
+    or beneficial future extensions
+=#
+
+nearby_ids(::PersonHouse, model, r=1) =
+    error("nearby_ids(::PersonHouse,$(typeof(model)),r=1) not implemented")
+nearby_ids(::PersonTown, model, r=1) =
+    error("nearby_ids(::PersonTown,$(typeof(model)),r=1) not implemented")
+
+add_agent_to_space!(::PersonHouse, model) =
+    error("add_agent_to_space!(::PersonHouse,$(typeof(model))) not implemented")
+remove_agent_from_space!(::PersonHouse, model) =
+    error("remove_agent_from_space!(::PersonHouse,$(typeof(model))) not implemented")

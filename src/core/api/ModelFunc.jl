@@ -49,7 +49,7 @@ remove_person!(model,personidx::Int,::PopulationFeature) = remove_person!(model,
 function verbose_houses(model,msg="")
     delayedVerbose() do
         ts = towns(model)
-        ehouses,ohouses = number_of_houses(ts)
+        ehouses,ohouses = num_houses(ts)
         println("$(msg) # empty houses : $ehouses , # occupied houses : $ohouses")
     end
 end
