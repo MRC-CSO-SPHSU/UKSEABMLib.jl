@@ -5,12 +5,15 @@ This source file is included within the Utilities module
 """
 
 # Functions
+export notneeded, notimplemented
 export createTimeStampedFolder, p_yearly2monthly, remove_unsorted!
 export removefirst!, date2yearsmonths, age2yearsmonths
 export checkAssumptions!, ignoreAssumptions!, assumption, setDelay!, delay
 export setVerbose!, unsetVerbose!, verbose, verbosePrint, delayedVerbose
 export fuse
 
+notimplemented(msg = "") = error("not implemeented" * msg)
+notneeded(msg = "") = error("not needed" * msg)
 
 "remove first occurance of e in list"
 function removefirst!(list, e)
