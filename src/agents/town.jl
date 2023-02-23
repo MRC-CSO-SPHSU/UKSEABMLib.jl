@@ -1,7 +1,7 @@
 export Town, TownLocation
 export undefined, isadjacent8, adjacent8Towns, manhattan_distance
-export add_emptyhouse!, make_emptyhouse_occupied!, make_occupiedhouse_empty!
-export has_emptyhouses, emptyhouses, occupiedhouses
+export add_empty_house!, make_empty_house_occupied!, make_occupiedhouse_empty!
+export has_empty_houses, empty_houses, occupiedhouses
 
 """
 Specification of a Town agent type.
@@ -58,18 +58,18 @@ manhattan_distance(town1, town2) =
     abs(town1.pos[1] - town2.pos[1]) +
     abs(town1.pos[2] - town2.pos[2])
 
-function add_emptyhouse!(town,house)
+function add_empty_house!(town,house)
     @assert isempty(house)
     push!(town.emptyHouses,house)
 end
 
-has_emptyhouses(town) = length(town.emptyHouses) > 0
-emptyhouses(town::Town{H}) where H = town.emptyHouses
+has_empty_houses(town) = length(town.emptyHouses) > 0
+empty_houses(town::Town{H}) where H = town.emptyHouses
 occupiedhouses(town)    = town.occupiedHouses
 adjacent_inhabited_towns(town) = town.adjacentInhabitedTowns
 
 
-function make_emptyhouse_occupied!(town,idx::Int)
+function make_empty_house_occupied!(town,idx::Int)
     house = town.emptyHouses[idx]
     @assert !isempty(house)
     town.emptyHouses[idx] = town.emptyHouses[end]
@@ -78,11 +78,11 @@ function make_emptyhouse_occupied!(town,idx::Int)
     nothing
 end
 
-function make_emptyhouse_occupied!(house)
+function make_empty_house_occupied!(house)
     # println("house $(house.id) become occupied")
     town = hometown(house)
-    @assert house in emptyhouses(town)
-    make_emptyhouse_occupied!(town,findfirst(x -> x === house, town.emptyHouses))
+    @assert house in empty_houses(town)
+    make_empty_house_occupied!(town,findfirst(x -> x === house, town.emptyHouses))
 end
 
 function make_occupiedhouse_empty!(town,idx::Int)

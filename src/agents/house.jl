@@ -39,8 +39,8 @@ function add_occupant!(house::House{P}, person::P) where {P}
     @assert !(person in house.occupants)
     if isempty(house)
 	    push!(house.occupants, person)
-        @assert house in emptyhouses(hometown(house))
-        make_emptyhouse_occupied!(house)
+        @assert house in empty_houses(hometown(house))
+        make_empty_house_occupied!(house)
     else
         push!(house.occupants,person)
     end

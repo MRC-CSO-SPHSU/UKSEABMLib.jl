@@ -14,7 +14,7 @@ end
 
 function create_newhouse!(town,xdim,ydim)
     house = PersonHouse(town,(xdim,ydim))
-    add_emptyhouse!(town,house)
+    add_empty_house!(town,house)
     return house
 end
 
@@ -28,7 +28,7 @@ function num_houses(towns)
     nempty = 0
     noccupied = 0
     for town in towns  # can be expressed better
-        nempty += length(emptyhouses(town))
+        nempty += length(empty_houses(town))
         noccupied += length(occupiedhouses(town))
     end
    return (nempty, noccupied)
