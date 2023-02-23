@@ -4,13 +4,9 @@ Module for defining a supertype, AbstractAgent for all Agent types
 """
 module XAgents
 
-    abstract type AbstractAgent
-    end
+    abstract type AbstractAgent end
 
-    abstract type AbstractXAgent
-    end
-
-    abstract type AbstractXSpace end
+    abstract type AbstractXAgent <: AbstractAgent end
 
     getIDCOUNTER() = 0
 

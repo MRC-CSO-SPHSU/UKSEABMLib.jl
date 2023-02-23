@@ -4,7 +4,7 @@ Module for defining a supertype, AbstractAgent for all Agent types
 """
 module XAgents
 
-using MultiAgents: AbstractAgent, AbstractXAgent, AbstractXSpace, getIDCOUNTER
+using MultiAgents: AbstractAgent, AbstractXAgent, getIDCOUNTER
 import MultiAgents: random_position, nearby_ids,
     add_agent_to_space!, remove_agent_from_space!
 

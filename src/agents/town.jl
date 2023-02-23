@@ -18,7 +18,7 @@ Type Town to extend from AbstractAXgent.
 const TownLocation  = NTuple{2,Int}
 const UNDEFINED_2DLOCATION = (-1,-1)
 
-struct Town{H} <: AbstractXSpace
+struct Town{H}
     #id::Int (this field was there when it was declared as an agent)
     pos::TownLocation
     # name::String            # does not look necessary

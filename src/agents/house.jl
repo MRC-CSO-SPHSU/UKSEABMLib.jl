@@ -11,7 +11,7 @@ Specification of a House Agent Type.
 This file is included in the module XAgents
 Type House to extend from AbstracXAgent.
 """
-mutable struct House{P, T} <: AbstractXSpace # AbstractXAgent
+mutable struct House{P, T}
     # id :: Int
     town :: T
     pos :: HouseLocation     # location in the town
