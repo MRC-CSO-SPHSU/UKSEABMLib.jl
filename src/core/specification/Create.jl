@@ -5,8 +5,11 @@ using Distributions
 using ....Utilities
 using ....XAgents
 using ....ParamTypes
+using ....API.ParamFunc
+using ....API.ModelFunc
 
-export create_towns, create_inhabited_towns, create_population, create_pyramid_population
+export create_towns, create_inhabited_towns, create_inhabited_towns!,
+    create_population, create_population!, create_pyramid_population
 
 function _create_towns(mappars)
     uktowns = PersonTown[]
@@ -55,8 +58,15 @@ function _create_inhabited_towns(mappars)
     return uktowns
 end
 
-create_inhabited_towns(pars) =
-    _create_inhabited_towns(mapx(pars))
+create_inhabited_towns(pars) = _create_inhabited_towns(mapx(pars))
+
+function create_inhabited_towns!(model)
+    towns = create_inhabited_towns(all_pars(model))
+    for town in towns
+        push!(model.space.towns,town)
+    end
+    nothing
+end
 
 # return agents with age in interval minAge, maxAge
 # assumes pop is sorted by age
@@ -184,7 +194,7 @@ create_pyramid_population(pars::DemographyPars) =
 
 function _create_population(pars)
     population = Person[]
-    for i in 1 : pars.initialPop
+    for _ in 1 : pars.initialPop
         ageMale = rand(pars.minStartAge:pars.maxStartAge)
         ageFemale = ageMale - rand(-2:5)
         ageFemale = ageFemale < 24 ? 24 : ageFemale
@@ -210,7 +220,18 @@ function _create_population(pars)
     return population
 end # createPopulation
 
-create_population(pars::DemographyPars) =
-	_create_population(population(pars))
+function create_population(pars::DemographyPars)
+    poppars = population(pars)
+    return _create_population(poppars)
+end
+
+function create_population!(model)
+    pop = create_population(all_pars(model))
+    for person in pop
+        ModelFunc.add_agent_pos!(person,model)
+    end
+    nothing
+end
+
 
 end # module Create
