@@ -18,6 +18,8 @@ export add_person!, add_house!, remove_person!
 export verbose_houses
 export share_childless_men, eligible_women
 
+import Agents: add_agent_pos!, add_agent_to_space!, nagents, seed!, add_town!
+
 init!(model) = error("init!($(typeof(model))) not implemented")
 
 all_people(model) = error("all_people not implemeneted")
