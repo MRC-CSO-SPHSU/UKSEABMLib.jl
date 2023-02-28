@@ -14,6 +14,7 @@ export InitHousesInTownsPort, InitCouplesToHousesPort
 export InitClassesProcess, InitWorkProcess, Init, DefaultModelInit
 
 struct DefaultModelInit <: AbsInitPort end
+struct AgentsJLInit <: AbsInitPort end
 
 struct InitHousesInTownsPort <: AbsInitPort end
 struct InitCouplesToHousesPort <: AbsInitPort end
@@ -147,4 +148,10 @@ function init!(model, mi::AbsInitPort = DefaultModelInit())
     init!(all_people(model),pars,InitWorkProcess())
 end
 
+function init!(model, mi::AgentsJLInit)
+    pars = all_pars(model)
+    # init!(model,InitHousesInTowns())
+    # init!(model,InitPeopleInHouses())
+    # init!(all_people(model),pars,InitClassesProcess())
+    # init!(all_people(model),pars,InitWorkProcess())
 end # module Initalize
