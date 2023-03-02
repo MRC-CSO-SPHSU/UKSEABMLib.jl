@@ -64,7 +64,7 @@ initial_connect!(houses::Vector{PersonHouse},
 
 function init!(model,::InitHousesInTownsProcess)
     popsize = length(alive_people(model))
-    create_newhouses!(model,popsize)
+    create_many_newhouses!(model,popsize)
     return nothing
 end
 
@@ -162,7 +162,7 @@ end
 function init!(model, mi::AgentsModelInit)
     pars = all_pars(model)
     init!(model,InitHousesInTownsProcess())
-    initital_connect!(houses(model),all_people(model),pars)
+    # initital_connect!(houses(model),all_people(model),pars)
     # init!(all_people(model),pars,InitClassesProcess())
     # init!(all_people(model),pars,InitWorkProcess())
 end

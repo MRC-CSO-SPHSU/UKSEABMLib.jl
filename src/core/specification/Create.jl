@@ -19,7 +19,7 @@ using ....API.ModelFunc
 
 export create_towns, create_inhabited_towns, create_inhabited_towns!,
     create_population, create_population!, create_pyramid_population,
-    create_newhouse!, create_newhouses!
+    create_newhouse!, create_many_newhouses!
 
 function _create_towns(mappars)
     uktowns = PersonTown[]
@@ -77,7 +77,7 @@ function create_newhouse!(model)
     return house
 end
 
-function create_newhouses!(model,nhouses)
+function create_many_newhouses!(model,nhouses)
     cnt = 0
     @assert sum(num_houses(towns(model))) == 0
     popsize = length(alive_people(model))
