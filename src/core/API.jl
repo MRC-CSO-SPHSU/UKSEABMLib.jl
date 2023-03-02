@@ -1,9 +1,9 @@
-""" 
+"""
     This module describes basic model interfaces to
-    be employed within simulation functions in any 
+    be employed within simulation functions in any
     *Simulate module
-    
-    This module is within the SocioEconomics[X] modules 
+
+    This module is within the SocioEconomics[X] modules
 """
 module API
 
@@ -11,5 +11,6 @@ module API
 	include("api/ParamFunc.jl")
     include("api/ModelFunc.jl")
     include("api/Connection.jl")
-    
-end # API 
+    include("api/ModelOp.jl")
+
+end # API

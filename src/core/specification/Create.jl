@@ -5,6 +5,7 @@ This module is cocnerned with functions employed for declaring model components.
     - declared in a specific order by the client
     - does not need to rely on the declaration of another component
     - are not initialized by sophisticated procedure
+    - are declared at the start of the simulation
 """
 
 module Create
@@ -16,9 +17,9 @@ using ....XAgents
 using ....ParamTypes
 using ....API.ParamFunc
 using ....API.ModelFunc
+using ....API.ModelOp
 
 import ....XAgents: create_newhouse!
-
 export create_towns, create_inhabited_towns, create_inhabited_towns!,
     create_population, create_population!, create_pyramid_population, create_many_newhouses!
 
@@ -69,16 +70,18 @@ function _create_inhabited_towns(mappars)
     return uktowns
 end
 
-# TODO this rather belongs to Operation module
-function create_newhouse!(model)
-    town = select_random_town(towns(model))
-    townGridDimension = map_pars(model).townGridDimension
-    house = create_newhouse!(town,  rand(1:townGridDimension),
-                                    rand(1:townGridDimension))
-    return house
+create_inhabited_towns(pars) = _create_inhabited_towns(mapx(pars))
+
+function create_inhabited_towns!(model)
+    ts = create_inhabited_towns(all_pars(model))
+    for town in ts
+        add_town!(model,town)
+        # push!(model.space.towns,town)
+    end
+    nothing
 end
 
-function create_many_newhouses!(model,nhouses)
+function create_many_newhouses!(model)
     cnt = 0
     @assert sum(num_houses(towns(model))) == 0
     popsize = length(alive_people(model))
@@ -87,16 +90,6 @@ function create_many_newhouses!(model,nhouses)
         cnt += 1
     end
     return nothing
-end
-
-create_inhabited_towns(pars) = _create_inhabited_towns(mapx(pars))
-
-function create_inhabited_towns!(model)
-    towns = create_inhabited_towns(all_pars(model))
-    for town in towns
-        push!(model.space.towns,town)
-    end
-    nothing
 end
 
 # return agents with age in interval minAge, maxAge
