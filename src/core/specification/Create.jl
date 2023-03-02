@@ -1,3 +1,12 @@
+"""
+This module is cocnerned with functions employed for declaring model components.
+    It is assumed that a model component (e.g. towns, houses, populations etc.)
+    don't need to be
+    - declared in a specific order by the client
+    - does not need to rely on the declaration of another component
+    - are not initialized by sophisticated procedure
+"""
+
 module Create
 
 using Distributions
@@ -249,7 +258,7 @@ end
 function create_population!(model)
     pop = create_population(all_pars(model))
     for person in pop
-        ModelFunc.add_agent_pos!(person,model)
+        add_person!(model,person)
     end
     nothing
 end
