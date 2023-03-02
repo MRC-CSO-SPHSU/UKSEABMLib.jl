@@ -9,7 +9,6 @@ export PopulationSpace, DemographicMap
 abstract type PopulationSpace <: DiscreteSpace end
 struct DemographicMap <: PopulationSpace
     countryname::String
-    # maxTownGridDim::Int # TODO remove this
     towns::Vector{PersonTown}
 end
 
