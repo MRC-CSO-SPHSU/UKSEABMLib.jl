@@ -1,17 +1,19 @@
 """
-space types for human populations
+space types for human populations conform with Agents.jl space concept, though the client
+    can also choose not to use Agents.jl
 """
 
 using TypedDelegation
+export PopulationSpace, DemographicMap
 
 abstract type PopulationSpace <: DiscreteSpace end
 struct DemographicMap <: PopulationSpace
     countryname::String
-    maxTownGridDim::Int
+    # maxTownGridDim::Int # TODO remove this
     towns::Vector{PersonTown}
 end
 
-DemographicMap(name,mtgd) = DemographicMap(name,mtgd,Town[])
+DemographicMap(name) = DemographicMap(name,Town[])
 
 #=
 @delegate_onefield(DemographicMap, towns,

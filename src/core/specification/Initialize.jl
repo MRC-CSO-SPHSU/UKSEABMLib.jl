@@ -6,19 +6,23 @@ using ....XAgents
 using ....ParamTypes
 using ....API.ModelFunc
 using ....API.ParamFunc
+using ..Create
 
 import ....API.ModelFunc: init!
 import ....API.Connection: AbsInitPort, AbsInitProcess, initial_connect!
 
 export InitHousesInTownsPort, InitCouplesToHousesPort
-export InitClassesProcess, InitWorkProcess, Init, DefaultModelInit
+export InitClassesProcess, InitWorkProcess, InitHousesInTownsProcess, InitPeopleInHouses
+export DefaultModelInit, AgentsModelInit
 
 struct DefaultModelInit <: AbsInitPort end
-struct AgentsJLInit <: AbsInitPort end
+struct AgentsModelInit <: AbsInitPort end
 
 struct InitHousesInTownsPort <: AbsInitPort end
 struct InitCouplesToHousesPort <: AbsInitPort end
 
+struct InitHousesInTownsProcess <: AbsInitProcess end
+struct InitPeopleInHouses <: AbsInitProcess end
 struct InitClassesProcess <: AbsInitProcess end
 struct InitWorkProcess <: AbsInitProcess end
 
@@ -56,6 +60,13 @@ initial_connect!(houses::Vector{PersonHouse},
                 towns::Vector{PersonTown},
                 pars) =
     initial_connect!(houses,towns,pars,InitHousesInTownsPort())
+
+
+function init!(model,::InitHousesInTownsProcess)
+    popsize = length(alive_people(model))
+    create_newhouses!(model,popsize)
+    return nothing
+end
 
 "Randomly assign a population of couples to non-inhebted set of houses"
 function _couples_to_houses!(population::Vector{Person}, houses::Vector{PersonHouse})
@@ -148,10 +159,12 @@ function init!(model, mi::AbsInitPort = DefaultModelInit())
     init!(all_people(model),pars,InitWorkProcess())
 end
 
-function init!(model, mi::AgentsJLInit)
+function init!(model, mi::AgentsModelInit)
     pars = all_pars(model)
-    # init!(model,InitHousesInTowns())
-    # init!(model,InitPeopleInHouses())
+    init!(model,InitHousesInTownsProcess())
+    initital_connect!(houses(model),all_people(model),pars)
     # init!(all_people(model),pars,InitClassesProcess())
     # init!(all_people(model),pars,InitWorkProcess())
+end
+
 end # module Initalize
