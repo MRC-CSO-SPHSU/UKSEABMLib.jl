@@ -4,7 +4,7 @@ Module for defining a supertype, AbstractAgent for all Agent types
 """
 module XAgents
 
-using MultiAgents: AbstractAgent, AbstractXAgent, getIDCOUNTER,
+using MultiAgents: AbstractAgent, AbstractXAgent, getIDCOUNTER, init_majl,
     Agents.DiscreteSpace
 # for Town
 import MultiAgents: positions, empty_positions, has_empty_positions,
