@@ -19,11 +19,11 @@ using ....API.ParamFunc
 using ....API.ModelFunc
 using ....API.ModelOp
 
-import ....XAgents: create_newhouse!
-export create_towns, create_inhabited_towns, create_inhabited_towns!,
-    create_population, create_population!, create_pyramid_population, create_many_newhouses!
+import ....XAgents: createX_newhouse!
+export declare_towns, declare_inhabited_towns, declare_inhabited_towns!,
+    declare_population, declare_population!, declare_pyramid_population, declare_many_newhouses!
 
-function _create_towns(mappars)
+function _declare_towns(mappars)
     uktowns = PersonTown[]
     for y in 1:mappars.mapGridYDimension
         for x in 1:mappars.mapGridXDimension
@@ -44,9 +44,9 @@ function _create_towns(mappars)
     return uktowns
 end
 
-create_towns(pars::DemographyPars) = _create_towns(mapx(pars))
+declare_towns(pars::DemographyPars) = _declare_towns(mapx(pars))
 
-function _create_inhabited_towns(mappars)
+function _declare_inhabited_towns(mappars)
     uktowns = PersonTown[]
     for y in 1:mappars.mapGridYDimension
         for x in 1:mappars.mapGridXDimension
@@ -70,10 +70,10 @@ function _create_inhabited_towns(mappars)
     return uktowns
 end
 
-create_inhabited_towns(pars) = _create_inhabited_towns(mapx(pars))
+declare_inhabited_towns(pars) = _declare_inhabited_towns(mapx(pars))
 
-function create_inhabited_towns!(model)
-    ts = create_inhabited_towns(all_pars(model))
+function declare_inhabited_towns!(model)
+    ts = declare_inhabited_towns(all_pars(model))
     for town in ts
         add_town!(model,town)
         # push!(model.space.towns,town)
@@ -81,12 +81,12 @@ function create_inhabited_towns!(model)
     nothing
 end
 
-function create_many_newhouses!(model)
+function declare_many_newhouses!(model)
     cnt = 0
     @assert sum(num_houses(towns(model))) == 0
     popsize = length(alive_people(model))
     while cnt < popsize
-        create_newhouse!(model)
+        createX_newhouse!(model)
         cnt += 1
     end
     return nothing
@@ -117,7 +117,7 @@ function _age_interval(pop, minAge, maxAge)
     idx_start, idx_end
 end
 
-function _create_pyramid_population(pars)
+function _declare_pyramid_population(pars)
     population = Person[]
     men = Person[]
     women = Person[]
@@ -213,10 +213,10 @@ function _create_pyramid_population(pars)
     return population
 end
 
-create_pyramid_population(pars::DemographyPars) =
-	_create_pyramid_population(population(pars))
+declare_pyramid_population(pars::DemographyPars) =
+	_declare_pyramid_population(population(pars))
 
-function _create_population(pars)
+function _declare_population(pars)
     population = Person[]
     for _ in 1 : pars.initialPop
         ageMale = rand(pars.minStartAge:pars.maxStartAge)
@@ -244,13 +244,13 @@ function _create_population(pars)
     return population
 end # createPopulation
 
-function create_population(pars::DemographyPars)
+function declare_population(pars::DemographyPars)
     poppars = population(pars)
-    return _create_population(poppars)
+    return _declare_population(poppars)
 end
 
-function create_population!(model)
-    pop = create_population(all_pars(model))
+function declare_population!(model)
+    pop = declare_population(all_pars(model))
     for person in pop
         add_person!(model,person)
     end
