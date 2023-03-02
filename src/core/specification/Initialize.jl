@@ -6,9 +6,10 @@ using ....XAgents
 using ....ParamTypes
 using ....API.ModelFunc
 using ....API.ParamFunc
-using ..Create
+using ..Declare
 
 import ....API.ModelFunc: init!
+import ....API.ModelOp: create_many_newhouses!
 import ....API.Connection: AbsInitPort, AbsInitProcess, initial_connect!
 
 export InitHousesInTownsPort, InitCouplesToHousesPort
@@ -64,13 +65,13 @@ initial_connect!(houses::Vector{PersonHouse},
 
 function init!(model,::InitHousesInTownsProcess)
     popsize = length(alive_people(model))
+    # assert number of houses == 0 , and towns exist
     create_many_newhouses!(model,popsize)
     return nothing
 end
 
 "Randomly assign a population of couples to non-inhebted set of houses"
-function _couples_to_houses!(population::Vector{Person}, houses::Vector{PersonHouse})
-
+function _couples_to_houses!(population, houses)
     women = [ person for person in population if isfemale(person) ]
     randomhouses = shuffle(houses)
 
@@ -94,12 +95,11 @@ function _couples_to_houses!(population::Vector{Person}, houses::Vector{PersonHo
             move_to_house!(person, house)
         end
     end
+    return nothing
 end  # function assignCouplesToHouses
 
-function initial_connect!(pop, houses, pars, ::InitCouplesToHousesPort)
+initial_connect!(pop, houses, pars, ::InitCouplesToHousesPort) =
     _couples_to_houses!(pop, houses)
-    nothing
-end
 
 initial_connect!(pop::Vector{Person},
                 houses::Vector{PersonHouse},
@@ -161,8 +161,8 @@ end
 
 function init!(model, mi::AgentsModelInit)
     pars = all_pars(model)
-    init!(model,InitHousesInTownsProcess())
-    # initital_connect!(houses(model),all_people(model),pars)
+    init!(model, InitHousesInTownsProcess())
+    #initial_connect!(all_people(model), PersonHouse[], pars, InitCouplesToHousesPort())
     # init!(all_people(model),pars,InitClassesProcess())
     # init!(all_people(model),pars,InitWorkProcess())
 end

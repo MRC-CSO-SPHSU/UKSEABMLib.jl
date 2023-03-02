@@ -8,7 +8,7 @@ This module is cocnerned with functions employed for declaring model components.
     - are declared at the start of the simulation
 """
 
-module Create
+module Declare
 
 using Distributions
 
@@ -258,4 +258,4 @@ function create_population!(model)
 end
 
 
-end # module Create
+end # module Declare
