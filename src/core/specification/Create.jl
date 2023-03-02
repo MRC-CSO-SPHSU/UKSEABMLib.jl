@@ -17,9 +17,10 @@ using ....ParamTypes
 using ....API.ParamFunc
 using ....API.ModelFunc
 
+import ....XAgents: create_newhouse!
+
 export create_towns, create_inhabited_towns, create_inhabited_towns!,
-    create_population, create_population!, create_pyramid_population,
-    create_newhouse!, create_many_newhouses!
+    create_population, create_population!, create_pyramid_population, create_many_newhouses!
 
 function _create_towns(mappars)
     uktowns = PersonTown[]
