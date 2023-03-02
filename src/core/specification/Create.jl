@@ -9,7 +9,8 @@ using ....API.ParamFunc
 using ....API.ModelFunc
 
 export create_towns, create_inhabited_towns, create_inhabited_towns!,
-    create_population, create_population!, create_pyramid_population
+    create_population, create_population!, create_pyramid_population,
+    create_newhouse!, create_newhouses!
 
 function _create_towns(mappars)
     uktowns = PersonTown[]
@@ -56,6 +57,26 @@ function _create_inhabited_towns(mappars)
 
     @info "# of towns : $(length(uktowns))"
     return uktowns
+end
+
+# TODO this rather belongs to Operation module
+function create_newhouse!(model)
+    town = select_random_town(towns(model))
+    townGridDimension = map_pars(model).townGridDimension
+    house = create_newhouse!(town,  rand(1:townGridDimension),
+                                    rand(1:townGridDimension))
+    return house
+end
+
+function create_newhouses!(model,nhouses)
+    cnt = 0
+    @assert sum(num_houses(towns(model))) == 0
+    popsize = length(alive_people(model))
+    while cnt < popsize
+        create_newhouse!(model)
+        cnt += 1
+    end
+    return nothing
 end
 
 create_inhabited_towns(pars) = _create_inhabited_towns(mapx(pars))
