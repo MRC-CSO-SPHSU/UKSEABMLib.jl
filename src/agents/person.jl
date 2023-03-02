@@ -8,7 +8,7 @@ export UNDEFINED_HOUSE, UNDEFINED_TOWN
 export move_to_house!, reset_house!, resolve_partnership!, household_income
 export household_income_percapita
 
-export home, are_living_together
+export home, ishomeless, are_living_together
 export set_as_parent_child!, set_as_partners!
 export age_youngest_alive_child, yearsold
 export has_alive_child_at_home, are_parent_child, related_first_degree, aresiblings
@@ -148,6 +148,7 @@ Person(;pos=UNDEFINED_HOUSE,age=0,
                 ClassBlock(0), DependencyBlock{Person}())
 
 home(person) = person.pos
+ishomeless(person) = undefined(home(person))
 
 "associate a house to a person, removes person from previous house"
 function move_to_house!(person::Person,house)
