@@ -1,10 +1,10 @@
 """
 space types for human populations conform with Agents.jl space concept, though the client
-    can also choose not to use Agents.jl
+    can also choose not to use Agents.jl.
 """
 
 using TypedDelegation
-export PopulationSpace, DemographicMap
+export PopulationSpace, DemographicMap, add_town!
 
 abstract type PopulationSpace <: DiscreteSpace end
 struct DemographicMap <: PopulationSpace
@@ -13,7 +13,7 @@ struct DemographicMap <: PopulationSpace
 end
 
 DemographicMap(name) = DemographicMap(name,Town[])
-
+add_town!(space::DemographicMap) = notimplemented()
 #=
 @delegate_onefield(DemographicMap, towns,
     [empty_positions, positions, empty_houses, houses, has_empty_house,
