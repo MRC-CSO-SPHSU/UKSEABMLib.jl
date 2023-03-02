@@ -1,5 +1,5 @@
 export House, HouseLocation
-export hometown, house_location, undefined, town, num_occupants
+export hometown, location, undefined, town, num_occupants
 
 import Base.isempty
 using ....Utilities: removefirst!
@@ -32,7 +32,7 @@ town(house) = house.town
 hometown(house::House) = house.town
 
 "house location in the associated town"
-house_location(house::House) = house.pos
+location(house::House) = house.pos
 
 "add an occupant to a house"
 function add_occupant!(house::House{P}, person::P) where {P}
@@ -61,7 +61,7 @@ end
 "Costum print function for agents"
 function Base.show(io::IO, house::House{P}) where P
     town = hometown(house)
-    print("House @ pos: $(house.pos) @ town pos: $(town.pos)")
+    print("House @ pos: $(location(house)) @ town pos: $(location(town))")
     length(house.occupants) == 0 ? nothing : print(" occupants: ")
     for person in house.occupants
         print(" $(person.id) ")
