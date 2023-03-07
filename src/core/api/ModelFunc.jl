@@ -27,7 +27,9 @@ init!(model) = error("init!($(typeof(model))) not implemented")
 all_people(model) = error("all_people not implemeneted")
 alive_people(model)  = error("alive_people not implemented")
 data_of(model) = error("data_of not implemeneted")
+"all houses of a model"
 houses(model) = error("houses not implemented")
+# an extension could be thought houses(model,::Empty) , houses(model,::Occupied)
 towns(model)  = error("towns not implemented")
 
 alive_people(model,::FullPopulation) =
