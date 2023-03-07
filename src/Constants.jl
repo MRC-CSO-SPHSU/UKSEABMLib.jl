@@ -17,6 +17,6 @@ const XAGENTS_MA_PATH      = SESRCPATH * "/multiagents"
 
 # ensuring consistent version of MultiAgents.jl library
 using MultiAgents: MAVERSION
-@assert MAVERSION == v"0.4.1"  # integration of agents.jl basic types
+@assert MAVERSION == v"0.5"  # integration of agents.jl basic types
 
 end # module Constants
