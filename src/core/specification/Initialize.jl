@@ -65,7 +65,8 @@ initial_connect!(houses::Vector{PersonHouse},
 
 function init!(model,::InitHousesInTownsProcess)
     popsize = length(alive_people(model))
-    # assert number of houses == 0 , and towns exist
+    @assert length(towns(model)) > 0
+    @assert sum(num_houses(towns(model))) == 0
     create_many_newhouses!(model,popsize)
     return nothing
 end
