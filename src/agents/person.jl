@@ -112,7 +112,7 @@ end # struct Person
 "costum @show method for Agent person"
 function Base.show(io::IO,  person::Person)
     print(person.info)
-    undefined(person.pos) ? nothing : print(" @ House id : $(person.pos.id)")
+    undefined(person.pos) ? nothing : print(" $(home(person)) ") # *" @ Town : $(hometown(person))")
     print(person.kinship)
     println()
 end

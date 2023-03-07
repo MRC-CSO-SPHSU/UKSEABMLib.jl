@@ -61,10 +61,9 @@ end
 "Costum print function for agents"
 function Base.show(io::IO, house::House{P}) where P
     town = hometown(house)
-    print("House @ pos: $(location(house)) @ town pos: $(location(town))")
-    length(house.occupants) == 0 ? nothing : print(" occupants: ")
+    print("House @ pos: $(location(house)) @ Town pos: $(location(town))")
+    length(house.occupants) == 0 ? nothing : print(" occupants ids: ")
     for person in house.occupants
-        print(" $(person.id) ")
+        print("  $(person.id) ")
     end
-    println()
 end
