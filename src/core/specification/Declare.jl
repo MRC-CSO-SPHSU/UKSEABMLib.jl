@@ -129,15 +129,15 @@ function _declare_pyramid_population(pars)
     for i in 1:pars.initialPop
         # surplus of babies and toddlers, lower bit of age pyramid
         if i < pars.startBabySurplus
-            age = rand(1:36) // 12
+            personAge = rand(1:36) // 12
         else
-            age = floor(Int, rand(dist)) // 12
+            personAge = floor(Int, rand(dist)) // 12
         end
 
         gender = Bool(rand(0:1)) ? male : female
 
-        person = Person(UNDEFINED_HOUSE, age; gender)
-        if age < 18
+        person = Person(UNDEFINED_HOUSE, personAge; gender)
+        if ischild(person)
             push!(population, person)
         else
             push!((gender==male ? men : women), person)
@@ -170,7 +170,7 @@ function _declare_pyramid_population(pars)
 
     # get all adult women
     women = filter(population) do p
-        isfemale(p) && age(p) >= 18
+        isfemale(p) && isadult(p)
     end
 
     # sort by age so that we can easily get age intervals
@@ -179,7 +179,7 @@ function _declare_pyramid_population(pars)
     for person in population
         a = age(person)
         # adults remain orphans with a certain likelihood
-        if a >= 18 && rand() < pars.startProbOrphan * a
+        if isadult(person) && rand() < pars.startProbOrphan * a
             continue
         end
 
@@ -202,7 +202,7 @@ function _declare_pyramid_population(pars)
             set_as_parent_child!(person, partner(mother))
         end
 
-        if age(person) < 18
+        if ischild(person)
             set_as_guardian_dependent!(mother, person)
             if !issingle(mother) # currently not an option
                 set_as_guardian_dependent!(partner(mother), person)

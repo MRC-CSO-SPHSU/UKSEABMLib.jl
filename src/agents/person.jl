@@ -85,7 +85,7 @@ end # struct Person
 @delegate_onefield Person pos [hometown]
 
 @export_forward Person info [age, gender, alive]
-@delegate_onefield Person info [isfemale, ismale, agestep!, agestep_ifalive!,
+@delegate_onefield Person info [isfemale, ismale, ischild, isadult, agestep!, agestep_ifalive!,
     has_birthday, yearsold]
 
 @export_forward Person kinship [father, mother, partner, children]
@@ -111,6 +111,7 @@ end # struct Person
 
 "costum @show method for Agent person"
 function Base.show(io::IO,  person::Person)
+    print("id : $(person.id) , ")
     print(person.info)
     undefined(person.pos) ? nothing : print(" $(home(person)) ") # *" @ Town : $(hometown(person))")
     print(person.kinship)
@@ -265,7 +266,7 @@ function age_youngest_alive_child(person::Person)
     return youngest
 end
 
-can_live_alone(person) = age(person) >= 18
+can_live_alone(person) = isadult(person)
 isorphan(person) = !can_live_alone(person) && !isdependent(person)
 
 function resolve_dependency!(guardian, dependent)
@@ -311,7 +312,7 @@ function check_consistency_dependents(person)
 
     for dep in dependents(person)
         @assert dep != nothing && alive(dep)
-        @assert age(dep) < 18
+        @assert ischild(dep)
         @assert person.pos == dep.pos
         @assert person in guardians(dep)
     end

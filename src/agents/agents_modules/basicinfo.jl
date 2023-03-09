@@ -1,6 +1,7 @@
 using ....Utilities: age2yearsmonths
 
-export isfemale, ismale, agestep!, agestep_ifalive!, has_birthday, yearsold
+export isfemale, ismale, ischild, isadult,
+    agestep!, agestep_ifalive!, has_birthday, yearsold
 export Gender, male, female, unknown
 
 #"Gender type enumeration"
@@ -19,6 +20,8 @@ BasicInfoBlock(;age=0//1, gender=unknown, alive = true) = BasicInfoBlock(age,gen
 
 isfemale(person::BasicInfoBlock) = person.gender == female
 ismale(person::BasicInfoBlock) = person.gender == male
+ischild(person::BasicInfoBlock) = person.age < 18
+isadult(person::BasicInfoBlock) = person.age >= 18
 
 "costum @show method for Agent person"
 function Base.show(io::IO,  info::BasicInfoBlock)
