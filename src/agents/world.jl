@@ -65,6 +65,7 @@ function verify_no_homealone_child(population)
             (mother(child) != nothing && home(mother(child)) === home(child))
             continue
         end
+        @info "$(child) is in home alone"
         return false
     end
     return true

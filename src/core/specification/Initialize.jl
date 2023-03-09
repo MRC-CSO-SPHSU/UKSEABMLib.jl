@@ -73,7 +73,7 @@ end
 
 "Randomly assign a population to non-inhebted set of houses"
 function _population_to_houses!(population, houses)
-    women = [ person for person in population if isfemale(person) ]
+    women = [ person for person in population if isfemale(person) && isadult(person)]
     randomhouses = shuffle(houses)
     # TODO assert that no child lives in a house alone!?
     # TODO Improve the overall algorithm
@@ -92,6 +92,7 @@ function _population_to_houses!(population, houses)
     for person in population
         if home(person) === UNDEFINED_HOUSE
             @assert ismale(person)
+            @assert isadult(person)
             @assert length(randomhouses) >= 1
             house = pop!(randomhouses)
             move_to_house!(person, house)
@@ -157,6 +158,7 @@ end
 # pre verification
 # post verification
 # verify no child alone in a home
+# verify that houses have consistent occupants
 function init!(model, mi::AbsInitPort = DefaultModelInit())
     pars = all_pars(model)
     initial_connect!(houses(model), towns(model), pars)
