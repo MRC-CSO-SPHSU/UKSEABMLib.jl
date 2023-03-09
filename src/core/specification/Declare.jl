@@ -117,6 +117,7 @@ function _age_interval(pop, minAge, maxAge)
     idx_start, idx_end
 end
 
+# TODO initialize
 function _declare_pyramid_population(pars)
     population = Person[]
     men = Person[]
@@ -216,6 +217,7 @@ end
 declare_pyramid_population(pars::DemographyPars) =
 	_declare_pyramid_population(population(pars))
 
+# TODO no Kinship initialization
 function _declare_population(pars)
     population = Person[]
     for _ in 1 : pars.initialPop
