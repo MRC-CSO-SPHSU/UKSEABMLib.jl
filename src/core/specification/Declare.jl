@@ -100,6 +100,7 @@ function _age_interval(pop, minAge, maxAge)
     idx_end = 0
 
     for p in pop
+        idx_end += 1
         if age(p) < minAge
             # not there yet
             idx_start += 1
@@ -110,8 +111,6 @@ function _age_interval(pop, minAge, maxAge)
             # we reached the end of the interval, return what we have
             return idx_start, idx_end
         end
-
-        idx_end += 1
     end
 
     idx_start, idx_end
@@ -175,6 +174,7 @@ function _declare_pyramid_population(pars)
 
     # sort by age so that we can easily get age intervals
     sort!(women, by = age)
+    @info "# of women : $(length(women)) from $(yearsold(women[1])) to $(yearsold(women[end])) yearsold"
 
     for person in population
         a = age(person)
@@ -189,6 +189,12 @@ function _declare_pyramid_population(pars)
         # check if we actually found any
         if start > length(women) || start > stop
             @assert !ischild(person)
+            if ischild(person)
+                @warn "motherless child $(person)"
+                @info "women start idx $start : of age $(yearsold(women[start]))"
+                @info "women stop  idx $stop  : of age $(yearsold(women[stop])) "
+                @assert false
+            end
             continue
         end
 
