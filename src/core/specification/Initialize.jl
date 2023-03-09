@@ -75,7 +75,6 @@ end
 function _population_to_houses!(population, houses)
     women = [ person for person in population if isfemale(person) ]
     randomhouses = shuffle(houses)
-    # TODO assert that there are no orphan
     # TODO assert that no child lives in a house alone!?
     # TODO Improve the overall algorithm
     for woman in women
@@ -154,9 +153,15 @@ function init!(pop,pars,::InitWorkProcess)
     end
 end
 
+# TODO
+# pre verification
+# post verification
+
 function init!(model, mi::AbsInitPort = DefaultModelInit())
     pars = all_pars(model)
     initial_connect!(houses(model), towns(model), pars)
+    @info "init!: verify population has no orphan before housing"
+    @assert verify_no_orphan(all_people(model))
     initial_connect!(houses(model), all_people(model), pars)
     #@assert verify_no_homeless(all_people(model)) #TODO to move to unit tests
     #@info "init!: verification of no homeless conducted"

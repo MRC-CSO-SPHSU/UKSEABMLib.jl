@@ -188,6 +188,7 @@ function _declare_pyramid_population(pars)
         start, stop = _age_interval(women, a + 18, a + 40)
         # check if we actually found any
         if start > length(women) || start > stop
+            @assert !ischild(person)
             continue
         end
 
