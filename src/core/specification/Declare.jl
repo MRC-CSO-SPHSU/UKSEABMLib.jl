@@ -174,7 +174,8 @@ function _declare_pyramid_population(pars)
 
     # sort by age so that we can easily get age intervals
     sort!(women, by = age)
-    @info "# of women : $(length(women)) from $(yearsold(women[1])) to $(yearsold(women[end])) yearsold"
+    @info "# of adult women : $(length(women)) from \
+        $(yearsold(women[1])) to $(yearsold(women[end])) yearsold"
 
     for person in population
         a = age(person)
@@ -189,12 +190,6 @@ function _declare_pyramid_population(pars)
         # check if we actually found any
         if start > length(women) || start > stop
             @assert !ischild(person)
-            if ischild(person)
-                @warn "motherless child $(person)"
-                @info "women start idx $start : of age $(yearsold(women[start]))"
-                @info "women stop  idx $stop  : of age $(yearsold(women[stop])) "
-                @assert false
-            end
             continue
         end
 
@@ -204,7 +199,7 @@ function _declare_pyramid_population(pars)
         mother = women[rand(start:stop)]
 
         set_as_parent_child!(person, mother)
-        if !issingle(mother)
+        if !issingle(mother) && age(partner(mother)) >= age(person) + 18
             set_as_parent_child!(person, partner(mother))
         end
 

@@ -194,7 +194,7 @@ household_income_percapita(person) =
 "set the father of a child"
 function set_as_parent_child!(child::Person,parent::Person)
     @assert ismale(parent) || isfemale(parent)
-    @assert age(child) < age(parent)
+    @assert age(child) <= age(parent) - 18
     @assert (ismale(parent) && father(child) == nothing) ||
         (isfemale(parent) && mother(child) == nothing)
     add_child!(parent, child)
