@@ -71,11 +71,13 @@ function init!(model,::InitHousesInTownsProcess)
     return nothing
 end
 
-"Randomly assign a population of couples to non-inhebted set of houses"
-function _couples_to_houses!(population, houses)
+"Randomly assign a population to non-inhebted set of houses"
+function _population_to_houses!(population, houses)
     women = [ person for person in population if isfemale(person) ]
     randomhouses = shuffle(houses)
-
+    # TODO assert that there are no orphan
+    # TODO assert that no child lives in a house alone!?
+    # TODO Improve the overall algorithm
     for woman in women
         house = pop!(randomhouses)
         move_to_house!(woman, house)
@@ -100,7 +102,7 @@ function _couples_to_houses!(population, houses)
 end  # function assignCouplesToHouses
 
 initial_connect!(pop, houses, pars, ::InitCouplesToHousesPort) =
-    _couples_to_houses!(pop, houses)
+    _population_to_houses!(pop, houses)
 
 initial_connect!(pop::Vector{Person},
                 houses::Vector{PersonHouse},
@@ -156,6 +158,8 @@ function init!(model, mi::AbsInitPort = DefaultModelInit())
     pars = all_pars(model)
     initial_connect!(houses(model), towns(model), pars)
     initial_connect!(houses(model), all_people(model), pars)
+    #@assert verify_no_homeless(all_people(model)) #TODO to move to unit tests
+    #@info "init!: verification of no homeless conducted"
     init!(all_people(model),pars,InitClassesProcess())
     init!(all_people(model),pars,InitWorkProcess())
 end

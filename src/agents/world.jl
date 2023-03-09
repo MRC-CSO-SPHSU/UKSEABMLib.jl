@@ -3,6 +3,7 @@ using StatsBase
 export adjacent_8_towns, adjacent_inhabited_towns
 export select_random_town, create_newhouse!, create_newhouse_and_append!
 export num_houses
+export verify_no_homeless
 
 # memoization does not help
 _weights(towns) = [ town.density for town in towns ]
@@ -32,4 +33,14 @@ function num_houses(towns)
         noccupied += length(occupied_houses(town))
     end
    return (nempty, noccupied)
+end
+
+"used to verify pre-assumed housing initialization is done correctly"
+function verify_no_homeless(population)
+    for person in population
+        if ishomeless(person)
+            return false
+        end
+    end
+    return true
 end
