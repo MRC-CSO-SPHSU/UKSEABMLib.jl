@@ -163,6 +163,7 @@ end
 function init!(model, mi::AgentsModelInit)
     pars = all_pars(model)
     init!(model, InitHousesInTownsProcess())
+    initial_connect!(all_people(model), houses(model) , pars, InitCouplesToHousesPort())
     #initial_connect!(all_people(model), PersonHouse[], pars, InitCouplesToHousesPort())
     # init!(all_people(model),pars,InitClassesProcess())
     # init!(all_people(model),pars,InitWorkProcess())
