@@ -176,8 +176,8 @@ function _declare_pyramid_population(pars)
     # sort by age so that we can easily get age intervals
     sort!(women, by = age)
 
-    for p in population
-        a = age(p)
+    for person in population
+        a = age(person)
         # adults remain orphans with a certain likelihood
         if a >= 18 && rand() < pars.startProbOrphan * a
             continue
@@ -196,17 +196,17 @@ function _declare_pyramid_population(pars)
 
         mother = women[rand(start:stop)]
 
-        set_as_parent_child!(p, mother)
+        set_as_parent_child!(person, mother)
         if !issingle(mother)
-            set_as_parent_child!(p, partner(mother))
+            set_as_parent_child!(person, partner(mother))
         end
 
-        if age(p) < 18
-            set_as_guardian_dependent!(mother, p)
+        if age(person) < 18
+            set_as_guardian_dependent!(mother, person)
             if !issingle(mother) # currently not an option
-                set_as_guardian_dependent!(partner(mother), p)
+                set_as_guardian_dependent!(partner(mother), person)
             end
-            set_as_provider_providee!(mother, p)
+            set_as_provider_providee!(mother, person)
         end
     end
 
