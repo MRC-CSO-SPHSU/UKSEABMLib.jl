@@ -3,7 +3,7 @@ using StatsBase
 export adjacent_8_towns, adjacent_inhabited_towns
 export select_random_town, create_newhouse!, create_newhouse_and_append!
 export num_houses
-export verify_no_homeless, verify_no_orphan
+export verify_no_homeless, verify_no_motherless_child
 
 # memoization does not help
 _weights(towns) = [ town.density for town in towns ]
@@ -46,10 +46,10 @@ function verify_no_homeless(population)
 end
 
 "verifying that kinship initialization is done correctly"
-function verify_no_orphan(population)
+function verify_no_motherless_child(population)
     for person in population
-        if isorphan(person)
-            @show person
+        if ischild(person) && mother(person) == nothing
+            @show "motherless child : $(person)"
             return false
         end
     end
