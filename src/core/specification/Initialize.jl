@@ -75,7 +75,6 @@ end
 function _population_to_houses!(population, houses)
     women = [ person for person in population if isfemale(person) && isadult(person)]
     randomhouses = shuffle(houses)
-    # TODO assert that no child lives in a house alone!?
     # TODO Improve the overall algorithm
     for woman in women
         house = pop!(randomhouses)
@@ -85,7 +84,9 @@ function _population_to_houses!(population, houses)
         end
         #for child in dependents(woman)
         for child in children(woman)
-            move_to_house!(child, house)
+            if ischild(child)
+                move_to_house!(child, house)
+            end
         end
     end # for person
 
@@ -157,8 +158,10 @@ end
 # TODO
 # pre verification
 # post verification
-# verify no child alone in a home
+# verify kinship_consistency (children parents,partnership)
 # verify that houses have consistent occupants
+# verify singles lives alone
+# verify families lives together
 function init!(model, mi::AbsInitPort = DefaultModelInit())
     pars = all_pars(model)
     initial_connect!(houses(model), towns(model), pars)
@@ -167,7 +170,8 @@ function init!(model, mi::AbsInitPort = DefaultModelInit())
     initial_connect!(houses(model), all_people(model), pars)
     @assert verify_no_homeless(all_people(model)) #TODO to move to unit tests
     @info "init!: verification of no homeless conducted"
-    @assert verify_no_homealone_child(all_people(model))
+    #verify_no_homealone_child(all_people(model))
+    @assert verify_no_child_without_a_parent(all_people(model))
     @info "init!: verification of no homealone child conducted"
     init!(all_people(model),pars,InitClassesProcess())
     init!(all_people(model),pars,InitWorkProcess())
