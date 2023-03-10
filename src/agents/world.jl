@@ -3,7 +3,7 @@ using StatsBase
 export adjacent_8_towns, adjacent_inhabited_towns
 export select_random_town, create_newhouse!, create_newhouse_and_append!
 export num_houses
-export verify_no_homeless, verify_no_motherless_child, verify_no_homealone_child
+export verify_no_homeless, verify_no_motherless_child, verify_no_child_without_a_paranet
 
 # memoization does not help
 _weights(towns) = [ town.density for town in towns ]
@@ -56,7 +56,7 @@ function verify_no_motherless_child(population)
     return true
 end
 
-function verify_no_homealone_child(population)
+function verify_no_child_without_a_paranet(population)
     for child in population
         if !ischild(child) continue end
         # check that there is at least one defined parent
@@ -65,7 +65,17 @@ function verify_no_homealone_child(population)
             (mother(child) != nothing && home(mother(child)) === home(child))
             continue
         end
-        @info "$(child) is in home alone"
+        @info "child not with any of his parents:"
+        @info child
+        m = mother(child)
+        f = father(child)
+        @show "parents:"
+        m == nothing ? nothing : @info m
+        f == nothing ? nothing : @info f
+        @show "occupants"
+        for occupant in occupants(home(child))
+            @info occupant
+        end
         return false
     end
     return true
