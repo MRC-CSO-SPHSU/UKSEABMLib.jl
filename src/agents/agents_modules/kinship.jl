@@ -9,13 +9,9 @@ mutable struct KinshipBlock{P}
 end
 
 has_children(parent::KinshipBlock{P}) where{P} = length(parent.children) > 0
-
 add_child!(parent::KinshipBlock{P}, child::P) where{P} = push!(parent.children, child)
-
 youngest_child(person::KinshipBlock) = person.children[end]
-
 issingle(person::KinshipBlock) = person.partner == nothing
-
 parents(person::KinshipBlock) = [person.father, person.mother]
 
 function siblings(person::KinshipBlock{P}) where P
