@@ -165,14 +165,13 @@ end
 function init!(model, mi::AbsInitPort = DefaultModelInit())
     pars = all_pars(model)
     initial_connect!(houses(model), towns(model), pars)
-    @info "init!: verify population has no orphan before housing"
-    @assert verify_no_motherless_child(all_people(model))
     initial_connect!(houses(model), all_people(model), pars)
     @assert verify_no_homeless(all_people(model)) #TODO to move to unit tests
     @info "init!: verification of no homeless conducted"
-    #verify_no_homealone_child(all_people(model))
-    @assert verify_no_child_without_a_parent(all_people(model))
-    @info "init!: verification of no homealone child conducted"
+    @assert verify_child_is_with_a_parent(all_people(model))
+    @info "init!: verification of a child lives with one of his parents conducted"
+    @assert verify_children_parents_consistency(all_people(model))
+    @info "init!: verification of consistency of child-parent relationship conducted"
     init!(all_people(model),pars,InitClassesProcess())
     init!(all_people(model),pars,InitWorkProcess())
 end
