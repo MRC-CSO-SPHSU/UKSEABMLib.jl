@@ -5,7 +5,7 @@ export select_random_town, create_newhouse!, create_newhouse_and_append!
 export num_houses
 export verify_no_homeless, verify_no_motherless_child, verify_child_is_with_a_parent,
     verify_children_parents_consistency, verify_partnership_consistency,
-    verify_singles_live_alone
+    verify_singles_live_alone, verify_family_lives_together
 
 # memoization does not help
 _weights(towns) = [ town.density for town in towns ]
@@ -113,8 +113,8 @@ function verify_no_parentless_child(population)
 end
 
 function verify_parentship_consistency(population)
-    parents = [parent for parent in population if has_children(parent)]
-    for parent in parents
+    for parent in population
+        if !has_children(parent) continue end
         if ischild(parent)
             @warn "an assumed parent is a child"
             @info parent
@@ -177,6 +177,57 @@ function verify_singles_live_alone(population)
             @show "single does not live alone"
             @info single
             return false
+        end
+    end
+    return true
+end
+
+function _has_children_at_home(person)
+    for child in children(person)
+        if home(child) === home(person)
+            return true
+        end
+    end
+    return false
+end
+_is_lone_parent(person) = issingle(person) && _has_children_at_home(person)
+
+"""
+verify that families lives together. A family could be
+- a married couple
+- a single lone parent
+"""
+function verify_family_lives_together(population)
+    for person in population
+        if _is_lone_parent(person)
+            nothing
+        elseif issingle(person)
+            continue
+        end
+        if !isnoperson(partner(person))
+            if !(partner(person) in population)
+                @info "person's partner not in population"
+                @info partner(person)
+                return false
+            end
+            if home(partner(person)) !== home(partner(person))
+                @info "partner's home not the identical"
+                @info partner(person)
+                return false
+            end
+        end
+        for child in children(person)
+            if !ischild(child) continue end
+            if !(child in population)
+                @info "a child not in population"
+                @info child
+                return false
+            end
+            if home(child) !== home(person)
+                @info "child home not identical to parent home"
+                @info child
+                return false
+            end
         end
     end
     return true

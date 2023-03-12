@@ -182,6 +182,8 @@ function init!(model, mi::AbsInitPort = DefaultModelInit())
     @assert verify_singles_live_alone(all_people(model))
     @info "init!: verification of singles living alone conducted"
 
+    @assert verify_family_lives_together(all_people(model))
+    @info "init!: verification of families living together conducted"
     init!(all_people(model),pars,InitClassesProcess())
     init!(all_people(model),pars,InitWorkProcess())
 end
