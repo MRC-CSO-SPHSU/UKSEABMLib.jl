@@ -54,7 +54,7 @@ function _effects_maternity!(woman)
     =#
 
     # TODO not necessarily true in many cases
-    if provider(woman) == nothing
+    if isnoperson(provider(woman))
         set_as_provider_providee!(partner(woman), woman)
     end
 

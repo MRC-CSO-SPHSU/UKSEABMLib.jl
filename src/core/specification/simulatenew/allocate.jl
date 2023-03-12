@@ -2,16 +2,16 @@
 Set of routines related to people allocatiom to empty potentially new
 """
 
-export get_or_create_emptyhouse!, move_to_emptyhouse!
+export get_or_create_empty_house!, move_to_empty_house!
 
-function _get_random_emptyhouse(town)
-    @assert has_emptyhouses(town)
-    rand(emptyhouses(town))
+function _get_random_empty_house(town)
+    @assert has_empty_houses(town)
+    rand(empty_houses(town))
 end
 
 #@memoize # does not really make that big difference
 _town_dimension(model) = 1:map_pars(model).townGridDimension
-function _create_emptyhouse!(town, model)
+function _create_empty_house!(town, model)
     dims = _town_dimension(model)
     xdim = rand(dims)
     ydim = rand(dims)
@@ -20,44 +20,44 @@ function _create_emptyhouse!(town, model)
     return newhouse
 end
 
-function _get_or_create_emptyhouse!(town::PersonTown, model)
-    if has_emptyhouses(town)
-        return _get_random_emptyhouse(town)
+function _get_or_create_empty_house!(town::PersonTown, model)
+    if has_empty_houses(town)
+        return _get_random_empty_house(town)
     else
-        return _create_emptyhouse!(town, model)
+        return _create_empty_house!(town, model)
     end
 end
 
-get_or_create_emptyhouse!(town, model, ::InTown) =
-    _get_or_create_emptyhouse!(town, model)
+get_or_create_empty_house!(town, model, ::InTown) =
+    _get_or_create_empty_house!(town, model)
 
-function _get_or_create_emptyhouse!(towns, model)
+function _get_or_create_empty_house!(towns, model)
     town = select_random_town(towns)
-    _get_or_create_emptyhouse!(town, model)
+    _get_or_create_empty_house!(town, model)
 end
 
-get_or_create_emptyhouse!(town, model, ::AdjTown) =
-    _get_or_create_emptyhouse!(adjacent_inhabited_towns(town), model)
+get_or_create_empty_house!(town, model, ::AdjTown) =
+    _get_or_create_empty_house!(adjacent_inhabited_towns(town), model)
 
-get_or_create_emptyhouse!(::PersonTown, model, loc::AnyWhere) =
-    get_or_create_emptyhouse!(model,loc)
+get_or_create_empty_house!(::PersonTown, model, loc::AnyWhere) =
+    get_or_create_empty_house!(model,loc)
 
-get_or_create_emptyhouse!(model,::AnyWhere) =
-    _get_or_create_emptyhouse!(towns(model), model)
+get_or_create_empty_house!(model,::AnyWhere) =
+    _get_or_create_empty_house!(towns(model), model)
 
-function move_to_emptyhouse!(person, house)
+function move_to_empty_house!(person, house)
     @assert isempty(house)
     move_to_house!(person, house)
 end
 
-function move_to_emptyhouse!(person::Person,
+function move_to_empty_house!(person::Person,
                                     model,
                                     dmax)
     # TODO
     # - yearInTown (used in relocation cost)
     # - movedThisYear
-    newhouse = get_or_create_emptyhouse!(hometown(person), model, dmax)
-    move_to_emptyhouse!(person, newhouse)
+    newhouse = get_or_create_empty_house!(hometown(person), model, dmax)
+    move_to_empty_house!(person, newhouse)
     nothing
 end
 
@@ -68,9 +68,9 @@ move_to_person_house!(peopleToMove::Vector{Person},personWithAHouse) =
     move_to_house!(peopleToMove,home(personWithAHouse))
 
 # people[1] determines centre of search radius
-function move_to_emptyhouse!(people::Vector{Person}, model,dmax)
+function move_to_empty_house!(people::Vector{Person}, model,dmax)
     head = people[1]
-    move_to_emptyhouse!(head,model,dmax)
+    move_to_empty_house!(head,model,dmax)
     others = people[2:end]
     move_to_person_house!(others,head)
     nothing
@@ -80,7 +80,7 @@ end
 
 function random_position(model)
     town = select_random_town(towns(model))
-    return _get_or_create_emptyhouse(town,model)
+    return _get_or_create_empty_house(town,model)
 end
 
 #=

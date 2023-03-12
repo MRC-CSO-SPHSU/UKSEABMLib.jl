@@ -54,10 +54,10 @@ _done_studying(person, pars) = classRank(person) >= 4
 
 # probability to start studying instead of working
 function _start_studying_prob(person, model, pars)
-    if father(person) == nothing && mother(person) == nothing
+    if isnoperson(father(person)) && isnoperson(mother(person))
         return 0.0
     end
-    if provider(person) == nothing
+    if isnoperson(provider(person))
         return 0.0
     end
 

@@ -116,7 +116,7 @@ function _join_couple!(man, woman, model, marpars)
         @assert home(decider) === home(follower)
     else
         distance = rand((InTown(),AdjTown()))
-        move_to_emptyhouse!(decider,model,distance)
+        move_to_empty_house!(decider,model,distance)
         move_to_person_house!(follower,decider)
         move_to_house!(dependents(decider),home(decider))
         move_to_house!(dependents(follower),home(decider))

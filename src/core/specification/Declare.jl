@@ -1,14 +1,29 @@
-module Create
+"""
+This module is cocnerned with functions employed for declaring model components.
+    It is assumed that a model component (e.g. towns, houses, populations etc.)
+    don't need to be
+    - declared in a specific order by the client
+    - does not need to rely on the declaration of another component
+    - are not initialized by sophisticated procedure
+    - are declared at the start of the simulation
+"""
+
+module Declare
 
 using Distributions
 
 using ....Utilities
 using ....XAgents
 using ....ParamTypes
+using ....API.ParamFunc
+using ....API.ModelFunc
+using ....API.ModelOp
 
-export create_towns, create_inhabited_towns, create_population, create_pyramid_population
+import ....XAgents: createX_newhouse!
+export declare_towns, declare_inhabited_towns, declare_inhabited_towns!,
+    declare_population, declare_population!, declare_pyramid_population, declare_many_newhouses!
 
-function _create_towns(mappars)
+function _declare_towns(mappars)
     uktowns = PersonTown[]
     for y in 1:mappars.mapGridYDimension
         for x in 1:mappars.mapGridXDimension
@@ -29,9 +44,9 @@ function _create_towns(mappars)
     return uktowns
 end
 
-create_towns(pars::DemographyPars) = _create_towns(mapx(pars))
+declare_towns(pars::DemographyPars) = _declare_towns(mapx(pars))
 
-function _create_inhabited_towns(mappars)
+function _declare_inhabited_towns(mappars)
     uktowns = PersonTown[]
     for y in 1:mappars.mapGridYDimension
         for x in 1:mappars.mapGridXDimension
@@ -55,8 +70,27 @@ function _create_inhabited_towns(mappars)
     return uktowns
 end
 
-create_inhabited_towns(pars) =
-    _create_inhabited_towns(mapx(pars))
+declare_inhabited_towns(pars) = _declare_inhabited_towns(mapx(pars))
+
+function declare_inhabited_towns!(model)
+    ts = declare_inhabited_towns(all_pars(model))
+    for town in ts
+        add_town!(model,town)
+        # push!(model.space.towns,town)
+    end
+    nothing
+end
+
+function declare_many_newhouses!(model)
+    cnt = 0
+    @assert sum(num_houses(towns(model))) == 0
+    popsize = length(alive_people(model))
+    while cnt < popsize
+        createX_newhouse!(model)
+        cnt += 1
+    end
+    return nothing
+end
 
 # return agents with age in interval minAge, maxAge
 # assumes pop is sorted by age
@@ -66,6 +100,7 @@ function _age_interval(pop, minAge, maxAge)
     idx_end = 0
 
     for p in pop
+        idx_end += 1
         if age(p) < minAge
             # not there yet
             idx_start += 1
@@ -76,14 +111,13 @@ function _age_interval(pop, minAge, maxAge)
             # we reached the end of the interval, return what we have
             return idx_start, idx_end
         end
-
-        idx_end += 1
     end
 
     idx_start, idx_end
 end
 
-function _create_pyramid_population(pars)
+# TODO initialize
+function _declare_pyramid_population(pars)
     population = Person[]
     men = Person[]
     women = Person[]
@@ -94,15 +128,15 @@ function _create_pyramid_population(pars)
     for i in 1:pars.initialPop
         # surplus of babies and toddlers, lower bit of age pyramid
         if i < pars.startBabySurplus
-            age = rand(1:36) // 12
+            personAge = rand(1:36) // 12
         else
-            age = floor(Int, rand(dist)) // 12
+            personAge = floor(Int, rand(dist)) // 12
         end
 
         gender = Bool(rand(0:1)) ? male : female
 
-        person = Person(UNDEFINED_HOUSE, age; gender)
-        if age < 18
+        person = Person(UNDEFINED_HOUSE, personAge; gender)
+        if ischild(person)
             push!(population, person)
         else
             push!((gender==male ? men : women), person)
@@ -135,16 +169,18 @@ function _create_pyramid_population(pars)
 
     # get all adult women
     women = filter(population) do p
-        isfemale(p) && age(p) >= 18
+        isfemale(p) && isadult(p)
     end
 
     # sort by age so that we can easily get age intervals
     sort!(women, by = age)
+    @info "# of adult women : $(length(women)) from \
+        $(yearsold(women[1])) to $(yearsold(women[end])) yearsold"
 
-    for p in population
-        a = age(p)
+    for person in population
+        a = age(person)
         # adults remain orphans with a certain likelihood
-        if a >= 18 && rand() < pars.startProbOrphan * a
+        if isadult(person) && rand() < pars.startProbOrphan * a
             continue
         end
 
@@ -153,6 +189,7 @@ function _create_pyramid_population(pars)
         start, stop = _age_interval(women, a + 18, a + 40)
         # check if we actually found any
         if start > length(women) || start > stop
+            @assert !ischild(person)
             continue
         end
 
@@ -161,17 +198,17 @@ function _create_pyramid_population(pars)
 
         mother = women[rand(start:stop)]
 
-        set_as_parent_child!(p, mother)
-        if !issingle(mother)
-            set_as_parent_child!(p, partner(mother))
+        set_as_parent_child!(person, mother)
+        if !issingle(mother) && age(partner(mother)) >= age(person) + 18
+            set_as_parent_child!(person, partner(mother))
         end
 
-        if age(p) < 18
-            set_as_guardian_dependent!(mother, p)
+        if ischild(person)
+            set_as_guardian_dependent!(mother, person)
             if !issingle(mother) # currently not an option
-                set_as_guardian_dependent!(partner(mother), p)
+                set_as_guardian_dependent!(partner(mother), person)
             end
-            set_as_provider_providee!(mother, p)
+            set_as_provider_providee!(mother, person)
         end
     end
 
@@ -179,12 +216,13 @@ function _create_pyramid_population(pars)
     return population
 end
 
-create_pyramid_population(pars::DemographyPars) =
-	_create_pyramid_population(population(pars))
+declare_pyramid_population(pars::DemographyPars) =
+	_declare_pyramid_population(population(pars))
 
-function _create_population(pars)
+# TODO no Kinship initialization
+function _declare_population(pars)
     population = Person[]
-    for i in 1 : pars.initialPop
+    for _ in 1 : pars.initialPop
         ageMale = rand(pars.minStartAge:pars.maxStartAge)
         ageFemale = ageMale - rand(-2:5)
         ageFemale = ageFemale < 24 ? 24 : ageFemale
@@ -210,7 +248,18 @@ function _create_population(pars)
     return population
 end # createPopulation
 
-create_population(pars::DemographyPars) =
-	_create_population(population(pars))
+function declare_population(pars::DemographyPars)
+    poppars = population(pars)
+    return _declare_population(poppars)
+end
 
-end # module Create
+function declare_population!(model)
+    pop = declare_population(all_pars(model))
+    for person in pop
+        add_person!(model,person)
+    end
+    nothing
+end
+
+
+end # module Declare

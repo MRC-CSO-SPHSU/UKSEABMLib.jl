@@ -58,7 +58,7 @@ function _divorce!(man, time, model, divorcepars, workpars, popfeature) #paramet
         end
 
         #peopleToMove = [man]
-        move_to_emptyhouse!(man, model,
+        move_to_empty_house!(man, model,
                                     #rand(_DIST_CHOICES))
                                     rand((InTown(),AdjTown(),AnyWhere())))
         for child in dependents(man)
