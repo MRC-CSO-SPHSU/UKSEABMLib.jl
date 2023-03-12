@@ -1,5 +1,5 @@
 export House, HouseLocation
-export hometown, location, undefined, town, num_occupants
+export hometown, location, undefined, town, num_occupants, occupants
 
 import Base.isempty
 using ....Utilities: removefirst!
@@ -24,6 +24,7 @@ end # House
 undefined(house::House{P,T}) where {P,T} =
     undefined(house.town) && house.pos == UNDEFINED_2DLOCATION
 
+occupants(house) = house.occupants
 num_occupants(house) = length(house.occupants)
 isempty(house::House) = length(house.occupants) == 0
 town(house) = house.town

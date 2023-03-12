@@ -11,7 +11,8 @@ export household_income_percapita
 export home, ishomeless, are_living_together
 export set_as_parent_child!, set_as_partners!
 export age_youngest_alive_child, yearsold
-export has_alive_child_at_home, are_parent_child, related_first_degree, aresiblings
+export has_alive_child_at_home, has_children_at_home, is_lone_parent,
+    are_parent_child, related_first_degree, aresiblings, arepartners
 export can_live_alone, isorphan, set_as_guardian_dependent!, set_as_provider_providee!,
     resolve_dependency!
 export set_as_independent!, set_as_selfprovidingviding!
@@ -85,12 +86,12 @@ end # struct Person
 @delegate_onefield Person pos [hometown]
 
 @export_forward Person info [age, gender, alive]
-@delegate_onefield Person info [isfemale, ismale, agestep!, agestep_ifalive!,
+@delegate_onefield Person info [isfemale, ismale, ischild, isadult, agestep!, agestep_ifalive!,
     has_birthday, yearsold]
 
 @export_forward Person kinship [father, mother, partner, children]
 @delegate_onefield Person kinship [has_children, add_child!, issingle, parents,
-    siblings, youngest_child]
+    siblings, youngest_child, isnoperson, noperson]
 
 @delegate_onefield Person maternity [start_maternity!, step_maternity!, end_maternity!,
     is_in_maternity, maternity_duration]
@@ -111,6 +112,7 @@ end # struct Person
 
 "costum @show method for Agent person"
 function Base.show(io::IO,  person::Person)
+    print("id : $(person.id) , ")
     print(person.info)
     undefined(person.pos) ? nothing : print(" $(home(person)) ") # *" @ Town : $(hometown(person))")
     print(person.kinship)
@@ -180,10 +182,11 @@ are_living_together(person1, person2) = person1.pos == person2.pos
 are_parent_child(person1, person2) =
     person1 in children(person2) || person2 in children(person1)
 aresiblings(person1, person2) =
-    father(person1) == father(person2) != nothing ||
-    mother(person1) == mother(person2) != nothing
+    !isnoperson(person1) &&
+        ((father(person1) == father(person2) ) || (mother(person1) == mother(person2) ))
 related_first_degree(person1, person2) =
     are_parent_child(person1, person2) || aresiblings(person1, person2)
+arepartners(person1,person2) = !isnoperson(person1) && person1 === partner(person2)
 
 # TODO check if correct
 household_income(person) = sum(p -> income(p), person.pos.occupants)
@@ -193,14 +196,11 @@ household_income_percapita(person) =
 "set the father of a child"
 function set_as_parent_child!(child::Person,parent::Person)
     @assert ismale(parent) || isfemale(parent)
-    @assert age(child) < age(parent)
-    @assert (ismale(parent) && father(child) == nothing) ||
-        (isfemale(parent) && mother(child) == nothing)
+    @assert age(child) <= age(parent) - 18
+    @assert (ismale(parent) && isnoperson(father(child))) ||
+        (isfemale(parent) && isnoperson(mother(child)))
     add_child!(parent, child)
     _set_parent!(child, parent)
-    # would be nice to ensure consistency of dependence/provision at this point as well
-    # but there are so many specific situations that it is easier to do that in simulation
-    # code
     nothing
 end
 
@@ -255,6 +255,16 @@ function has_alive_child_at_home(person)
     return false
 end
 
+is_lone_parent(person) = issingle(person) && has_children_at_home(person)
+function has_children_at_home(person::Person)
+    for child in children(person)
+        if home(child) === home(person)
+            return true
+        end
+    end
+    return false
+end
+
 function age_youngest_alive_child(person::Person)
     youngest = Rational{Int}(Inf)
     for child in children(person)
@@ -265,7 +275,7 @@ function age_youngest_alive_child(person::Person)
     return youngest
 end
 
-can_live_alone(person) = age(person) >= 18
+can_live_alone(person) = isadult(person)
 isorphan(person) = !can_live_alone(person) && !isdependent(person)
 
 function resolve_dependency!(guardian, dependent)
@@ -311,14 +321,14 @@ function check_consistency_dependents(person)
 
     for dep in dependents(person)
         @assert dep != nothing && alive(dep)
-        @assert age(dep) < 18
+        @assert ischild(dep)
         @assert person.pos == dep.pos
         @assert person in guardians(dep)
     end
 end
 
 function set_as_provider_providee!(prov, providee)
-    @assert provider(providee) == nothing
+    @assert isnoperson(provider(providee))
     @assert !(providee in providees(prov))
     push!(providees(prov), providee)
     provider!(providee, prov)
@@ -326,7 +336,7 @@ function set_as_provider_providee!(prov, providee)
 end
 
 function set_as_selfprovidingviding!(person)
-    if provider(person) == nothing
+    if isnoperson(provider(person))
         return
     end
 
@@ -339,13 +349,13 @@ end
 function max_parent_rank(person)
     f = father(person)
     m = mother(person)
-    if f == m == nothing
-        classRank(person)
-    elseif f == nothing
-        classRank(m)
-    elseif m == nothing
-        classRank(f)
+    if isnoperson(f) && isnoperson(m)
+        return classRank(person)
+    elseif isnoperson(f)
+        return classRank(m)
+    elseif isnoperson(m)
+        return classRank(f)
     else
-        max(classRank(m), classRank(f))
+        return max(classRank(m), classRank(f))
     end
 end
