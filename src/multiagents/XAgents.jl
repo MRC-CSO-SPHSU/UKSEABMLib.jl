@@ -15,5 +15,6 @@ include("../agents/house.jl")
 include("../agents/person.jl")
 include("../agents/demographic_space.jl")
 include("../agents/world.jl")
+include("../agents/population_verification.jl")
 
 end  # XAgents
