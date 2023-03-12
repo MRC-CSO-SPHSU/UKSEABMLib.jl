@@ -4,7 +4,8 @@ export adjacent_8_towns, adjacent_inhabited_towns
 export select_random_town, create_newhouse!, create_newhouse_and_append!
 export num_houses
 export verify_no_homeless, verify_no_motherless_child, verify_child_is_with_a_parent,
-    verify_children_parents_consistency, verify_partnership_consistency
+    verify_children_parents_consistency, verify_partnership_consistency,
+    verify_singles_live_alone
 
 # memoization does not help
 _weights(towns) = [ town.density for town in towns ]
@@ -157,6 +158,25 @@ function verify_partnership_consistency(population)
             if !(partner(person) in population) return false end
             if issingle(partner(person)) return false end
             if partner(partner(person)) !== person return false end
+        end
+    end
+    return true
+end
+
+function verify_singles_live_alone(population)
+    for single in population
+        if ischild(single) continue end
+        if !issingle(single) continue end
+        if has_children(single) continue end
+        if !(single in home(single).occupants)
+            @show "single not in the occupant list of his house"
+            @info single
+            return false
+        end
+        if length(occupants(home(single))) != 1
+            @show "single does not live alone"
+            @info single
+            return false
         end
     end
     return true
