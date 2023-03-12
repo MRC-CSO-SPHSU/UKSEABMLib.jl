@@ -18,10 +18,10 @@ _valid_guardian(g) = g!=nothing && alive(g)  && can_live_alone(g)
 _valid_guardian(g,::AlivePopulation) = can_live_alone(g)
 _valid_guardian(g,::FullPopulation) = alive(g) && _valid_guardian(g,AlivePopulation())
 
-_parents(p) = p == nothing ? Person[] : parents(p)
-_siblings(p) = p == nothing ? Person[] : siblings(p)
-_father(p) = p == nothing ? nothing : father(p)
-_mother(p) = p == nothing ? nothing : mother(p)
+_parents(p) = isnoperson(p) ? Person[] : parents(p)
+_siblings(p) = isnoperson(p) ? Person[] : siblings(p)
+_father(p) = isnoperson(p) ? nothing : father(p)
+_mother(p) = isnoperson(p) ? nothing : mother(p)
 
 function _related_vaid_guardian(person)
     if _valid_guardian(_father(person)) return father(person) end
@@ -94,7 +94,7 @@ function _assign_guardian!(person, time, model, gcandidates, popfeature)
     # this implies that relatives of a non-related former legal guardian
     # that are now excluded due to age won't get a chance again in the future
     empty!(guardians(person))
-    if guard == nothing || guard === person
+    if isnoperson(guard) || guard === person
         return false
     end
     # guard and partner become new guardians

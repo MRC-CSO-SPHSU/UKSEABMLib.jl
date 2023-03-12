@@ -1,5 +1,6 @@
 export KinshipBlock
-export has_children, add_child!, issingle, parents, siblings, youngest_child
+export has_children, add_child!, issingle, parents, siblings, youngest_child,
+    noperson, isnoperson
 
 mutable struct KinshipBlock{P}
   father::Union{P,Nothing}
@@ -8,16 +9,22 @@ mutable struct KinshipBlock{P}
   children::Vector{P}
 end
 
+noperson() = nothing
+noperson(::KinshipBlock) = noperson()
+noperson(::Nothing) = noperson()
+isnoperson(person::KinshipBlock) = person == noperson(person)
+isnoperson(::Nothing) = true
+
 has_children(parent::KinshipBlock{P}) where{P} = length(parent.children) > 0
 add_child!(parent::KinshipBlock{P}, child::P) where{P} = push!(parent.children, child)
 youngest_child(person::KinshipBlock) = person.children[end]
-issingle(person::KinshipBlock) = person.partner == nothing
+issingle(person::KinshipBlock) = isnoperson(person.partner)
 parents(person::KinshipBlock) = [person.father, person.mother]
 
 function siblings(person::KinshipBlock{P}) where P
     sibs = P[]
     for p in parents(person)
-        if p == nothing continue end
+        if isnoperson(p) continue end
         for c in children(p)
             if c != person
                 push!(sibs, c)
@@ -30,10 +37,10 @@ end
 "costum @show method for Agent person"
 function Base.show(io::IO, kinship::KinshipBlock)
   father = kinship.father; mother = kinship.mother; partner = kinship.partner; children = kinship.children;
-  father  == nothing        ? nothing : print(" , father    : $(father.id)")
-  mother  == nothing        ? nothing : print(" , mother    : $(mother.id)")
-  partner == nothing        ? nothing : print(" , partner   : $(partner.id)")
-  length(children) == 0      ? nothing : print(" , children  : ")
+  isnoperson(father)     ? nothing : print(" , father    : $(father.id)")
+  isnoperson(mother)     ? nothing : print(" , mother    : $(mother.id)")
+  isnoperson(partner)    ? nothing : print(" , partner   : $(partner.id)")
+  length(children) == 0  ? nothing : print(" , children  : ")
   for child in children
     print(" $(child.id) ")
   end

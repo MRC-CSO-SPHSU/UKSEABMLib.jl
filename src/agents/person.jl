@@ -90,7 +90,7 @@ end # struct Person
 
 @export_forward Person kinship [father, mother, partner, children]
 @delegate_onefield Person kinship [has_children, add_child!, issingle, parents,
-    siblings, youngest_child]
+    siblings, youngest_child, isnoperson, noperson]
 
 @delegate_onefield Person maternity [start_maternity!, step_maternity!, end_maternity!,
     is_in_maternity, maternity_duration]
@@ -181,8 +181,8 @@ are_living_together(person1, person2) = person1.pos == person2.pos
 are_parent_child(person1, person2) =
     person1 in children(person2) || person2 in children(person1)
 aresiblings(person1, person2) =
-    father(person1) == father(person2) != nothing ||
-    mother(person1) == mother(person2) != nothing
+    !isnoperson(person1) &&
+        ((father(person1) == father(person2) ) || (mother(person1) == mother(person2) ))
 related_first_degree(person1, person2) =
     are_parent_child(person1, person2) || aresiblings(person1, person2)
 
@@ -195,13 +195,10 @@ household_income_percapita(person) =
 function set_as_parent_child!(child::Person,parent::Person)
     @assert ismale(parent) || isfemale(parent)
     @assert age(child) <= age(parent) - 18
-    @assert (ismale(parent) && father(child) == nothing) ||
-        (isfemale(parent) && mother(child) == nothing)
+    @assert (ismale(parent) && isnoperson(father(child))) ||
+        (isfemale(parent) && isnoperson(mother(child)))
     add_child!(parent, child)
     _set_parent!(child, parent)
-    # would be nice to ensure consistency of dependence/provision at this point as well
-    # but there are so many specific situations that it is easier to do that in simulation
-    # code
     nothing
 end
 
@@ -319,7 +316,7 @@ function check_consistency_dependents(person)
 end
 
 function set_as_provider_providee!(prov, providee)
-    @assert provider(providee) == nothing
+    @assert isnoperson(provider(providee))
     @assert !(providee in providees(prov))
     push!(providees(prov), providee)
     provider!(providee, prov)
@@ -327,7 +324,7 @@ function set_as_provider_providee!(prov, providee)
 end
 
 function set_as_selfprovidingviding!(person)
-    if provider(person) == nothing
+    if isnoperson(provider(person))
         return
     end
 
@@ -340,13 +337,13 @@ end
 function max_parent_rank(person)
     f = father(person)
     m = mother(person)
-    if f == m == nothing
-        classRank(person)
-    elseif f == nothing
-        classRank(m)
-    elseif m == nothing
-        classRank(f)
+    if isnoperson(f) && isnoperson(m)
+        return classRank(person)
+    elseif isnoperson(f)
+        return classRank(m)
+    elseif isnoperson(m)
+        return classRank(f)
     else
-        max(classRank(m), classRank(f))
+        return max(classRank(m), classRank(f))
     end
 end
