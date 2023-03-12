@@ -89,7 +89,8 @@ end # struct Person
     has_birthday, yearsold]
 
 @export_forward Person kinship [father, mother, partner, children]
-@delegate_onefield Person kinship [has_children, add_child!, issingle, parents,
+@delegate_onefield Person kinship [has_children, has_children_at_home, is_lone_parent,
+    add_child!, issingle, parents,
     siblings, youngest_child, isnoperson, noperson]
 
 @delegate_onefield Person maternity [start_maternity!, step_maternity!, end_maternity!,

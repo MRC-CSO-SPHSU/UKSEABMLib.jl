@@ -147,16 +147,6 @@ function verify_singles_live_alone(population)
     return true
 end
 
-function _has_children_at_home(person)
-    for child in children(person)
-        if home(child) === home(person)
-            return true
-        end
-    end
-    return false
-end
-_is_lone_parent(person) = issingle(person) && _has_children_at_home(person)
-
 """
 verify that families lives together. A family could be
 - a married couple
@@ -164,7 +154,7 @@ verify that families lives together. A family could be
 """
 function verify_family_lives_together(population)
     for person in population
-        if _is_lone_parent(person)
+        if is_lone_parent(person)
             nothing
         elseif issingle(person)
             continue
