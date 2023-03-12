@@ -12,7 +12,7 @@ export home, ishomeless, are_living_together
 export set_as_parent_child!, set_as_partners!
 export age_youngest_alive_child, yearsold
 export has_alive_child_at_home, has_children_at_home, is_lone_parent,
-    are_parent_child, related_first_degree, aresiblings
+    are_parent_child, related_first_degree, aresiblings, arepartners
 export can_live_alone, isorphan, set_as_guardian_dependent!, set_as_provider_providee!,
     resolve_dependency!
 export set_as_independent!, set_as_selfprovidingviding!
@@ -186,6 +186,7 @@ aresiblings(person1, person2) =
         ((father(person1) == father(person2) ) || (mother(person1) == mother(person2) ))
 related_first_degree(person1, person2) =
     are_parent_child(person1, person2) || aresiblings(person1, person2)
+arepartners(person1,person2) = !isnoperson(person1) && person1 === partner(person2)
 
 # TODO check if correct
 household_income(person) = sum(p -> income(p), person.pos.occupants)

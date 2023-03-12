@@ -1,6 +1,7 @@
 export verify_no_homeless, verify_no_motherless_child, verify_child_is_with_a_parent,
     verify_children_parents_consistency, verify_partnership_consistency,
-    verify_singles_live_alone, verify_family_lives_together
+    verify_singles_live_alone, verify_family_lives_together,
+    verify_houses_consistency
 
 "used to verify pre-assumed housing initialization is done correctly"
 function verify_no_homeless(population)
@@ -181,6 +182,46 @@ function verify_family_lives_together(population)
             if home(child) !== home(person)
                 @info "child home not identical to parent home"
                 @info child
+                return false
+            end
+        end
+    end
+    return true
+end
+
+# TODO this function fits better with model as an argument
+function verify_houses_consistency(population,allhouses)
+    for house in allhouses
+        if isempty(house) continue end
+        occs = occupants(house)
+        if length(occs) == 1 continue end
+        for occupant in occs
+            if !(occupant in population)
+                @info "occupant not in population"
+                return false
+            end
+            for another in occs
+                if another === occupant continue end
+                if !related_first_degree(occupant,another) && !arepartners(occupant,another)
+                    # family with a step father
+                    if mother(another) in occs || mother(occupant) in occs
+                        continue
+                    end
+                    @info "strangers living together"
+                    @info occupant
+                    @info another
+                    return false
+                end
+            end
+        end
+    end
+
+    for person in population
+        if !ishomeless(person)
+            if !(person in occupants(home(person)))
+                return false
+            end
+            if !(home(person) in occupied_houses(hometown(person)))
                 return false
             end
         end

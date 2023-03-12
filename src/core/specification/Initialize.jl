@@ -62,7 +62,6 @@ initial_connect!(houses::Vector{PersonHouse},
                 pars) =
     initial_connect!(houses,towns,pars,InitHousesInTownsPort())
 
-
 function init!(model,::InitHousesInTownsProcess)
     popsize = length(alive_people(model))
     @assert length(towns(model)) > 0
@@ -155,7 +154,6 @@ function init!(pop,pars,::InitWorkProcess)
     end
 end
 
-
 function _init_pre_verification(model)
     @assert verify_children_parents_consistency(all_people(model))
     @info "init!: verification of consistency of child-parent relationship conducted"
@@ -176,6 +174,9 @@ function _init_post_verification(model)
 
     @assert verify_family_lives_together(all_people(model))
     @info "init!: verification of families living together conducted"
+
+    @assert verify_houses_consistency(all_people(model),houses(model))
+    @info "init!: verification of houses consistency conducted"
 end
 
 # TODO
