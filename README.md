@@ -26,5 +26,5 @@ A library of types, components and simulation functions for establishing socio-e
 - **V0.3** (10.1.2023): Unifying the API of the rest of simulation functions (age transitions, social transitions, work transitions), speedup 25 % (w.r.t. Version 0.2.8, overall ~6x faster than V0), Memory allocation reduced (~380k instead of 24M V0.2.8, 290M V0.2, 400M V0), Storage usage reduced (90 MB instead of 10GB V0.2, 12.5 GB V0) 
    - V0.3.1 (16.1): Arbitray initial population size, following blue style code (partially conducted)  
    - V0.3.2 (20.1): blue style, improved implementation of adjacent towns 
-
+- **V0.4** (12.3.2023): Agents.jl-conform space type, consistency verification of initial population, removal of many significant bug related to initial population declaration, model-based operation-oriented function (starting phase) 
 
