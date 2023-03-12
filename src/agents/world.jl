@@ -4,7 +4,7 @@ export adjacent_8_towns, adjacent_inhabited_towns
 export select_random_town, create_newhouse!, create_newhouse_and_append!
 export num_houses
 export verify_no_homeless, verify_no_motherless_child, verify_child_is_with_a_parent,
-    verify_children_parents_consistency
+    verify_children_parents_consistency, verify_partnership_consistency
 
 # memoization does not help
 _weights(towns) = [ town.density for town in towns ]
@@ -49,7 +49,7 @@ end
 "verifying that kinship initialization is done correctly"
 function verify_no_motherless_child(population)
     for person in population
-        if ischild(person) && mother(person) == nothing
+        if ischild(person) && isnoperson(mother(person))
             @show "motherless child : $(person)"
             return false
         end
@@ -71,8 +71,8 @@ function verify_child_is_with_a_parent(population)
         m = mother(child)
         f = father(child)
         @show "parents:"
-        m == nothing ? nothing : @info m
-        f == nothing ? nothing : @info f
+        isnoperson(m) ? nothing : @info m
+        isnoperson(f) ? nothing : @info f
         @show "occupants"
         for occupant in occupants(home(child))
             @info occupant
@@ -87,13 +87,13 @@ function verify_no_parentless_child(population)
     parentsfunc = [mother, father]
 
     for child in kids
-        if mother(child) == nothing && father(child) == nothing
+        if isnoperson(mother(child)) && isnoperson(father(child))
             @warn "a parentless child identified"
             @info aparent(child)
             return false
         end
         for aparent in parentsfunc
-            if aparent(child) != nothing
+            if !(isnoperson(aparent(child)))
                 if !(aparent(child) in population)
                     @warn "a parent does not exist in population"
                     @info aparent(child)
@@ -146,6 +146,18 @@ function verify_children_parents_consistency(population)
     end
     if !verify_parentship_consistency(population)
         return true
+    end
+    return true
+end
+
+"verify consistency of partnership relations"
+function verify_partnership_consistency(population)
+    for person in population
+        if !issingle(person)
+            if !(partner(person) in population) return false end
+            if issingle(partner(person)) return false end
+            if partner(partner(person)) !== person return false end
+        end
     end
     return true
 end

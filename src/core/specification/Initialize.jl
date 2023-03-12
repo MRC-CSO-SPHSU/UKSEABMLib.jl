@@ -158,11 +158,17 @@ end
 # TODO
 # pre verification
 # post verification
-# verify kinship_consistency (children parents,partnership)
+# verify kinship_consistency (partnership)
 # verify that houses have consistent occupants
 # verify singles lives alone
 # verify families lives together
 function init!(model, mi::AbsInitPort = DefaultModelInit())
+    @assert verify_children_parents_consistency(all_people(model))
+    @info "init!: verification of consistency of child-parent relationship conducted"
+
+    @assert verify_partnership_consistency(all_people(model))
+    @info "init!: verification of consistency of partnership relationship conducted"
+
     pars = all_pars(model)
     initial_connect!(houses(model), towns(model), pars)
     initial_connect!(houses(model), all_people(model), pars)
@@ -170,8 +176,6 @@ function init!(model, mi::AbsInitPort = DefaultModelInit())
     @info "init!: verification of no homeless conducted"
     @assert verify_child_is_with_a_parent(all_people(model))
     @info "init!: verification of a child lives with one of his parents conducted"
-    @assert verify_children_parents_consistency(all_people(model))
-    @info "init!: verification of consistency of child-parent relationship conducted"
     init!(all_people(model),pars,InitClassesProcess())
     init!(all_people(model),pars,InitWorkProcess())
 end
