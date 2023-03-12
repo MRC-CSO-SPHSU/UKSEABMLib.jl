@@ -11,7 +11,8 @@ export household_income_percapita
 export home, ishomeless, are_living_together
 export set_as_parent_child!, set_as_partners!
 export age_youngest_alive_child, yearsold
-export has_alive_child_at_home, are_parent_child, related_first_degree, aresiblings
+export has_alive_child_at_home, has_children_at_home, is_lone_parent,
+    are_parent_child, related_first_degree, aresiblings
 export can_live_alone, isorphan, set_as_guardian_dependent!, set_as_provider_providee!,
     resolve_dependency!
 export set_as_independent!, set_as_selfprovidingviding!
@@ -89,8 +90,7 @@ end # struct Person
     has_birthday, yearsold]
 
 @export_forward Person kinship [father, mother, partner, children]
-@delegate_onefield Person kinship [has_children, has_children_at_home, is_lone_parent,
-    add_child!, issingle, parents,
+@delegate_onefield Person kinship [has_children, add_child!, issingle, parents,
     siblings, youngest_child, isnoperson, noperson]
 
 @delegate_onefield Person maternity [start_maternity!, step_maternity!, end_maternity!,
@@ -248,6 +248,16 @@ end
 function has_alive_child_at_home(person)
     for c in children(person)
         if alive(c) && c.pos == person.pos
+            return true
+        end
+    end
+    return false
+end
+
+is_lone_parent(person) = issingle(person) && has_children_at_home(person)
+function has_children_at_home(person::Person)
+    for child in children(person)
+        if home(child) === home(person)
             return true
         end
     end

@@ -1,6 +1,5 @@
 export KinshipBlock
-export has_children, has_children_at_home, issingle, is_lone_parent,
-    add_child!, parents, siblings, youngest_child,
+export has_children, issingle, add_child!, parents, siblings, youngest_child,
     noperson, isnoperson
 
 mutable struct KinshipBlock{P}
@@ -10,6 +9,8 @@ mutable struct KinshipBlock{P}
   children::Vector{P}
 end
 
+children(person::KinshipBlock) = person.children
+
 noperson() = nothing
 noperson(::KinshipBlock) = noperson()
 noperson(::Nothing) = noperson()
@@ -17,18 +18,9 @@ isnoperson(person::KinshipBlock) = person == noperson(person)
 isnoperson(::Nothing) = true
 
 has_children(parent::KinshipBlock{P}) where{P} = length(parent.children) > 0
-function has_children_at_home(person)
-    for child in children(person)
-        if home(child) === home(person)
-            return true
-        end
-    end
-    return false
-end
 add_child!(parent::KinshipBlock{P}, child::P) where{P} = push!(parent.children, child)
 youngest_child(person::KinshipBlock) = person.children[end]
 issingle(person::KinshipBlock) = isnoperson(person.partner)
-is_lone_parent(person::KinshipBlock) = issingle(person) && has_children_at_home(person)
 parents(person::KinshipBlock) = [person.father, person.mother]
 
 function siblings(person::KinshipBlock{P}) where P
