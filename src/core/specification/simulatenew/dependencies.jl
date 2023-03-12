@@ -18,10 +18,10 @@ _valid_guardian(g) = g!=nothing && alive(g)  && can_live_alone(g)
 _valid_guardian(g,::AlivePopulation) = can_live_alone(g)
 _valid_guardian(g,::FullPopulation) = alive(g) && _valid_guardian(g,AlivePopulation())
 
-_parents(p) = p == nothing ? Person[] : parents(p)
-_siblings(p) = p == nothing ? Person[] : siblings(p)
-_father(p) = p == nothing ? nothing : father(p)
-_mother(p) = p == nothing ? nothing : mother(p)
+_parents(p) = isnoperson(p) ? Person[] : parents(p)
+_siblings(p) = isnoperson(p) ? Person[] : siblings(p)
+_father(p) = isnoperson(p) ? nothing : father(p)
+_mother(p) = isnoperson(p) ? nothing : mother(p)
 
 function _related_vaid_guardian(person)
     if _valid_guardian(_father(person)) return father(person) end
@@ -54,7 +54,7 @@ function _guardian_candidates(model,norphans,popfeature)
     people = all_people(model) # select_population(model,nothing,popfeature,AssignGuardian())
     for p in people
         if _valid_guardian(p,popfeature) && isfemale(p) && !issingle(p)
-              # &&  (status(p) == WorkStatus.worker || status(partner(p)) == WorkStatus.worker) ]
+        # &&  (status(p) == WorkStatus.worker || status(partner(p)) == WorkStatus.worker) ]
             push!(_G_CANDIDATES,p)
             if length(_G_CANDIDATES) > norphans return _G_CANDIDATES end
         end
@@ -78,7 +78,7 @@ function _find_random_guardian(model,popfeature)
 end
 
 function _adopt!(guard, person)
-    move_person_to_person_house!(person, guard)
+    move_to_person_house!(person, guard)
     set_as_guardian_dependent!(guard, person)
     if ! issingle(guard)
         set_as_guardian_dependent!(partner(guard), person)
@@ -94,7 +94,7 @@ function _assign_guardian!(person, time, model, gcandidates, popfeature)
     # this implies that relatives of a non-related former legal guardian
     # that are now excluded due to age won't get a chance again in the future
     empty!(guardians(person))
-    if guard == nothing || guard === person
+    if isnoperson(guard) || guard === person
         return false
     end
     # guard and partner become new guardians

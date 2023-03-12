@@ -6,10 +6,10 @@ module SocioEconomicsX
 include("Constants.jl")
 using .Constants: SESRCPATH, SEPATH, SEVERSION
 
-include("./socioeconomics/Utilities.jl")
+include("./core/Utilities.jl")
 
 include("generic/XAgents.jl")
 
 include("semodules.jl")
 
-end  # module SocioEconomicsX 
+end  # module SocioEconomicsX

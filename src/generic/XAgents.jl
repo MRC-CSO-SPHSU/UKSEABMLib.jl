@@ -1,14 +1,12 @@
 """
-Module for defining a supertype, AbstractAgent for all Agent types 
-    with additional ready-to-use agents to be used in (Multi-)ABMs models 
+Module for defining a supertype, AbstractAgent for all Agent types
+    with additional ready-to-use agents to be used in (Multi-)ABMs models
 """
 module XAgents
 
-    abstract type AbstractAgent
-    end
+    abstract type AbstractAgent end
 
-    abstract type AbstractXAgent
-    end
+    abstract type AbstractXAgent <: AbstractAgent end
 
     getIDCOUNTER() = 0
 
@@ -16,6 +14,5 @@ module XAgents
     include("../agents/house.jl")
     include("../agents/person.jl")
     include("../agents/world.jl")
-    
-end  # XAgents 
 
+end  # XAgents

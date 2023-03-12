@@ -1,4 +1,4 @@
-export select_birth, dobirths!, birth!
+export dobirths!, birth!
 
 function _birth_probability(rWoman,birthpars,data,currstep)
 
@@ -54,7 +54,7 @@ function _effects_maternity!(woman)
     =#
 
     # TODO not necessarily true in many cases
-    if provider(woman) == nothing
+    if isnoperson(provider(woman))
         set_as_provider_providee!(partner(woman), woman)
     end
 
@@ -73,7 +73,7 @@ function _assumption_birth(woman, birthpars, birthProb)
     nothing
 end
 
-function _subject_to_birth(woman, currstep, data, birthpars, popfeature)
+function _subject_to_birth(woman, currstep, data, birthpars)
     # womanClassRank = woman.classRank
     # if woman.status == 'student':
     #     womanClassRank = woman.parentsClassRank
@@ -127,7 +127,7 @@ selectedfor(woman, birthpars, ::FullPopulation, process::Birth) =
 
 function _birth!(woman, currstep, data, birthpars, popfeature)
     if !(selectedfor(woman, birthpars, popfeature, Birth())) return false end
-    if _subject_to_birth(woman, currstep, data, birthpars, popfeature)
+    if _subject_to_birth(woman, currstep, data, birthpars)
         _givesbirth!(woman)
         verbose(woman, Birth())
         return true
@@ -195,7 +195,9 @@ _verbose_dobirths(people, babies, birthpars) =
 function _assumption_dobirths(people, birthpars, currstep)
     assumption() do
         #@info currstep
-        reproductiveWomen = [ woman for woman in people if selectedfor(woman, birthpars, FullPopulation(), Birth()) ]
+        reproductiveWomen =
+            [ woman for woman in people if
+                selectedfor(woman, birthpars, FullPopulation(), Birth()) ]
         allFemales = [ woman for woman in people if isfemale(woman) && alive(woman) ]
         adultWomen = [ aWomen for aWomen in allFemales if
                          age(aWomen) >= birthpars.minPregnancyAge ]

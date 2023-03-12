@@ -3,6 +3,8 @@
     be employed within simulation functions in any
     *Simulate module
 
+    It is desired to keep the number of functions minimal
+
     This module is within the SocioEconomics[X] modules
 """
 module ModelFunc
@@ -18,12 +20,16 @@ export add_person!, add_house!, remove_person!
 export verbose_houses
 export share_childless_men, eligible_women
 
+import Agents: add_agent_pos!, add_agent_to_space!, nagents, seed!
+
 init!(model) = error("init!($(typeof(model))) not implemented")
 
 all_people(model) = error("all_people not implemeneted")
 alive_people(model)  = error("alive_people not implemented")
 data_of(model) = error("data_of not implemeneted")
+"all houses of a model"
 houses(model) = error("houses not implemented")
+# an extension could be thought houses(model,::Empty) , houses(model,::Occupied)
 towns(model)  = error("towns not implemented")
 
 alive_people(model,::FullPopulation) =
@@ -49,7 +55,7 @@ remove_person!(model,personidx::Int,::PopulationFeature) = remove_person!(model,
 function verbose_houses(model,msg="")
     delayedVerbose() do
         ts = towns(model)
-        ehouses,ohouses = number_of_houses(ts)
+        ehouses,ohouses = num_houses(ts)
         println("$(msg) # empty houses : $ehouses , # occupied houses : $ohouses")
     end
 end

@@ -6,18 +6,24 @@ using ....XAgents
 using ....ParamTypes
 using ....API.ModelFunc
 using ....API.ParamFunc
+using ..Declare
 
 import ....API.ModelFunc: init!
+import ....API.ModelOp: create_many_newhouses!
 import ....API.Connection: AbsInitPort, AbsInitProcess, initial_connect!
 
 export InitHousesInTownsPort, InitCouplesToHousesPort
-export InitClassesProcess, InitWorkProcess, Init, DefaultModelInit
+export InitClassesProcess, InitWorkProcess, InitHousesInTownsProcess, InitPeopleInHouses
+export DefaultModelInit, AgentsModelInit
 
 struct DefaultModelInit <: AbsInitPort end
+struct AgentsModelInit <: AbsInitPort end
 
 struct InitHousesInTownsPort <: AbsInitPort end
 struct InitCouplesToHousesPort <: AbsInitPort end
 
+struct InitHousesInTownsProcess <: AbsInitProcess end
+struct InitPeopleInHouses <: AbsInitProcess end
 struct InitClassesProcess <: AbsInitProcess end
 struct InitWorkProcess <: AbsInitProcess end
 
@@ -56,12 +62,19 @@ initial_connect!(houses::Vector{PersonHouse},
                 pars) =
     initial_connect!(houses,towns,pars,InitHousesInTownsPort())
 
-"Randomly assign a population of couples to non-inhebted set of houses"
-function _couples_to_houses!(population::Vector{Person}, houses::Vector{PersonHouse})
+function init!(model,::InitHousesInTownsProcess)
+    popsize = length(alive_people(model))
+    @assert length(towns(model)) > 0
+    @assert sum(num_houses(towns(model))) == 0
+    create_many_newhouses!(model,popsize)
+    return nothing
+end
 
-    women = [ person for person in population if isfemale(person) ]
+"Randomly assign a population to non-inhebted set of houses"
+function _population_to_houses!(population, houses)
+    women = [ person for person in population if isfemale(person) && isadult(person)]
     randomhouses = shuffle(houses)
-
+    # TODO Improve the overall algorithm
     for woman in women
         house = pop!(randomhouses)
         move_to_house!(woman, house)
@@ -70,24 +83,26 @@ function _couples_to_houses!(population::Vector{Person}, houses::Vector{PersonHo
         end
         #for child in dependents(woman)
         for child in children(woman)
-            move_to_house!(child, house)
+            if ischild(child)
+                move_to_house!(child, house)
+            end
         end
     end # for person
 
     for person in population
         if home(person) === UNDEFINED_HOUSE
             @assert ismale(person)
+            @assert isadult(person)
             @assert length(randomhouses) >= 1
             house = pop!(randomhouses)
             move_to_house!(person, house)
         end
     end
+    return nothing
 end  # function assignCouplesToHouses
 
-function initial_connect!(pop, houses, pars, ::InitCouplesToHousesPort)
-    _couples_to_houses!(pop, houses)
-    nothing
-end
+initial_connect!(pop, houses, pars, ::InitCouplesToHousesPort) =
+    _population_to_houses!(pop, houses)
 
 initial_connect!(pop::Vector{Person},
                 houses::Vector{PersonHouse},
@@ -139,12 +154,56 @@ function init!(pop,pars,::InitWorkProcess)
     end
 end
 
-function init!(model, mi::AbsInitPort = DefaultModelInit())
+function _init_pre_verification(model)
+    @assert verify_children_parents_consistency(all_people(model))
+    @info "init!: verification of consistency of child-parent relationship conducted"
+
+    @assert verify_partnership_consistency(all_people(model))
+    @info "init!: verification of consistency of partnership relationship conducted"
+end
+
+function _init_post_verification(model)
+    @assert verify_no_homeless(all_people(model)) #TODO to move to unit tests
+    @info "init!: verification of no homeless conducted"
+
+    @assert verify_child_is_with_a_parent(all_people(model))
+    @info "init!: verification of a child lives with one of his parents conducted"
+
+    @assert verify_singles_live_alone(all_people(model))
+    @info "init!: verification of singles living alone conducted"
+
+    @assert verify_family_lives_together(all_people(model))
+    @info "init!: verification of families living together conducted"
+
+    @assert verify_houses_consistency(all_people(model),houses(model))
+    @info "init!: verification of houses consistency conducted"
+end
+
+# TODO
+# verify that houses have consistent occupants
+function init!(model, mi::AbsInitPort = DefaultModelInit(); verify=false)
+    if verify
+        _init_pre_verification(model)
+    end
+
     pars = all_pars(model)
     initial_connect!(houses(model), towns(model), pars)
     initial_connect!(houses(model), all_people(model), pars)
     init!(all_people(model),pars,InitClassesProcess())
     init!(all_people(model),pars,InitWorkProcess())
+
+    if verify
+        _init_post_verification(model)
+    end
+end
+
+function init!(model, mi::AgentsModelInit)
+    pars = all_pars(model)
+    init!(model, InitHousesInTownsProcess())
+    initial_connect!(all_people(model), houses(model) , pars, InitCouplesToHousesPort())
+    #initial_connect!(all_people(model), PersonHouse[], pars, InitCouplesToHousesPort())
+    # init!(all_people(model),pars,InitClassesProcess())
+    # init!(all_people(model),pars,InitWorkProcess())
 end
 
 end # module Initalize
