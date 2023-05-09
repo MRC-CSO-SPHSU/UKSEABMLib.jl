@@ -92,30 +92,6 @@ function declare_many_newhouses!(model)
     return nothing
 end
 
-# return agents with age in interval minAge, maxAge
-# assumes pop is sorted by age
-# very simple implementation, binary search would be faster
-function _age_interval(pop, minAge, maxAge)
-    idx_start = 1
-    idx_end = 0
-
-    for p in pop
-        idx_end += 1
-        if age(p) < minAge
-            # not there yet
-            idx_start += 1
-            continue
-        end
-
-        if age(p) > maxAge
-            # we reached the end of the interval, return what we have
-            return idx_start, idx_end
-        end
-    end
-
-    idx_start, idx_end
-end
-
 # TODO initialize
 function _declare_pyramid_population(pars)
     population = Person[]
@@ -136,80 +112,12 @@ function _declare_pyramid_population(pars)
         gender = Bool(rand(0:1)) ? male : female
 
         person = Person(UNDEFINED_HOUSE, personAge; gender)
-        if ischild(person)
+        #=if ischild(person)
             push!(population, person)
         else
             push!((gender==male ? men : women), person)
-        end
-    end
-
-###  assign partners
-
-    nCouples = floor(Int, pars.startProbMarried * length(men))
-    for i in 1:nCouples
-        man = men[1]
-        # find woman of the right age
-        for (j, woman) in enumerate(women)
-            if age(man)+2 >= age(woman) >= age(man)-5
-                set_as_partners!(man, woman)
-                push!(population, man)
-                push!(population, woman)
-                remove_unsorted!(men, 1)
-                remove_unsorted!(women, j)
-                break
-            end
-        end
-    end
-
-    # store unmarried people in population as well
-    append!(population, men)
-    append!(population, women)
-
-### assign parents
-
-    # get all adult women
-    women = filter(population) do p
-        isfemale(p) && isadult(p)
-    end
-
-    # sort by age so that we can easily get age intervals
-    sort!(women, by = age)
-    @info "# of adult women : $(length(women)) from \
-        $(yearsold(women[1])) to $(yearsold(women[end])) yearsold"
-
-    for person in population
-        a = age(person)
-        # adults remain orphans with a certain likelihood
-        if isadult(person) && rand() < pars.startProbOrphan * a
-            continue
-        end
-
-        # get all women that are between 18 and 40 years older than
-        # p (and could thus be their mother)
-        start, stop = _age_interval(women, a + 18, a + 40)
-        # check if we actually found any
-        if start > length(women) || start > stop
-            @assert !ischild(person)
-            continue
-        end
-
-        @assert typeof(start) == Int
-        @assert age(women[start]) >= a+18
-
-        mother = women[rand(start:stop)]
-
-        set_as_parent_child!(person, mother)
-        if !issingle(mother) && age(partner(mother)) >= age(person) + 18
-            set_as_parent_child!(person, partner(mother))
-        end
-
-        if ischild(person)
-            set_as_guardian_dependent!(mother, person)
-            if !issingle(mother) # currently not an option
-                set_as_guardian_dependent!(partner(mother), person)
-            end
-            set_as_provider_providee!(mother, person)
-        end
+        end=#
+        push!(population,person)
     end
 
     @assert length(population) == pars.initialPop

@@ -13,7 +13,8 @@ import ....API.ModelOp: create_many_newhouses!
 import ....API.Connection: AbsInitPort, AbsInitProcess, initial_connect!
 
 export InitHousesInTownsPort, InitCouplesToHousesPort
-export InitClassesProcess, InitWorkProcess, InitHousesInTownsProcess, InitPeopleInHouses
+export InitClassesProcess, InitWorkProcess, InitHousesInTownsProcess, InitPeopleInHouses,
+    InitKinshipProcess
 export DefaultModelInit, AgentsModelInit
 
 struct DefaultModelInit <: AbsInitPort end
@@ -23,6 +24,7 @@ struct InitHousesInTownsPort <: AbsInitPort end
 struct InitCouplesToHousesPort <: AbsInitPort end
 
 struct InitHousesInTownsProcess <: AbsInitProcess end
+struct InitKinshipProcess <: AbsInitProcess end
 struct InitPeopleInHouses <: AbsInitProcess end
 struct InitClassesProcess <: AbsInitProcess end
 struct InitWorkProcess <: AbsInitProcess end
@@ -63,10 +65,131 @@ initial_connect!(houses::Vector{PersonHouse},
     initial_connect!(houses,towns,pars,InitHousesInTownsPort())
 
 function init!(model,::InitHousesInTownsProcess)
-    popsize = length(alive_people(model))
+    popsize = length(alive_people(model))  # Why alive_people? , are not all people alive?
     @assert length(towns(model)) > 0
     @assert sum(num_houses(towns(model))) == 0
     create_many_newhouses!(model,popsize)
+    return nothing
+end
+
+# return agents with age in interval minAge, maxAge
+# assumes pop is sorted by age
+# very simple implementation, binary search would be faster
+function _age_interval(pop, minAge, maxAge)
+    idx_start = 1
+    idx_end = 0
+
+    for p in pop
+        idx_end += 1
+        if age(p) < minAge
+            # not there yet
+            idx_start += 1
+            continue
+        end
+
+        if age(p) > maxAge
+            # we reached the end of the interval, return what we have
+            return idx_start, idx_end
+        end
+    end
+
+    idx_start, idx_end
+end
+
+function init_kinship!(model)
+    pop = alive_people(model)
+    pars = population_pars(model)
+
+    population = Person[]
+    men = Person[]
+    women = Person[]
+
+    ###  The code below by Martin Hinsh
+
+    for person in pop
+        if ischild(person)
+            push!(population,person)
+        else
+            push!(gender == ismale(person) ? men : women, person)
+        end
+    end
+
+    # store unmarried people in population as well
+    append!(population, men)
+    append!(population, women)
+
+    ###  assign partners
+
+    nCouples = floor(Int, pars.startProbMarried * length(men))
+    for i in 1:nCouples
+        man = men[1]
+        # find woman of the right age
+        for (j, woman) in enumerate(women)
+            if age(man)+2 >= age(woman) >= age(man)-5
+                set_as_partners!(man, woman)
+                push!(population, man)
+                push!(population, woman)
+                remove_unsorted!(men, 1)
+                remove_unsorted!(women, j)
+                break
+            end
+        end
+    end
+
+    ### assign parents
+
+    # TODO same variable name is reused again!
+
+    # get all adult women
+    women = filter(population) do p
+        isfemale(p) && isadult(p)
+    end
+
+    # sort by age so that we can easily get age intervals
+    sort!(women, by = age)
+    @info "# of adult women : $(length(women)) from \
+        $(yearsold(women[1])) to $(yearsold(women[end])) yearsold"
+
+    for person in population
+        a = age(person)
+        # adults remain orphans with a certain likelihood
+        if isadult(person) && rand() < pars.startProbOrphan * a
+            continue
+        end
+
+        # get all women that are between 18 and 40 years older than
+        # p (and could thus be their mother)
+        start, stop = _age_interval(women, a + 18, a + 40)
+        # check if we actually found any
+        if start > length(women) || start > stop
+            @assert !ischild(person)
+            continue
+        end
+
+        @assert typeof(start) == Int
+        @assert age(women[start]) >= a+18
+
+        mother = women[rand(start:stop)]
+
+        set_as_parent_child!(person, mother)
+        if !issingle(mother) && age(partner(mother)) >= age(person) + 18
+            set_as_parent_child!(person, partner(mother))
+        end
+
+        if ischild(person)
+            set_as_guardian_dependent!(mother, person)
+            if !issingle(mother) # currently not an option
+                set_as_guardian_dependent!(partner(mother), person)
+            end
+            set_as_provider_providee!(mother, person)
+        end
+    end
+
+    return nothing
+end
+
+function init!(model,::InitKinshipProcess)
+    init_kinship!(model)
     return nothing
 end
 
@@ -155,14 +278,17 @@ function init!(pop,pars,::InitWorkProcess)
 end
 
 function _init_pre_verification(model)
+   # Verify all people are alive
+end
+
+function _init_post_verification(model)
+
     @assert verify_children_parents_consistency(all_people(model))
     @info "init!: verification of consistency of child-parent relationship conducted"
 
     @assert verify_partnership_consistency(all_people(model))
     @info "init!: verification of consistency of partnership relationship conducted"
-end
 
-function _init_post_verification(model)
     @assert verify_no_homeless(all_people(model)) #TODO to move to unit tests
     @info "init!: verification of no homeless conducted"
 
@@ -188,6 +314,7 @@ function init!(model, mi::AbsInitPort = DefaultModelInit(); verify=false)
 
     pars = all_pars(model)
     initial_connect!(houses(model), towns(model), pars)
+    init!(model, InitKinshipProcess())
     initial_connect!(houses(model), all_people(model), pars)
     init!(all_people(model),pars,InitClassesProcess())
     init!(all_people(model),pars,InitWorkProcess())
@@ -200,6 +327,7 @@ end
 function init!(model, mi::AgentsModelInit)
     pars = all_pars(model)
     init!(model, InitHousesInTownsProcess())
+    init!(model, InitKinshipProcess())
     initial_connect!(all_people(model), houses(model) , pars, InitCouplesToHousesPort())
     #initial_connect!(all_people(model), PersonHouse[], pars, InitCouplesToHousesPort())
     # init!(all_people(model),pars,InitClassesProcess())
