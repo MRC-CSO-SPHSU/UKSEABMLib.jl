@@ -2,6 +2,7 @@ module Initialize
 
 using Distributions: Normal
 using Random:  shuffle
+using ....Utilities
 using ....XAgents
 using ....ParamTypes
 using ....API.ModelFunc
@@ -110,13 +111,9 @@ function init_kinship!(model)
         if ischild(person)
             push!(population,person)
         else
-            push!(gender == ismale(person) ? men : women, person)
+            push!(ismale(person) ? men : women, person)
         end
     end
-
-    # store unmarried people in population as well
-    append!(population, men)
-    append!(population, women)
 
     ###  assign partners
 
@@ -136,19 +133,25 @@ function init_kinship!(model)
         end
     end
 
+    # store unmarried people in population as well
+    append!(population, men)
+    append!(population, women)
+    @assert length(population) == pars.initialPop
+
     ### assign parents
 
     # TODO same variable name is reused again!
 
     # get all adult women
-    women = filter(population) do p
+    adultWomen = filter(population) do p
         isfemale(p) && isadult(p)
     end
 
+    # @info "married women : " * string(length([m for m in adultWomen if !issingle(m)]))
     # sort by age so that we can easily get age intervals
-    sort!(women, by = age)
-    @info "# of adult women : $(length(women)) from \
-        $(yearsold(women[1])) to $(yearsold(women[end])) yearsold"
+    sort!(adultWomen, by = age)
+    # @info "# of adult women : $(length(adultWomen)) from \
+    #    $(yearsold(adultWomen[1])) to $(yearsold(adultWomen[end])) yearsold"
 
     for person in population
         a = age(person)
@@ -159,17 +162,17 @@ function init_kinship!(model)
 
         # get all women that are between 18 and 40 years older than
         # p (and could thus be their mother)
-        start, stop = _age_interval(women, a + 18, a + 40)
+        start, stop = _age_interval(adultWomen, a + 18, a + 40)
         # check if we actually found any
-        if start > length(women) || start > stop
+        if start > length(adultWomen) || start > stop
             @assert !ischild(person)
             continue
         end
 
         @assert typeof(start) == Int
-        @assert age(women[start]) >= a+18
+        @assert age(adultWomen[start]) >= a+18
 
-        mother = women[rand(start:stop)]
+        mother = adultWomen[rand(start:stop)]
 
         set_as_parent_child!(person, mother)
         if !issingle(mother) && age(partner(mother)) >= age(person) + 18
@@ -312,9 +315,9 @@ function init!(model, mi::AbsInitPort = DefaultModelInit(); verify=false)
         _init_pre_verification(model)
     end
 
+    init!(model, InitKinshipProcess())
     pars = all_pars(model)
     initial_connect!(houses(model), towns(model), pars)
-    init!(model, InitKinshipProcess())
     initial_connect!(houses(model), all_people(model), pars)
     init!(all_people(model),pars,InitClassesProcess())
     init!(all_people(model),pars,InitWorkProcess())
