@@ -97,9 +97,7 @@ function _age_interval(pop, minAge, maxAge)
     idx_start, idx_end
 end
 
-function init_kinship!(model)
-    pop = alive_people(model)
-    pars = population_pars(model)
+function _init_kinship!(pop,pars)
 
     population = Person[]
     men = Person[]
@@ -189,8 +187,12 @@ function init_kinship!(model)
     return nothing
 end
 
+function init!(pop,pars,::InitKinshipProcess)
+    _init_kinship!(pop,population(pars))
+end
+
 function init!(model,::InitKinshipProcess)
-    init_kinship!(model)
+    _init_kinship!(all_people(model), population_pars(model))
     return nothing
 end
 
@@ -284,7 +286,6 @@ function _init_pre_verification(model)
 end
 
 function _init_post_verification(model)
-
     @assert verify_children_parents_consistency(all_people(model))
     @info "init!: verification of consistency of child-parent relationship conducted"
 
@@ -312,12 +313,13 @@ function init!(model, mi::AbsInitPort = DefaultModelInit(); verify=false)
         _init_pre_verification(model)
     end
 
-    init!(model, InitKinshipProcess())
     pars = all_pars(model)
+
+    init!(all_people(model), pars, InitKinshipProcess())
     initial_connect!(houses(model), towns(model), pars)
     initial_connect!(houses(model), all_people(model), pars)
-    init!(all_people(model),pars,InitClassesProcess())
-    init!(all_people(model),pars,InitWorkProcess())
+    init!(all_people(model), pars, InitClassesProcess())
+    init!(all_people(model), pars, InitWorkProcess())
 
     if verify
         _init_post_verification(model)
