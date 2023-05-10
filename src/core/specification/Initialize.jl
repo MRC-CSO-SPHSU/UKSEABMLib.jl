@@ -30,6 +30,8 @@ struct InitPeopleInHouses <: AbsInitProcess end
 struct InitClassesProcess <: AbsInitProcess end
 struct InitWorkProcess <: AbsInitProcess end
 
+init!(model,process::AbsInitProcess) = init!(all_people(model),all_pars(model),process)
+
 "initialize houses in a given set of towns"
 function _initialize_houses_towns(towns, houses, pars, popsize)
     @assert length(houses) == 0
@@ -191,11 +193,6 @@ function init!(pop,pars,::InitKinshipProcess)
     _init_kinship!(pop,population(pars))
 end
 
-function init!(model,::InitKinshipProcess)
-    _init_kinship!(all_people(model), population_pars(model))
-    return nothing
-end
-
 "Randomly assign a population to non-inhebted set of houses"
 function _population_to_houses!(population, houses)
     women = [ person for person in population if isfemale(person) && isadult(person)]
@@ -308,7 +305,7 @@ function _init_post_verification(model)
     @info "init!: verification of houses consistency conducted"
 end
 
-function init!(model, mi::AbsInitPort = DefaultModelInit(); verify=false)
+function init!(model,::DefaultModelInit; verify)
     if verify
         _init_pre_verification(model)
     end
@@ -325,15 +322,23 @@ function init!(model, mi::AbsInitPort = DefaultModelInit(); verify=false)
         _init_post_verification(model)
     end
 end
+init!(model;verify) = init!(model,DefaultModelInit();verify)
 
-function init!(model, mi::AgentsModelInit)
+function init!(model, ::AgentsModelInit; verify)
+    if verify
+        _init_pre_verification(model)
+    end
+
     pars = all_pars(model)
     init!(model, InitHousesInTownsProcess())
     init!(model, InitKinshipProcess())
     initial_connect!(all_people(model), houses(model) , pars, InitCouplesToHousesPort())
-    #initial_connect!(all_people(model), PersonHouse[], pars, InitCouplesToHousesPort())
-    # init!(all_people(model),pars,InitClassesProcess())
-    # init!(all_people(model),pars,InitWorkProcess())
+    init!(model,InitClassesProcess())
+    init!(model,InitWorkProcess())
+
+    if verify
+        _init_post_verification(model)
+    end
 end
 
 end # module Initalize
