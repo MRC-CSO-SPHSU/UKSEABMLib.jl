@@ -21,7 +21,9 @@ using ....API.ModelOp
 
 import ....XAgents: createX_newhouse!
 export declare_towns, declare_inhabited_towns, declare_inhabited_towns!,
-    declare_population, declare_population!, declare_pyramid_population, declare_many_newhouses!
+    declare_population, declare_population!,
+    declare_pyramid_population, declare_pyramid_population!,
+    declare_many_newhouses!
 
 function _declare_towns(mappars)
     uktowns = PersonTown[]
@@ -169,5 +171,12 @@ function declare_population!(model)
     nothing
 end
 
+function declare_pyramid_population!(model)
+    pop = declare_pyramid_population(all_pars(model))
+    for person in pop
+        add_person!(model,person)
+    end
+    nothing
+end
 
 end # module Declare
