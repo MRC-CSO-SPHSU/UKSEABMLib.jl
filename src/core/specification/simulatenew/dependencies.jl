@@ -54,7 +54,7 @@ function _guardian_candidates(model,norphans,popfeature)
     people = all_people(model) # select_population(model,nothing,popfeature,AssignGuardian())
     for p in people
         if _valid_guardian(p,popfeature) && isfemale(p) && !issingle(p)
-        # &&  (status(p) == WorkStatus.worker || status(partner(p)) == WorkStatus.worker) ]
+            # && (status(p) == WorkStatus.worker || status(partner(p)) == WorkStatus.worker)
             push!(_G_CANDIDATES,p)
             if length(_G_CANDIDATES) > norphans return _G_CANDIDATES end
         end
