@@ -140,8 +140,6 @@ function init_kinship!(model)
 
     ### assign parents
 
-    # TODO same variable name is reused again!
-
     # get all adult women
     adultWomen = filter(population) do p
         isfemale(p) && isadult(p)
@@ -281,7 +279,8 @@ function init!(pop,pars,::InitWorkProcess)
 end
 
 function _init_pre_verification(model)
-   # Verify all people are alive
+    @assert length(alive_people(model)) == length(all_people(model))
+    @info "init!: verification of initial population are all alive"
 end
 
 function _init_post_verification(model)
@@ -308,8 +307,6 @@ function _init_post_verification(model)
     @info "init!: verification of houses consistency conducted"
 end
 
-# TODO
-# verify that houses have consistent occupants
 function init!(model, mi::AbsInitPort = DefaultModelInit(); verify=false)
     if verify
         _init_pre_verification(model)
