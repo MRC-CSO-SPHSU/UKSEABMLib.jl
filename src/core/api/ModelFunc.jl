@@ -40,7 +40,7 @@ alive_people(model,::AlivePopulation) = all_people(model)
 select_population(model,
                     pars,
                     popfeature::PopulationFeature,
-                    process::SimProcess)::Vector{Person} = all_people(model) # Default
+                    process::SimProcess) = all_people(model) # Default
 
 "examine if a person is selected to be applicable to a given simulation process"
 selectedfor(person, pars, popfeature::PopulationFeature, process::SimProcess)::Bool =
