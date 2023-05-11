@@ -82,7 +82,7 @@ function set_dead!(person)
     =#
 
     # dead persons no longer have to be provided for
-    set_as_selfprovidingviding!(person)
+    set_as_selfproviding!(person)
 
     for p in providees(person)
         provider!(p, nothing)
