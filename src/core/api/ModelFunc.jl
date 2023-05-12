@@ -48,9 +48,11 @@ selectedfor(person, pars, popfeature::PopulationFeature, process::SimProcess)::B
 
 add_person!(model,person) = error("add_person! not implemented")
 add_house!(model,person)  = error("add_house! not implemented")
-remove_person!(model,personidx::Int) = error("remove_person! not implemented")
-remove_person!(model,personidx::Int,::FullPopulation) = nothing # don't remove
-remove_person!(model,personidx::Int,::PopulationFeature) = remove_person!(model,personidx)
+
+remove_person!(model,person,personidx::Int) = error("remove_person! not implemented")
+remove_person!(model,person,personidx::Int,::FullPopulation) = nothing # don't remove
+remove_person!(model, person, personidx::Int,::PopulationFeature) =
+    remove_person!(model, person, personidx)
 
 function verbose_houses(model,msg="")
     delayedVerbose() do

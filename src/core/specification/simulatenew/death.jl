@@ -172,8 +172,8 @@ function verbosemsg(person::Person,::Death)
     return "person $(person.id) died with age of $y"
 end
 
-_remove_person!(model,idx,::AlivePopulation) = remove_person!(model,idx)
-_remove_person!(model,idx,::FullPopulation)  = nothing
+_remove_person!(model, person, idx,::AlivePopulation) = remove_person!(model,person,idx)
+_remove_person!(model, person, idx,::FullPopulation)  = nothing
 
 function _dodeaths!(ret,model,time,popfeature)
     verbose_houses(model,"before dodeaths!")
@@ -186,7 +186,7 @@ function _dodeaths!(ret,model,time,popfeature)
         if _death!(person, time, data, poppars, popfeature)
             ret = progress_return!(ret,(ind=ind,person=person))
             @assert person === people[len-ind+1]
-            _remove_person!(model, len-ind+1, popfeature)
+            _remove_person!(model, person, len-ind+1, popfeature)
         end
     end
     verbose(ret,Death())
