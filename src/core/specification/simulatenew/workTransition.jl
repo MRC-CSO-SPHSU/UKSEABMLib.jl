@@ -1,4 +1,4 @@
-export doWorkTransitions!
+export doWorkTransitions!, work_transition!
 
 selectedfor(person,pars,::AlivePopulation,::WorkTransition) =
     status(person) != WorkStatus.retired && has_birthday(person)
