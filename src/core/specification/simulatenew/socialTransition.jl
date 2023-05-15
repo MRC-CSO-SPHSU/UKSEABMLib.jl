@@ -112,7 +112,7 @@ function _start_working!(person, pars)
     dist = _income_dist(person, pars)
     finalIncome!(person, rand(dist))
     # updates provider as well
-    set_as_selfprovidingviding!(person)
+    set_as_selfproviding!(person)
 # commented in original:
 #        if person.classRank < 4:
 #            dKf = np.random.normal(dKi, self.p['wageVar'])

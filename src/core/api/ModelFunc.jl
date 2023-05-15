@@ -40,17 +40,19 @@ alive_people(model,::AlivePopulation) = all_people(model)
 select_population(model,
                     pars,
                     popfeature::PopulationFeature,
-                    process::SimProcess)::Vector{Person} = all_people(model) # Default
+                    process::SimProcess) = all_people(model) # Default
 
 "examine if a person is selected to be applicable to a given simulation process"
 selectedfor(person, pars, popfeature::PopulationFeature, process::SimProcess)::Bool =
     error("selectedfor(person, pars, ::$(typeof(popfeatue)),  $(typeof(process)) not implemented")
 
 add_person!(model,person) = error("add_person! not implemented")
-add_house!(model,person)  = error("add_house! not implemented")
-remove_person!(model,personidx::Int) = error("remove_person! not implemented")
-remove_person!(model,personidx::Int,::FullPopulation) = nothing # don't remove
-remove_person!(model,personidx::Int,::PopulationFeature) = remove_person!(model,personidx)
+add_house!(model,house)  = error("add_house! not implemented")
+
+remove_person!(model,person,personidx::Int) = error("remove_person! not implemented")
+remove_person!(model,person,personidx::Int,::FullPopulation) = nothing # don't remove
+remove_person!(model, person, personidx::Int,::PopulationFeature) =
+    remove_person!(model, person, personidx)
 
 function verbose_houses(model,msg="")
     delayedVerbose() do

@@ -15,7 +15,7 @@ export has_alive_child_at_home, has_children_at_home, is_lone_parent,
     are_parent_child, related_first_degree, aresiblings, arepartners
 export can_live_alone, isorphan, set_as_guardian_dependent!, set_as_provider_providee!,
     resolve_dependency!
-export set_as_independent!, set_as_selfprovidingviding!
+export set_as_independent!, set_as_selfproviding!
 export check_consistency_dependents
 export max_parent_rank
 
@@ -335,7 +335,7 @@ function set_as_provider_providee!(prov, providee)
     nothing
 end
 
-function set_as_selfprovidingviding!(person)
+function set_as_selfproviding!(person)
     if isnoperson(provider(person))
         return
     end
