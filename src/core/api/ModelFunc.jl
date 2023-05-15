@@ -47,7 +47,7 @@ selectedfor(person, pars, popfeature::PopulationFeature, process::SimProcess)::B
     error("selectedfor(person, pars, ::$(typeof(popfeatue)),  $(typeof(process)) not implemented")
 
 add_person!(model,person) = error("add_person! not implemented")
-add_house!(model,person)  = error("add_house! not implemented")
+add_house!(model,house)  = error("add_house! not implemented")
 
 remove_person!(model,person,personidx::Int) = error("remove_person! not implemented")
 remove_person!(model,person,personidx::Int,::FullPopulation) = nothing # don't remove
