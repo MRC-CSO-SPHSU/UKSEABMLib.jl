@@ -14,7 +14,7 @@ using ....XAgents
 using ....Utilities
 
 export init!
-export all_people, alive_people, data_of, houses, towns
+export all_people, alive_people, data_of, houses, towns, currenttime
 export select_population, selectedfor
 export add_person!, add_house!, remove_person!
 export verbose_houses
