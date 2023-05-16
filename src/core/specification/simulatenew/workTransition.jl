@@ -12,7 +12,7 @@ function verbosemsg(person::Person,::WorkTransition)
 end
 
 
-function _work_transition!(person, time, pars, popfeature)
+function _work_transition!(person, pars, popfeature)
     if !selectedfor(person,nothing,popfeature,WorkTransition()) return false end
     if age(person) == pars.ageTeenagers
         status!(person, WorkStatus.teenager)
@@ -44,15 +44,15 @@ function _work_transition!(person, time, pars, popfeature)
     false
 end
 
-work_transition!(person, time, model, popfeature::PopulationFeature = FullPopulation()) =
-    _work_transition!(person, time, work_pars(model), popfeature)
+work_transition!(person, model, popfeature::PopulationFeature = FullPopulation()) =
+    _work_transition!(person, work_pars(model), popfeature)
 
-function _do_work_transitions!(ret, model, time, popfeature)
+function _do_work_transitions!(ret, model, popfeature)
     ret = init_return!(ret)
     people = select_population(model,nothing,popfeature,WorkTransition())
     workpars = work_pars(model)
     for (ind,person) in enumerate(people)
-        if _work_transition!(person, time, workpars, popfeature)
+        if _work_transition!(person, workpars, popfeature)
             ret = progress_return!(ret,(ind=ind,person=person))
         end
     end
@@ -60,7 +60,7 @@ function _do_work_transitions!(ret, model, time, popfeature)
     return ret
 end
 
-do_work_transitions!(model, time, popfeature::PopulationFeature, ret = nothing) =
-    _do_work_transitions!(ret, model, time, popfeature)
-do_work_transitions!(model, time, ret = nothing) =
-    do_work_transitions!(model, time, AlivePopulation(), ret)
+do_work_transitions!(model, popfeature::PopulationFeature, ret = nothing) =
+    _do_work_transitions!(ret, model, popfeature)
+do_work_transitions!(model, ret = nothing) =
+    do_work_transitions!(model, AlivePopulation(), ret)
