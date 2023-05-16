@@ -85,7 +85,7 @@ function _adopt!(guard, person)
     end
 end
 
-function _assign_guardian!(person, time, model, gcandidates, popfeature)
+function _assign_guardian!(person, gcandidates, popfeature)
     guard = _find_guardian_family(person)
     if guard === person
         guard = rand(gcandidates)
@@ -102,9 +102,9 @@ function _assign_guardian!(person, time, model, gcandidates, popfeature)
     return true
 end
 
-function assign_guardian!(person, time, model,popfeature::PopulationFeature=FullPopulation())
+function assign_guardian!(person, model,popfeature::PopulationFeature=FullPopulation())
     gcandidates = _guardian_candidates(model,1000, popfeature)
-    return _assign_guardian!(person, time, model, gcandidates, popfeature)
+    return _assign_guardian!(person, gcandidates, popfeature)
 end
 
 const _ORPHANS = Person[]
@@ -120,17 +120,15 @@ function _orphans(model,popfeature)
 end
 
 verbosemsg(::AssignGuardian) = "orphans"
-function verbosemsg(orphan,::AssignGuardian)
-    return "orphan $(orphan.id) got adopted"
-end
+verbosemsg(orphan,::AssignGuardian) = "orphan $(orphan.id) got adopted"
 
-function _do_assign_guardians!(ret,model, time,popfeature)
+function _do_assign_guardians!(ret,model, popfeature)
     ret = init_return!(ret)
     orphans = _orphans(model,popfeature)
     n = length(orphans)
     gcandidates = _guardian_candidates(model,n,popfeature)
     for (ind,orphan) in enumerate(orphans)
-        if _assign_guardian!(orphan, time, model, gcandidates, popfeature)
+        if _assign_guardian!(orphan, gcandidates, popfeature)
             ret = progress_return!(ret,(ind=ind,person=orphan))
             n -= 1
         end
@@ -140,8 +138,8 @@ function _do_assign_guardians!(ret,model, time,popfeature)
     return ret
 end
 
-do_assign_guardians!(model,time,popfeature::PopulationFeature,ret=nothing) =
-    _do_assign_guardians!(ret,model,time,popfeature)
+do_assign_guardians!(model,popfeature::PopulationFeature,ret=nothing) =
+    _do_assign_guardians!(ret,model,popfeature)
 
-do_assign_guardians!(model, time, ret=nothing) =
-    do_assign_guardians!(model,time,AlivePopulation(),ret)
+do_assign_guardians!(model,ret=nothing) =
+    do_assign_guardians!(model,AlivePopulation(),ret)
