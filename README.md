@@ -30,4 +30,3 @@ A library of types, components and simulation functions for establishing socio-e
    - V0.4.1 (15.5) : enabling simulation with Agents.jl  
    - V0.4.2 (16.5) : simplification of main simulation functions (now without time argument)
 
-
