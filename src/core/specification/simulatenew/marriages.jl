@@ -144,7 +144,7 @@ selectedfor(man, ageOfAdulthood, ::AlivePopulation, ::Marriage) =
 selectedfor(man, ageOfAdulthood, ::FullPopulation, process::Marriage) =
     alive(man) && selectedfor(man, ageOfAdulthood, AlivePopulation(), process)
 
-function _marriage!(man, time, model, eligibleWomen, ageclass, shareChildlessMens, popfeature)
+function _marriage!(man, model, eligibleWomen, ageclass, shareChildlessMens, popfeature)
     if !selectedfor(man,work_pars(model).ageOfAdulthood,popfeature,Marriage())
         return false
     end
@@ -196,18 +196,18 @@ function _marriage!(man, time, model, eligibleWomen, ageclass, shareChildlessMen
     return true
 end
 
-function marriage!(man, time, model, popfeatue::PopulationFeature = FullPopulation())
+function marriage!(man, model, popfeatue::PopulationFeature = FullPopulation())
     ageclass = _age_class(man)
     snc =  share_childless_men(model, ageclass)
     ewomen = eligible_women(model)
-    return _marriage!(man, time, model, ewomen, ageclass, snc, popfeatue)
+    return _marriage!(man, model, ewomen, ageclass, snc, popfeatue)
 end
 
 verbosemsg(::Marriage) = "marriages"
 verbosemsg(person::Person,::Marriage) =
     "person $(person.id) married to $(partner(person).id)"
 
-function _domarriages!(ret,model,time, popfeature)
+function _domarriages!(ret,model, popfeature)
     verbose_houses(model,"before domarriages!")
     ret = init_return!(ret)
     people = select_population(model,nothing,popfeature,Marriage())
@@ -218,7 +218,7 @@ function _domarriages!(ret,model,time, popfeature)
     snc = _share_childless_men(people, popfeature)
     for (ind,man) in enumerate(people)
         ageclass = _age_class(man)
-        if _marriage!(man, time, model, ewomen, ageclass, snc[ageclass+1], popfeature)
+        if _marriage!(man, model, ewomen, ageclass, snc[ageclass+1], popfeature)
             ret = progress_return!(ret,(ind=ind,person=man))
         end
     end
@@ -227,8 +227,8 @@ function _domarriages!(ret,model,time, popfeature)
     return ret
 end
 
-domarriages!(model, time, popfeature::PopulationFeature, ret=nothing) =
-    _domarriages!(ret, model, time, popfeature)
+domarriages!(model, popfeature::PopulationFeature, ret=nothing) =
+    _domarriages!(ret, model, popfeature)
 
-domarriages!(model,time,ret=nothing) =
-    domarriages!(model, time, AlivePopulation(),ret)
+domarriages!(model, ret=nothing) =
+    domarriages!(model, AlivePopulation(),ret)

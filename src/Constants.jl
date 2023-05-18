@@ -11,7 +11,7 @@ module Constants
 
 const SESRCPATH = @__DIR__
 const SEPATH    = SESRCPATH * "/.."
-const SEVERSION = v"0.4"    # (Shallow) integration of Agents.jl space concept
+const SEVERSION = v"0.4.2"    # eleminating time argument in simulation functions
 const XAGENTS_GENERIC_PATH = SESRCPATH * "/generic"
 const XAGENTS_MA_PATH      = SESRCPATH * "/multiagents"
 

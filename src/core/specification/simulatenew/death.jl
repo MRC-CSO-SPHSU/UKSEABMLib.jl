@@ -82,7 +82,7 @@ function set_dead!(person)
     =#
 
     # dead persons no longer have to be provided for
-    set_as_selfprovidingviding!(person)
+    set_as_selfproviding!(person)
 
     for p in providees(person)
         provider!(p, nothing)
@@ -154,8 +154,8 @@ function _assumption_death(person::Person)
     nothing
 end
 
-death!(person, currstep, model, popfeature::PopulationFeature = FullPopulation()) =
-    _death!(person, currstep, data_of(model), population_pars(model), popfeature)
+death!(person, model, popfeature::PopulationFeature = FullPopulation()) =
+    _death!(person, currenttime(model), data_of(model), population_pars(model), popfeature)
 
 function _assumption_dodeaths(people)
     assumption() do
@@ -172,10 +172,10 @@ function verbosemsg(person::Person,::Death)
     return "person $(person.id) died with age of $y"
 end
 
-_remove_person!(model,idx,::AlivePopulation) = remove_person!(model,idx)
-_remove_person!(model,idx,::FullPopulation)  = nothing
+_remove_person!(model, person, idx,::AlivePopulation) = remove_person!(model,person,idx)
+_remove_person!(model, person, idx,::FullPopulation)  = nothing
 
-function _dodeaths!(ret,model,time,popfeature)
+function _dodeaths!(ret,model,popfeature)
     verbose_houses(model,"before dodeaths!")
     ret = init_return!(ret)
     poppars = population_pars(model)
@@ -183,10 +183,10 @@ function _dodeaths!(ret,model,time,popfeature)
     data = data_of(model)
     len = length(people)
     for (ind,person) in enumerate(Iterators.reverse(people))
-        if _death!(person, time, data, poppars, popfeature)
+        if _death!(person, currenttime(model), data, poppars, popfeature)
             ret = progress_return!(ret,(ind=ind,person=person))
             @assert person === people[len-ind+1]
-            _remove_person!(model, len-ind+1, popfeature)
+            _remove_person!(model, person, len-ind+1, popfeature)
         end
     end
     verbose(ret,Death())
@@ -194,14 +194,14 @@ function _dodeaths!(ret,model,time,popfeature)
     return ret
 end
 
-dodeaths!(model,time,::AlivePopulation,::SimFullReturn) =
+dodeaths!(model,::AlivePopulation,::SimFullReturn) =
     error("dodeaths!: returned indices are not meaningful due to deads removal")
 
-dodeaths!(model,time,::AlivePopulation,::Tuple{Vector{Int},Vector{Person}}) =
+dodeaths!(model,::AlivePopulation,::Tuple{Vector{Int},Vector{Person}}) =
     error("dodeaths!: returned indices are not meaningful due to deads removal")
 
-dodeaths!(model, time, popfeature::PopulationFeature, ret=nothing) =
-    _dodeaths!(ret, model, time, popfeature)
+dodeaths!(model, popfeature::PopulationFeature, ret=nothing) =
+    _dodeaths!(ret, model, popfeature)
 
-dodeaths!(model, time, ret=nothing) =
-    dodeaths!(model, time, AlivePopulation(), ret)
+dodeaths!(model, ret=nothing) =
+    dodeaths!(model, AlivePopulation(), ret)

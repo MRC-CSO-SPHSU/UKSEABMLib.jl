@@ -112,7 +112,7 @@ function _start_working!(person, pars)
     dist = _income_dist(person, pars)
     finalIncome!(person, rand(dist))
     # updates provider as well
-    set_as_selfprovidingviding!(person)
+    set_as_selfproviding!(person)
 # commented in original:
 #        if person.classRank < 4:
 #            dKf = np.random.normal(dKi, self.p['wageVar'])
@@ -130,7 +130,7 @@ end
 function _addto_workforce!(person, model) end
 
 # move newly adult agents into study or work
-function _social_transition!(person, time, model, workpars, popfeature)
+function _social_transition!(person, model, workpars, popfeature)
     if !selectedfor(person, workpars, popfeature, SocialTransition()) return false end
     probStudy = _done_studying(person, workpars)  ?
         0.0 : _start_studying_prob(person, model, workpars)
@@ -144,8 +144,8 @@ function _social_transition!(person, time, model, workpars, popfeature)
     return false
 end
 
-social_transition!(person, time, model, popfeature::PopulationFeature = FullPopulation()) =
-    _social_transition!(person, time, model, work_pars(model), popfeature)
+social_transition!(person, model, popfeature::PopulationFeature = FullPopulation()) =
+    _social_transition!(person, model, work_pars(model), popfeature)
 
 verbosemsg(::SocialTransition) = "social transitions"
 function verbosemsg(person::Person,::SocialTransition)
@@ -153,12 +153,12 @@ function verbosemsg(person::Person,::SocialTransition)
     return "person $(person.id) of age $(y) changed social status to ..."
 end
 
-function _do_social_transitions!(ret, model, time, popfeature)
+function _do_social_transitions!(ret, model, popfeature)
     ret = init_return!(ret)
     people = select_population(model,nothing,AlivePopulation(),WorkTransition())
     workpars = work_pars(model)
     for (ind,person) in enumerate(people)
-        if _social_transition!(person, time, model, workpars, AlivePopulation())
+        if _social_transition!(person, model, workpars, AlivePopulation())
             ret = progress_return!(ret,(ind=ind,person=person))
         end
     end
@@ -166,7 +166,7 @@ function _do_social_transitions!(ret, model, time, popfeature)
     return ret
 end
 
-do_social_transitions!(model, time, popfeature::PopulationFeature, ret = nothing) =
-    _do_social_transitions!(ret, model, time, popfeature)
-do_social_transitions!(model, time, ret = nothing) =
-    do_social_transitions!(model, time, AlivePopulation(), ret)
+do_social_transitions!(model, popfeature::PopulationFeature, ret = nothing) =
+    _do_social_transitions!(ret, model, popfeature)
+do_social_transitions!(model, ret = nothing) =
+    do_social_transitions!(model, AlivePopulation(), ret)

@@ -28,13 +28,14 @@ selectedfor(person,pars,::AlivePopulation,::Divorce) =
 selectedfor(person, pars,::FullPopulation,process::Divorce) =
     alive(person) && selectedfor(person,pars,AlivePopulation(),process)
 
-function _divorce!(man, time, model, divorcepars, workpars, popfeature) #parameters)
+function _divorce!(man, model, divorcepars, workpars, popfeature) #parameters)
     if !selectedfor(man,nothing,popfeature, Divorce()) return false end
 
     agem = age(man)
+    currstep = currenttime(model)
     ## This is here to manage the sweeping through of this parameter
     ## but only for the years after 2012
-    if time < divorcepars.thePresent
+    if currstep < divorcepars.thePresent
         # Not sure yet if the following is parameter or data
         rawRate = divorcepars.basicDivorceRate *
             divorcepars.divorceModifierByDecade[ceil(Int, agem / 10 )]
@@ -82,9 +83,8 @@ function _divorce!(man, time, model, divorcepars, workpars, popfeature) #paramet
     return false
 end
 
-divorce!(man, time, model, popfeature::PopulationFeature = FullPopulation()) =
+divorce!(man, model, popfeature::PopulationFeature = FullPopulation()) =
     _divorce!(man,
-            time,
             model,
             divorce_pars(model),
             work_pars(model),
@@ -116,13 +116,13 @@ function verbosemsg(person::Person,::Divorce)
     return "man $(person.id) divorced"
 end
 
-function _dodivorces!(ret, model, time, popfeature)
+function _dodivorces!(ret, model, popfeature)
     ret = init_return!(ret)
     divorcepars = divorce_pars(model)
     workpars = work_pars(model)
     people = select_population(model, nothing, popfeature, Divorce())
     for (ind,man) in enumerate(people)
-        if _divorce!(man, time, model, divorcepars, workpars, popfeature)
+        if _divorce!(man, model, divorcepars, workpars, popfeature)
             ret = progress_return!(ret,(ind=ind,person=man))
         end
     end
@@ -130,8 +130,8 @@ function _dodivorces!(ret, model, time, popfeature)
     return ret
 end
 
-dodivorces!(model, time, popfeature::PopulationFeature, ret = nothing) =
-    _dodivorces!(ret, model, time, popfeature)
+dodivorces!(model, popfeature::PopulationFeature, ret = nothing) =
+    _dodivorces!(ret, model, popfeature)
 
-dodivorces!(model, time, ret = nothing) =
-    dodivorces!(model, time, AlivePopulation(), nothing)
+dodivorces!(model, ret = nothing) =
+    dodivorces!(model, AlivePopulation(), nothing)
