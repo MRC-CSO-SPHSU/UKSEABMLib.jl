@@ -19,7 +19,7 @@ using ....API.ParamFunc
 using ....API.ModelFunc
 using ....API.ModelOp
 
-import ....XAgents: createX_newhouse!
+import ....XAgents: create_newhouse!
 export declare_towns, declare_inhabited_towns, declare_inhabited_towns!,
     declare_population, declare_population!,
     declare_pyramid_population, declare_pyramid_population!,
@@ -88,7 +88,7 @@ function declare_many_newhouses!(model)
     @assert sum(num_houses(towns(model))) == 0
     popsize = length(alive_people(model))
     while cnt < popsize
-        createX_newhouse!(model)
+        create_newhouse!(model)
         cnt += 1
     end
     return nothing

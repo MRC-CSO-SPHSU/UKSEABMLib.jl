@@ -14,7 +14,7 @@ using ....XAgents
 using ....Utilities
 
 export init!
-export all_people, alive_people, data_of, houses, towns
+export all_people, alive_people, data_of, houses, towns, currenttime
 export select_population, selectedfor
 export add_person!, add_house!, remove_person!
 export verbose_houses
@@ -31,6 +31,7 @@ data_of(model) = error("data_of not implemeneted")
 houses(model) = error("houses not implemented")
 # an extension could be thought houses(model,::Empty) , houses(model,::Occupied)
 towns(model)  = error("towns not implemented")
+currenttime(model)::Rational{Int} = error("currenttime not implemented")
 
 alive_people(model,::FullPopulation) =
     [ person for person in all_people(model)  if alive(person) ]

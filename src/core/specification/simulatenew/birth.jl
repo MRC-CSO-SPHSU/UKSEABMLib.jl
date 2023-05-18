@@ -135,8 +135,8 @@ function _birth!(woman, currstep, data, birthpars, popfeature)
     return false
 end
 
-function birth!(woman, currstep, model, popfeature::PopulationFeature = FullPopulation())
-    if _birth!(woman, currstep, data_of(model), birth_pars(model), popfeature)
+function birth!(woman, model, popfeature::PopulationFeature = FullPopulation())
+    if _birth!(woman, currenttime(model), data_of(model), birth_pars(model), popfeature)
         add_person!(model,youngest_child(woman))
         return true
     end
@@ -270,21 +270,22 @@ function verbosemsg(person::Person,::Birth)
     return "woman $(person.id) gave birth of $(baby.id) at age of $(y)"
 end
 
-function _dobirths!(ret, model, time, popfeature)
+function _dobirths!(ret, model, popfeature)
     ret = init_return!(ret)
     birthpars = birth_pars(model)
     people = select_population(model, nothing, popfeature, Birth())
     data = data_of(model)
     len = length(people)
-    _assumption_dobirths(people, birthpars, time)
+    currstep = currenttime(model)
+    _assumption_dobirths(people, birthpars, currstep)
     for (ind,woman) in enumerate(Iterators.reverse(people))
-        if _birth!(woman, time, data, birthpars, popfeature)
+        if _birth!(woman, currenttime(model), data, birthpars, popfeature)
            @assert people[len-ind+1] === woman
            add_person!(model,youngest_child(woman)::Person)
            ret = progress_return!(ret,(ind=len-ind+1,person=woman))
         end
     end # for woman
-    _,m = date2yearsmonths(time)
+    _,m = date2yearsmonths(currstep)
     if m == 0
         nbabies = length(people) - len
         _verbose_dobirths(people, nbabies, birthpars)
@@ -293,11 +294,11 @@ function _dobirths!(ret, model, time, popfeature)
     return ret
 end
 
-dobirths!(model, time, popfeature::PopulationFeature, ret = nothing) =
-    _dobirths!(ret, model, time, popfeature)
+dobirths!(model, popfeature::PopulationFeature, ret = nothing) =
+    _dobirths!(ret, model, popfeature)
 
 """
-    dobirths!(model, time)
+    dobirths!(model)
 
 Accept a population and evaluates the birth rate upon computing
 - the population of married fertile women according to
@@ -306,5 +307,5 @@ fixed parameters (minPregnenacyAge, maxPregnenacyAge) and
 
 Class rankes and shares are temporarily ignored.
 """
-dobirths!(model, time, ret=nothing) =
-	dobirths!(model, time, AlivePopulation(), ret)
+dobirths!(model, ret=nothing) =
+	dobirths!(model, AlivePopulation(), ret)
