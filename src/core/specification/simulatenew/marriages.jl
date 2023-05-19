@@ -231,4 +231,4 @@ domarriages!(model, popfeature::PopulationFeature, ret=nothing) =
     _domarriages!(ret, model, popfeature)
 
 domarriages!(model, ret=nothing) =
-    domarriages!(model, AlivePopulation(),ret)
+    domarriages!(model, FullPopulation(),ret)

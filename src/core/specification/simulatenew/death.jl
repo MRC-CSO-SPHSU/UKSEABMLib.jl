@@ -204,4 +204,4 @@ dodeaths!(model, popfeature::PopulationFeature, ret=nothing) =
     _dodeaths!(ret, model, popfeature)
 
 dodeaths!(model, ret=nothing) =
-    dodeaths!(model, AlivePopulation(), ret)
+    dodeaths!(model, FullPopulation(), ret)

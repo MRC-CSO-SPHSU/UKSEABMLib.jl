@@ -308,4 +308,4 @@ fixed parameters (minPregnenacyAge, maxPregnenacyAge) and
 Class rankes and shares are temporarily ignored.
 """
 dobirths!(model, ret=nothing) =
-	dobirths!(model, AlivePopulation(), ret)
+	dobirths!(model, FullPopulation(), ret)
