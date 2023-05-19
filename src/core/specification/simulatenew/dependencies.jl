@@ -142,4 +142,4 @@ do_assign_guardians!(model,popfeature::PopulationFeature,ret=nothing) =
     _do_assign_guardians!(ret,model,popfeature)
 
 do_assign_guardians!(model,ret=nothing) =
-    do_assign_guardians!(model,AlivePopulation(),ret)
+    do_assign_guardians!(model,FullPopulation(),ret)

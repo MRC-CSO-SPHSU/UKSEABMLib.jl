@@ -67,4 +67,4 @@ end
 do_age_transitions!(model, popfeature::PopulationFeature, ret=nothing) =
     _do_age_transitions!(ret, model, popfeature)
 do_age_transitions!(model, ret=nothing) =
-    do_age_transitions!(model, AlivePopulation(), ret)
+    do_age_transitions!(model, FullPopulation(), ret)

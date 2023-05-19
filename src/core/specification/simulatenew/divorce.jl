@@ -134,4 +134,4 @@ dodivorces!(model, popfeature::PopulationFeature, ret = nothing) =
     _dodivorces!(ret, model, popfeature)
 
 dodivorces!(model, ret = nothing) =
-    dodivorces!(model, AlivePopulation(), nothing)
+    dodivorces!(model, FullPopulation(), nothing)

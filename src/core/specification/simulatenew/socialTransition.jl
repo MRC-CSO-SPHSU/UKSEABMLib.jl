@@ -169,4 +169,4 @@ end
 do_social_transitions!(model, popfeature::PopulationFeature, ret = nothing) =
     _do_social_transitions!(ret, model, popfeature)
 do_social_transitions!(model, ret = nothing) =
-    do_social_transitions!(model, AlivePopulation(), ret)
+    do_social_transitions!(model, FullPopulation(), ret)

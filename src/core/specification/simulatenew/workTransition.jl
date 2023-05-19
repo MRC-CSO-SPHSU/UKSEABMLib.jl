@@ -63,4 +63,4 @@ end
 do_work_transitions!(model, popfeature::PopulationFeature, ret = nothing) =
     _do_work_transitions!(ret, model, popfeature)
 do_work_transitions!(model, ret = nothing) =
-    do_work_transitions!(model, AlivePopulation(), ret)
+    do_work_transitions!(model, FullPopulation(), ret)
