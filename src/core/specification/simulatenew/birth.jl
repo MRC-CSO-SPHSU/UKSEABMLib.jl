@@ -1,5 +1,7 @@
 export dobirths!, birth!
 
+const _BIRTH_PROP_BEFORE_1951::Ref{Float64} = -1.0 
+const _BIRTH_PROP = -ones(30,100)  
 function _birth_probability(rWoman,birthpars,data,currstep)
 
     curryear, = date2yearsmonths(currstep)
@@ -14,12 +16,18 @@ function _birth_probability(rWoman,birthpars,data,currstep)
     =#
 
     if curryear < 1951
-        rawRate = birthpars.growingPopBirthProb
-    else
-        yearold, = age2yearsmonths(age(rWoman))
-        rawRate = data.fertility[yearold-16,curryear-1950]
-    end
-
+		if _BIRTH_PROP_BEFORE_1951[] < 0  
+			_BIRTH_PROP_BEFORE_1951[] = birthpars.growingPopBirthProb * birthpars.fertilityBias 
+		end
+		return _BIRTH_PROP_BEFORE_1951[]
+        #rawRate = birthpars.growingPopBirthProb
+	end 
+    
+	yearold, = age2yearsmonths(age(rWoman))
+	if _BIRTH_PROP[yearold-16, curryear-1950] < 0 
+    	_BIRTH_PROP[yearold-16, curryear-1950] = 
+			data.fertility[yearold-16,curryear-1950] * birthpars.fertilityBias
+    end 
     #=
     a = 0
     for i in range(int(self.p['numberClasses'])):
@@ -29,9 +37,8 @@ function _birth_probability(rWoman,birthpars,data,currstep)
     =#
 
     # The above formula with one single socio-economic class translates to:
-
-    birthProb = rawRate * birthpars.fertilityBias
-    return birthProb
+	
+    return _BIRTH_PROP[yearold-16, curryear-1950]
 end # computeBirthProb
 
 
