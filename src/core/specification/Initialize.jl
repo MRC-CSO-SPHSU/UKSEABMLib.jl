@@ -6,7 +6,9 @@ using ....Utilities
 using ....XAgents
 using ....ParamTypes
 using ....API.ModelFunc
+using ....API.ModelOp
 using ....API.ParamFunc
+using ....API.Traits
 using ..Declare
 
 import ....API.ModelFunc: init!
@@ -305,7 +307,9 @@ function _init_post_verification(model)
     @info "init!: verification of houses consistency conducted"
 end
 
-function init!(model,::DefaultModelInit; verify)
+_apply_chaching(::SimProcess) = false 
+
+function init!(model,::DefaultModelInit, applycaching ; verify)
     if verify
         _init_pre_verification(model)
     end
@@ -321,8 +325,13 @@ function init!(model,::DefaultModelInit; verify)
     if verify
         _init_post_verification(model)
     end
+
+	if applycaching(Birth()) 
+		cache_computation(model,Birth())
+	end
 end
-init!(model;verify) = init!(model,DefaultModelInit();verify)
+init!(model;verify,applycaching=_apply_chaching ) = 
+	init!(model,DefaultModelInit(),applycaching;verify)
 
 function init!(model, ::AgentsModelInit; verify)
     if verify

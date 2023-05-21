@@ -14,6 +14,8 @@ using ....API.ModelFunc  # Here it is does not make sense anymore to
                     #     employ explicit using statements
                     #     anything(model) comes from there
 import ....API.ModelFunc: select_population, selectedfor
+using ....API.ModelOp 
+import ....API.ModelOp: cache_computation
 
 using ....Utilities
 using ....XAgents
