@@ -11,12 +11,12 @@ module Constants
 
 const SESRCPATH = @__DIR__
 const SEPATH    = SESRCPATH * "/.."
-const SEVERSION = v"0.4.2"    # eleminating time argument in simulation functions
+const SEVERSION = v"0.4.4"    # performance tuning + attempt of caching computations
 const XAGENTS_GENERIC_PATH = SESRCPATH * "/generic"
 const XAGENTS_MA_PATH      = SESRCPATH * "/multiagents"
 
 # ensuring consistent version of MultiAgents.jl library
 using MultiAgents: MAVERSION
-@assert MAVERSION == v"0.5"  # integration of agents.jl basic types
+@assert MAVERSION == v"0.5.1"  # integration of agents.jl basic types
 
 end # module Constants

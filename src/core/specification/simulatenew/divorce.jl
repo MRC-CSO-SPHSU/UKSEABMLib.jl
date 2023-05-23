@@ -10,7 +10,7 @@ function _divorce_probability(rawRate, pars) # ,classRank)
         splitProb = baseRate*math.pow(self.p['divorceBias'], classRank)
         return splitProb
     =#
-    rawRate * pars.divorceBias
+    return rawRate * pars.divorceBias
 end
 
 function _assumption_divorce(man)
@@ -38,10 +38,10 @@ function _divorce!(man, model, divorcepars, workpars, popfeature) #parameters)
     if currstep < divorcepars.thePresent
         # Not sure yet if the following is parameter or data
         rawRate = divorcepars.basicDivorceRate *
-            divorcepars.divorceModifierByDecade[ceil(Int, agem / 10 )]
+            divorcepars.divorceModifierByDecade[ceil(Int, agem * 0.1 )]
     else
         rawRate = divorcepars.variableDivorce  *
-            divorcepars.divorceModifierByDecade[ceil(Int, agem / 10 )]
+            divorcepars.divorceModifierByDecade[ceil(Int, agem * 0.1 )]
     end
 
     divorceProb = _divorce_probability(rawRate, divorcepars) # TODO , man.classRank)
@@ -134,4 +134,4 @@ dodivorces!(model, popfeature::PopulationFeature, ret = nothing) =
     _dodivorces!(ret, model, popfeature)
 
 dodivorces!(model, ret = nothing) =
-    dodivorces!(model, AlivePopulation(), nothing)
+    dodivorces!(model, FullPopulation(), nothing)

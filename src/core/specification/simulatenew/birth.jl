@@ -1,7 +1,35 @@
 export dobirths!, birth!
 
-function _birth_probability(rWoman,birthpars,data,currstep)
+const _BIRTH_PROP_BEFORE_1951::Ref{Float64} = -1.0
+const _BIRTH_PROP = -ones(30,90)
 
+_birth_probability(womanage::Int,birthpars,data,curryear::Int) =
+	data.fertility[womanage-birthpars.minPregnancyAge+1,curryear-1950] * birthpars.fertilityBias
+
+function cache_computation(model,::Birth)
+	birthpars = birth_pars(model)
+	_BIRTH_PROP_BEFORE_1951[] = birthpars.growingPopBirthProb * birthpars.fertilityBias
+	@assert birthpars.maxPregnancyAge - birthpars.minPregnancyAge < 30
+	data = data_of(model)
+	for year in 1951:2040
+		for womanage in birthpars.minPregnancyAge:birthpars.maxPregnancyAge
+			_BIRTH_PROP[womanage-birthpars.minPregnancyAge+1,year-1950] =
+				_birth_probability(womanage,birthpars,data,year)
+		end
+	end
+	nothing
+end
+
+function _birth_probability(rWoman,birthpars,data,currstep,::UseCache)
+	curryear, = date2yearsmonths(currstep)
+	if curryear < 1951
+		return _BIRTH_PROP_BEFORE_1951[]
+	end
+	yearsold,_ = age2yearsmonths(age(rWoman))
+	return _BIRTH_PROP[yearsold-birthpars.minPregnancyAge+1,curryear-1950]
+end
+
+function _birth_probability(rWoman,birthpars,data,currstep,::NoCaching)
     curryear, = date2yearsmonths(currstep)
 
     #=
@@ -14,13 +42,10 @@ function _birth_probability(rWoman,birthpars,data,currstep)
     =#
 
     if curryear < 1951
-        rawRate = birthpars.growingPopBirthProb
-    else
-        yearold, = age2yearsmonths(age(rWoman))
-        rawRate = data.fertility[yearold-16,curryear-1950]
-    end
-
-    #=
+		return birthpars.growingPopBirthProb * birthpars.fertilityBias
+	end
+	yearold, = age2yearsmonths(age(rWoman))
+	#=
     a = 0
     for i in range(int(self.p['numberClasses'])):
         a += womanClassShares[i]*math.pow(self.p['fertilityBias'], i)
@@ -29,9 +54,7 @@ function _birth_probability(rWoman,birthpars,data,currstep)
     =#
 
     # The above formula with one single socio-economic class translates to:
-
-    birthProb = rawRate * birthpars.fertilityBias
-    return birthProb
+	return	_birth_probability(yearold,birthpars,data,curryear)
 end # computeBirthProb
 
 
@@ -73,12 +96,12 @@ function _assumption_birth(woman, birthpars, birthProb)
     nothing
 end
 
-function _subject_to_birth(woman, currstep, data, birthpars)
+function _subject_to_birth(woman, currstep, data, birthpars,caching::CachingOperation)
     # womanClassRank = woman.classRank
     # if woman.status == 'student':
     #     womanClassRank = woman.parentsClassRank
 
-    birthProb = _birth_probability(woman, birthpars, data, currstep)
+    birthProb = _birth_probability(woman, birthpars, data, currstep,caching)
 
     _assumption_birth(woman, birthpars, birthProb)
 
@@ -117,17 +140,20 @@ function _givesbirth!(woman)
     return baby
 end
 
-selectedfor(woman, birthpars, ::AlivePopulation, ::Birth) = isfemale(woman) &&
+_selectedfor(woman, birthpars, ::Birth) = isfemale(woman) &&
     !issingle(woman) &&
     age(woman) >= birthpars.minPregnancyAge &&
     age(woman) <= birthpars.maxPregnancyAge &&
     age_youngest_alive_child(woman) > 1
-selectedfor(woman, birthpars, ::FullPopulation, process::Birth) =
-    alive(woman) && selectedfor(woman, birthpars, AlivePopulation(), process)
 
-function _birth!(woman, currstep, data, birthpars, popfeature)
+selectedfor(woman, birthpars, ::AlivePopulation, process::Birth) =
+	_selectedfor(woman, birthpars, process)
+selectedfor(woman, birthpars, ::FullPopulation, process::Birth) =
+    alive(woman) && _selectedfor(woman, birthpars, process)
+
+function _birth!(woman, currstep, data, birthpars, popfeature,caching)
     if !(selectedfor(woman, birthpars, popfeature, Birth())) return false end
-    if _subject_to_birth(woman, currstep, data, birthpars)
+    if _subject_to_birth(woman, currstep, data, birthpars,caching)
         _givesbirth!(woman)
         verbose(woman, Birth())
         return true
@@ -135,8 +161,9 @@ function _birth!(woman, currstep, data, birthpars, popfeature)
     return false
 end
 
-function birth!(woman, model, popfeature::PopulationFeature = FullPopulation())
-    if _birth!(woman, currenttime(model), data_of(model), birth_pars(model), popfeature)
+function birth!(woman, model, popfeature::PopulationFeature = FullPopulation();
+	caching::CachingOperation = NoCache())
+    if _birth!(woman, currenttime(model), data_of(model), birth_pars(model), popfeature, caching)
         add_person!(model,youngest_child(woman))
         return true
     end
@@ -270,7 +297,7 @@ function verbosemsg(person::Person,::Birth)
     return "woman $(person.id) gave birth of $(baby.id) at age of $(y)"
 end
 
-function _dobirths!(ret, model, popfeature)
+function _dobirths!(ret, model, popfeature, caching::CachingOperation )
     ret = init_return!(ret)
     birthpars = birth_pars(model)
     people = select_population(model, nothing, popfeature, Birth())
@@ -279,7 +306,7 @@ function _dobirths!(ret, model, popfeature)
     currstep = currenttime(model)
     _assumption_dobirths(people, birthpars, currstep)
     for (ind,woman) in enumerate(Iterators.reverse(people))
-        if _birth!(woman, currenttime(model), data, birthpars, popfeature)
+        if _birth!(woman, currenttime(model), data, birthpars, popfeature, caching)
            @assert people[len-ind+1] === woman
            add_person!(model,youngest_child(woman)::Person)
            ret = progress_return!(ret,(ind=len-ind+1,person=woman))
@@ -294,18 +321,19 @@ function _dobirths!(ret, model, popfeature)
     return ret
 end
 
-dobirths!(model, popfeature::PopulationFeature, ret = nothing) =
-    _dobirths!(ret, model, popfeature)
+dobirths!(model, popfeature::PopulationFeature, ret = nothing;
+	caching::CachingOperation = NoCaching()) =
+    	_dobirths!(ret, model, popfeature, caching)
 
 """
     dobirths!(model)
 
 Accept a population and evaluates the birth rate upon computing
 - the population of married fertile women according to
-fixed parameters (minPregnenacyAge, maxPregnenacyAge) and
+fixed parameters (minPregnenacyAge, maxPregnancyAge) and
 - the birth probability data (fertility bias and growth rates)
 
 Class rankes and shares are temporarily ignored.
 """
-dobirths!(model, ret=nothing) =
-	dobirths!(model, AlivePopulation(), ret)
+dobirths!(model, ret=nothing; caching::CachingOperation = NoCache()) =
+	dobirths!(model, FullPopulation(), ret; caching)

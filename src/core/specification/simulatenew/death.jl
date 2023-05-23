@@ -103,9 +103,10 @@ function _death!(person, currstep, data, poppars, popfeature)
     if !selectedfor(person,nothing,popfeature,Death()) return false end
     (curryear,currmonth) = date2yearsmonths(currstep)
     currmonth += 1 # adjusting 0:11 => 1:12
-    agep = age(person)
+    #agep = age(person)
+    agep = Float64(age(person))
     if curryear >= 1950
-        agep = agep > 109 ? 109//1 : agep
+        agep = agep > 109 ? 109.0 : agep
         ageindex = trunc(Int,agep)
         rawRate = ismale(person) ? data.deathMale[ageindex+1,curryear-1950+1] :
                                             data.deathFemale[ageindex+1,curryear-1950+1]
@@ -204,4 +205,4 @@ dodeaths!(model, popfeature::PopulationFeature, ret=nothing) =
     _dodeaths!(ret, model, popfeature)
 
 dodeaths!(model, ret=nothing) =
-    dodeaths!(model, AlivePopulation(), ret)
+    dodeaths!(model, FullPopulation(), ret)

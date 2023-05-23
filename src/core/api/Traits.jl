@@ -9,6 +9,7 @@ export FuncReturn, NoReturn, WithReturn
 export MaxDistance, InTown, AdjTown, AnyWhere 
 export SimProcess, Death, Birth, Divorce, Marriage, AssignGuardian, 
         AgeTransition, WorkTransition, SocialTransition 
+export CachingOperation, UseCache, NoCaching 
 export SimFullReturn
 export init_return!, progress_return!, fullreturn_object, select_population
 export verbose, verbosemsg
@@ -40,6 +41,10 @@ struct AssignGuardian <: SimProcess end
 struct AgeTransition <: SimProcess end 
 struct WorkTransition <: SimProcess end 
 struct SocialTransition <: SimProcess end 
+
+abstract type CachingOperation end 
+struct UseCache <: CachingOperation end 
+struct NoCaching <: CachingOperation end 
 
 # default local simulation functions 
 
