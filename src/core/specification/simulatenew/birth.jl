@@ -1,32 +1,31 @@
 export dobirths!, birth!
 
-const _BIRTH_PROP_BEFORE_1951::Ref{Float64} = -1.0 
-const _BIRTH_PROP = -ones(30,90)  
+const _BIRTH_PROP_BEFORE_1951::Ref{Float64} = -1.0
+const _BIRTH_PROP = -ones(30,90)
 
-_birth_probability(womanage::Int,birthpars,data,curryear::Int) = 
+_birth_probability(womanage::Int,birthpars,data,curryear::Int) =
 	data.fertility[womanage-birthpars.minPregnancyAge+1,curryear-1950] * birthpars.fertilityBias
 
 function cache_computation(model,::Birth)
 	birthpars = birth_pars(model)
-	_BIRTH_PROP_BEFORE_1951[] = birthpars.growingPopBirthProb * birthpars.fertilityBias 
-	@assert birthpars.minPregnancyAge == 17 
-	@assert birthpars.maxPregnancyAge - birthpars.minPregnancyAge < 30 
+	_BIRTH_PROP_BEFORE_1951[] = birthpars.growingPopBirthProb * birthpars.fertilityBias
+	@assert birthpars.maxPregnancyAge - birthpars.minPregnancyAge < 30
 	data = data_of(model)
 	for year in 1951:2040
-		for womanage in birthpars.minPregnancyAge:birthpars.maxPregnancyAge 
-			_BIRTH_PROP[womanage-birthpars.minPregnancyAge+1,year-1950] = 
+		for womanage in birthpars.minPregnancyAge:birthpars.maxPregnancyAge
+			_BIRTH_PROP[womanage-birthpars.minPregnancyAge+1,year-1950] =
 				_birth_probability(womanage,birthpars,data,year)
 		end
 	end
-	nothing 
+	nothing
 end
 
-function _birth_probability(rWoman,birthpars,data,currstep,::UseCache) 
+function _birth_probability(rWoman,birthpars,data,currstep,::UseCache)
 	curryear, = date2yearsmonths(currstep)
-	if curryear < 1951 
-		return _BIRTH_PROP_BEFORE_1951[] 
-	end 
-	yearsold,_ = age2yearsmonths(age(rWoman)) 
+	if curryear < 1951
+		return _BIRTH_PROP_BEFORE_1951[]
+	end
+	yearsold,_ = age2yearsmonths(age(rWoman))
 	return _BIRTH_PROP[yearsold-birthpars.minPregnancyAge+1,curryear-1950]
 end
 
@@ -43,8 +42,8 @@ function _birth_probability(rWoman,birthpars,data,currstep,::NoCaching)
     =#
 
     if curryear < 1951
-		return birthpars.growingPopBirthProb * birthpars.fertilityBias 
-	end 
+		return birthpars.growingPopBirthProb * birthpars.fertilityBias
+	end
 	yearold, = age2yearsmonths(age(rWoman))
 	#=
     a = 0
@@ -147,7 +146,7 @@ _selectedfor(woman, birthpars, ::Birth) = isfemale(woman) &&
     age(woman) <= birthpars.maxPregnancyAge &&
     age_youngest_alive_child(woman) > 1
 
-selectedfor(woman, birthpars, ::AlivePopulation, process::Birth) = 
+selectedfor(woman, birthpars, ::AlivePopulation, process::Birth) =
 	_selectedfor(woman, birthpars, process)
 selectedfor(woman, birthpars, ::FullPopulation, process::Birth) =
     alive(woman) && _selectedfor(woman, birthpars, process)
@@ -162,7 +161,7 @@ function _birth!(woman, currstep, data, birthpars, popfeature,caching)
     return false
 end
 
-function birth!(woman, model, popfeature::PopulationFeature = FullPopulation(); 
+function birth!(woman, model, popfeature::PopulationFeature = FullPopulation();
 	caching::CachingOperation = NoCache())
     if _birth!(woman, currenttime(model), data_of(model), birth_pars(model), popfeature, caching)
         add_person!(model,youngest_child(woman))
@@ -322,7 +321,7 @@ function _dobirths!(ret, model, popfeature, caching::CachingOperation )
     return ret
 end
 
-dobirths!(model, popfeature::PopulationFeature, ret = nothing; 
+dobirths!(model, popfeature::PopulationFeature, ret = nothing;
 	caching::CachingOperation = NoCaching()) =
     	_dobirths!(ret, model, popfeature, caching)
 
