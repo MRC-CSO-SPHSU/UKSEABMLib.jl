@@ -12,13 +12,13 @@ _is_childless_man(person,ageclass::Int,::FullPopulation) =
     isalive(person) && _is_childless_man(person,ageclass)
 
 _num_alive_people(people,::AlivePopulation) = length(people)
-_num_alive_people(people,::FullPopulation) = nalive = count(x -> alive(x) , people)
+_num_alive_people(people,::FullPopulation) = count(x -> alive(x) , people)
 
 # Is this share childless mens among mens or among all people ?
-function _share_childless_men(people, ageclass::Int, popfeature)
+function _share_childless_men(people, ageclass::Int, popfeature)::Float64
     nalive = _num_alive_people(people,popfeature)
     ret = nalive == 0 ?
-        0 :
+        0.0 :
         count( x -> _is_childless_man(x,ageclass,popfeature) , people) / nalive
     return ret
 end
