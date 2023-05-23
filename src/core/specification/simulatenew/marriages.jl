@@ -2,11 +2,13 @@ using ....XAgents
 
 export marriage!, domarriages!
 
-_age_class(person) = trunc(Int, age(person)/10)
+_age_class(person) = trunc(Int, age(person) * 0.1)
 
-_is_childless_man(person,ageclass) =
+_is_childless_man(person,ageclass::Int) =
     ismale(person) && !has_dependents(person) && _age_class(person) == ageclass
-_is_childless_man(person,ageclass,::FullPopulation) =
+_is_childless_man(person,ageclass::Int,::AlivePopulation) =
+    _is_childless_man(person,ageclass)
+_is_childless_man(person,ageclass::Int,::FullPopulation) =
     isalive(person) && _is_childless_man(person,ageclass)
 
 _num_alive_people(people,::AlivePopulation) = length(people)
@@ -17,7 +19,7 @@ function _share_childless_men(people, ageclass::Int, popfeature)
     nalive = _num_alive_people(people,popfeature)
     ret = nalive == 0 ?
         0 :
-        count( x -> _is_childless_man(x,popfeature) , people) / nalive
+        count( x -> _is_childless_man(x,ageclass,popfeature) , people) / nalive
     return ret
 end
 
