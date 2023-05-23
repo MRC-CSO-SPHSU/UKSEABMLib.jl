@@ -11,7 +11,7 @@ module Constants
 
 const SESRCPATH = @__DIR__
 const SEPATH    = SESRCPATH * "/.."
-const SEVERSION = v"0.4.3"    # full population as a defualt feature across simulations
+const SEVERSION = v"0.4.4"    # performance tuning + attempt of caching computations
 const XAGENTS_GENERIC_PATH = SESRCPATH * "/generic"
 const XAGENTS_MA_PATH      = SESRCPATH * "/multiagents"
 

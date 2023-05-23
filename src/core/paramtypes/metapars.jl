@@ -19,6 +19,7 @@ export DataPars
     sleeptime :: Float64  = 0; @assert sleeptime >= 0
                                    # how long simulation is suspended after printing info
     checkassumption :: Bool = false # whether assumptions in unit functions should be checked
+	#caching :: Bool = false # wehter pre-computation is saved 
     logfile :: String = "log.tsv"
 end
 

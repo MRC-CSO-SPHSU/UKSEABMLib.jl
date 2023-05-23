@@ -30,4 +30,5 @@ A library of types, components and simulation functions for establishing socio-e
    - V0.4.1 (15.5) : enabling simulation with Agents.jl  
    - V0.4.2 (16.5) : simplification of main simulation functions (now without time argument)
    - V0.4.3 (19.5) : Full population as a default value for population feature across simulation functions 
+   - V0.4.4 (23.5) : Attempting caching pre-computation, tiny low-level tuning 
 

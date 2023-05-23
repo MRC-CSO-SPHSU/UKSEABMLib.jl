@@ -37,15 +37,15 @@ end
 # properly instead
 _social_class_shares(model, class) = 0.2
 
-function studyClassFactor_(person, model, pars)
+function studyClassFactor_(person, model, pars)::Float64
     if classRank(person) == 0
-        return _social_class_shares(model, 0) > 0.2 ?  1/0.9 : 0.85
+        return _social_class_shares(model, 0) > 0.2 ?  10 / 9 : 0.85
     end
     if classRank(person) == 1 && _social_class_shares(model, 1) > 0.35
-        return 1/0.8
+        return 10 / 8
     end
     if classRank(person) == 2 && _social_class_shares(model, 2) > 0.25
-        return 1/0.85
+        return 100 / 85
     end
     return 1.0
 end
