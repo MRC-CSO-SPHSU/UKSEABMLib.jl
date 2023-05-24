@@ -1,39 +1,45 @@
 """
 Run this script from shell as
-# julia tests/RunTests.jl
+# julia tests/runtests.jl
 
 or within REPL
 
-julia> include("tests/RunTests.jl")
+julia> include("tests/runtests.jl")
 """
-
-include("../loadLibsPath.jl")
 
 using Test
 
-using XAgents: Person, House, Town
+include("./libpaths.jl")
+include("./helpers.jl")
 
-using MultiAgents: verifyAgentsJLContract
-
-# BasicInfo module
-using XAgents: alive, setDead!, age, agestep!, agestepAlive!
-using XAgents: isfemale, ismale
-
-# Kinship Module
-using XAgents: father, mother, children, partner, issingle
-using XAgents: set_as_parent_child!, set_as_partners!, resolve_partnership!, reset_partner!
-
-# Person type
-using XAgents: setHouse!, getHomeTown, getHomeTownName, location, reset_house!, undefined
-
-using Utilities: HouseLocation
-
-using Utilities:  createTimeStampedFolder
-
-using Utilities: Gender, male, female, unknown
+using SocioEconomics.Specification.Declare
 
 @testset "Lone Parent Model Components Testing" begin
 
+    # basic components
+    @testset verbose=true "Basics" begin
+
+        model = declare_demographic_model(1000)
+
+        person1 = rand(model.pop[1:100])
+        person2 = rand(model.pop[101:200])
+
+        @test length(model.pop) == 1000
+        @test age(person1) > 0
+        @test ismale(person1) || isfemale(person1)
+
+    end # Basics
+
+    # declaration
+
+    # initialization
+
+    # model-based functions
+
+    # stepping functions
+
+
+    #=
     # List of towns
     glasgow   = Town((10,10),name="Glasgow")
     edinbrugh = Town((11,12),name="Edinbrugh")
@@ -200,5 +206,5 @@ using Utilities: Gender, male, female, unknown
         =#
 
     end
-
+    =#
 end  # Lone Parent Model main components
