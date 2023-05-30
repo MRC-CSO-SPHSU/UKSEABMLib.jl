@@ -7,63 +7,31 @@ or within REPL
 julia> include("tests/runtests.jl")
 """
 
+using Test
+
 @testset "Lone Parent Model Components Testing" begin
 
     include("./basictests.jl")
+    include("./initializationtests.jl")
 
-    # basic model declaration
-    @testset verbose=true "Model Declaration" begin
 
-        model = declare_demographic_model(1000)
 
-        person1 = rand(model.pop[1:100])
-        person2 = rand(model.pop[101:200])
-
-        @test length(model.pop) == 1000
-        @test age(person1) > 0
-        @test ismale(person1) || isfemale(person1)
-
-    end # Basics
-
-    # declaration
-
-    # initialization
-
-    # model-based functions
+    #=
+    @testset verbose=true "Person Modules" begin
+        @testset verbose=true "BasicInfo Module" begin
+            set_dead!(person1)
+            @test !alive(person1)
+        end
+    end
+    =#
 
     # stepping functions
 
 
     #=
 
-
-    @testset verbose=true "Basic declaration" begin
-        @test_throws MethodError person4 = Person(1,house1,22)         # Default constructor is disallowed
-
-        @test verifyAgentsJLContract(glasgow)
-        @test verifyAgentsJLContract(house1)
-        @test verifyAgentsJLContract(person1)
-
-        # Testing that every agent should have a unique ID
-        @test person1.id > 0
-        @test house1.id != person1.id
-        @test person3.id != person1.id                  # A new person is another person
-
-        # every agent should be assigned with a location
-        @test person1.pos == house1
-        @test person1 in house1.occupants
-
-        @test person1 === person2
-    end
-
     @testset verbose=true "BasicInfo Module" begin
 
-        @test typeof(age(person1)) == Rational{Int64}
-        @test ismale(person1)
-        @test !isfemale(person1)
-        @test alive(person1)
-
-        person7 = Person(house1,25,gender=male)
         setDead!(person7)
         @test !alive(person7)
 
