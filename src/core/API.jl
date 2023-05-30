@@ -8,7 +8,6 @@
 module API
 
     include("api/Traits.jl")
-	include("api/ParamFunc.jl")
     include("api/ModelFunc.jl")
     include("api/Connection.jl")
     include("api/ModelOp.jl")

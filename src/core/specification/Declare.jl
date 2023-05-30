@@ -15,7 +15,6 @@ using Distributions
 using ....Utilities
 using ....XAgents
 using ....ParamTypes
-using ....API.ParamFunc
 using ....API.ModelFunc
 using ....API.ModelOp
 

@@ -19,8 +19,18 @@ export select_population, selectedfor
 export add_person!, add_house!, remove_person!
 export verbose_houses
 export share_childless_men, eligible_women
+export all_pars, population_pars, birth_pars, marriage_pars,
+		divorce_pars, map_pars, work_pars
 
 import Agents: add_agent_pos!, add_agent_to_space!, nagents, seed!
+
+all_pars(model) = model.parameters
+population_pars(model) = model.parameters.poppars
+birth_pars(model) = model.parameters.birthpars
+divorce_pars(model) = model.parameters.divorcepars
+marriage_pars(model) = model.parameters.marriagepars
+work_pars(model) = model.parameters.workpars
+map_pars(model) = model.parameters.mappars
 
 init!(model) = error("init!($(typeof(model))) not implemented")
 
