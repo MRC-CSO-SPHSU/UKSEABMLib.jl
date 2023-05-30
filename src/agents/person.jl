@@ -15,6 +15,7 @@ export has_alive_child_at_home, has_children_at_home, is_lone_parent,
     are_parent_child, related_first_degree, aresiblings, arepartners
 export can_live_alone, isorphan, set_as_guardian_dependent!, set_as_provider_providee!,
     resolve_dependency!
+export set_dead!
 export set_as_independent!, set_as_selfproviding!
 export check_consistency_dependents
 export max_parent_rank
@@ -351,4 +352,45 @@ function max_parent_rank(person)
     else
         return max(classRank(m), classRank(f))
     end
+end
+
+function set_dead!(person)
+    person.info.alive = false    # this statement is a sign that this function does not belong here!
+    reset_house!(person)
+    if !issingle(person)
+        resolve_partnership!(partner(person),person)
+    end
+
+    #=
+    fa = father(person)
+    mo = mother(person)
+    gs = guardians(person)
+    =#
+
+    # dead persons are no longer dependents
+    set_as_independent!(person)
+
+    #=
+    if fa != nothing
+        @assert !(person in dependents(fa))
+    end
+    if mo != nothing
+        @assert mo != nothing && !(person in dependents(mo))
+    end
+    for g in gs
+        @assert !(person in dependents(g))
+    end
+    =#
+
+    # dead persons no longer have to be provided for
+    set_as_selfproviding!(person)
+
+    for p in providees(person)
+        provider!(p, nothing)
+        # TODO update provision/work status
+    end
+    empty!(providees(person))
+
+    # dependents are being taken care of by assignGuardian!
+    nothing
 end
