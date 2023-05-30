@@ -1,5 +1,5 @@
 
-using MultiAgents: MAVERSION, init_majl
+using MultiAgents: MAVERSION, init_majl, verify_agentsjl
 using SocioEconomics: SEVERSION
 using SocioEconomics.XAgents
 using SocioEconomics.ParamTypes
