@@ -79,5 +79,14 @@ include("./helpers.jl")
 
     @testset verbose=true "XAgents.jl" begin
         @test verify_agentsjl(randperson)
+        @test randperson.id > 0
+        ids = Int[]
+        for town in towns
+            for house in occupied_houses(town)
+                @assert length(occupants(house)) == 1
+                push!(ids,house.occupants[1].id)
+            end
+        end
+        @test sum(ids) == sum(1:length(ids)) > 0
     end
 end
