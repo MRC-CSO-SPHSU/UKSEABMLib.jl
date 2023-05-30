@@ -114,10 +114,18 @@ function make_occupied_house_empty!(house)
 end
 
 function verify_consistency(town::Town)
-    # check the empty houses are empty
-    # check that allocated houses are not empty
-    # check that occupants are alive verify_consistency(house)
-    error("not implemented")
+    for house in empty_houses(town)
+        if !verify_consistency(house) return false end
+    end
+    for house in occupied_houses(town)
+        if !verify_consistency(house) return false end
+    end
+    if town.density > 0
+        for atown in adjacent_inhabited_towns(town)
+            if !isadjacent8(atown,town) return false end
+        end
+    end
+    return true
 end
 
 ####
