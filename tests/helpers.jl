@@ -10,7 +10,7 @@ import SocioEconomics.ParamTypes: load_parameters
 @assert MAVERSION == v"0.5.1"
 init_majl()  # reset agents id counter
 
-@assert SEVERSION == v"0.4.4"  # Performance tuning
+@assert SEVERSION == v"0.4.5"  # Unit testing
 
 function load_parameters()
     simPars = SimulationPars()
