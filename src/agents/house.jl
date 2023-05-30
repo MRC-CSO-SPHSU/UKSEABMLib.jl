@@ -51,7 +51,7 @@ end
 "remove an occupant from a house"
 function remove_occupant!(house::House{P}, person::P) where {P}
     removefirst!(house.occupants, person)
-    @assert !(person in house.occupants)
+    person.pos = UNDEFINED_HOUSE
     if isempty(house)
         @assert house in occupied_houses(hometown(house))
         make_occupied_house_empty!(house)
