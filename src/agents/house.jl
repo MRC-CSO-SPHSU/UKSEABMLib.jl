@@ -1,5 +1,6 @@
 export House, HouseLocation
-export hometown, location, undefined, town, num_occupants, occupants, remove_occupant!
+export hometown, location, undefined, town, num_occupants, occupants,
+    remove_occupant!, add_occupant!
 
 import Base.isempty
 using ....Utilities: removefirst!
@@ -39,12 +40,11 @@ location(house::House) = house.pos
 function add_occupant!(house::House{P}, person::P) where {P}
     @assert !(person in house.occupants)
     if isempty(house)
-	    push!(house.occupants, person)
-        @assert house in empty_houses(hometown(house))
+        push!(house.occupants, person)
         make_empty_house_occupied!(house)
-    else
-        push!(house.occupants,person)
+        return nothing
     end
+    push!(house.occupants, person)
 	nothing
 end
 
@@ -53,7 +53,6 @@ function remove_occupant!(house::House{P}, person::P) where {P}
     removefirst!(house.occupants, person)
     person.pos = UNDEFINED_HOUSE
     if isempty(house)
-        @assert house in occupied_houses(hometown(house))
         make_occupied_house_empty!(house)
     end
     nothing
