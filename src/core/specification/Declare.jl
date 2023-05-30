@@ -34,7 +34,6 @@ function _declare_towns(mappars)
         end
     end
     init_adjacent_ihabited_towns!(towns)
-
     return towns
 end
 
@@ -51,15 +50,7 @@ function _declare_inhabited_towns(mappars)
             end
         end
     end
-
-    for town in towns
-        for t in towns
-            if isadjacent8(town,t)
-                push!(town.adjacentInhabitedTowns,t)
-            end
-        end
-    end
-
+    init_adjacent_ihabited_towns!(towns)
     @info "# of towns : $(length(towns))"
     return towns
 end
