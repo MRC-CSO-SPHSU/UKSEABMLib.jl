@@ -307,7 +307,7 @@ end
 
 _apply_chaching(::SimProcess) = false
 
-function init!(model,::DefaultModelInit, applycaching ; verify)
+function init!(model,::DefaultModelInit, applycaching ; verify=false)
     if verify
         _init_pre_verification(model)
     end
@@ -328,10 +328,10 @@ function init!(model,::DefaultModelInit, applycaching ; verify)
 		cache_computation(model,Birth())
 	end
 end
-init!(model;verify,applycaching=_apply_chaching ) =
+init!(model;verify=false,applycaching=_apply_chaching ) =
 	init!(model,DefaultModelInit(),applycaching;verify)
 
-function init!(model, ::AgentsModelInit; verify)
+function init!(model, ::AgentsModelInit; verify=false)
     if verify
         _init_pre_verification(model)
     end
