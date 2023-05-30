@@ -6,6 +6,7 @@ using SocioEconomics.ParamTypes
 using SocioEconomics.Specification.Declare
 
 import SocioEconomics.ParamTypes: load_parameters
+import SocioEconomics.API.ModelFunc: all_people, alive_people
 
 @assert MAVERSION == v"0.5.1"
 init_majl()  # reset agents id counter
@@ -29,6 +30,9 @@ mutable struct DemographyModel
     const data :: DemographyData
     time :: Rational{Int}
 end
+
+all_people(model::DemographyModel) = model.pop
+alive_people(model::DemographyModel) = [ person for person in model.pop if alive(person) ]
 
 function declare_demographic_model(ips = 1000)
     simPars, dataPars, pars = load_parameters()
