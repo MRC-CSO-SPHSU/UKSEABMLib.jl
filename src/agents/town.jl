@@ -128,6 +128,13 @@ function verify_consistency(town::Town)
     return true
 end
 
+function verify_consistency(towns::Vector{Town{H}}) where H
+    for town in towns
+        if ! verify_consistency(town) return false end
+    end
+    return true
+end
+
 ####
 # Agents.jl stuffs
 ####
