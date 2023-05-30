@@ -1,4 +1,4 @@
-export Town, TownLocation
+export Town, TownLocation, UNDEFINED_2DLOCATION
 export undefined, isadjacent8, adjacent8Towns, manhattan_distance
 export add_empty_house!, make_empty_house_occupied!, make_occupied_house_empty!
 export has_empty_houses, empty_houses, occupied_houses
@@ -72,8 +72,7 @@ empty_houses(town::Town{H}) where H = town.emptyHouses
 occupied_houses(town)    = town.occupiedHouses
 adjacent_inhabited_towns(town) = town.adjacentInhabitedTowns
 
-
-function make_empty_house_occupied!(town,idx::Int)
+function _make_empty_house_occupied!(town,idx::Int)
     house = town.emptyHouses[idx]
     @assert !isempty(house)
     town.emptyHouses[idx] = town.emptyHouses[end]
@@ -83,15 +82,12 @@ function make_empty_house_occupied!(town,idx::Int)
 end
 
 function make_empty_house_occupied!(house)
-    # println("house $(house.id) become occupied")
     town = hometown(house)
-    @assert house in empty_houses(town)
-    make_empty_house_occupied!(town,findfirst(x -> x === house, town.emptyHouses))
+    _make_empty_house_occupied!(town, findfirst(x -> x === house, town.emptyHouses))
 end
 
-function make_occupied_house_empty!(town,idx::Int)
+function _make_occupied_house_empty!(town,idx::Int)
     house = town.occupiedHouses[idx]
-    #println("house $(house.id) become empty")
     @assert isempty(house)
     town.occupiedHouses[idx] = town.occupiedHouses[end]
     pop!(town.occupiedHouses)
@@ -101,8 +97,7 @@ end
 
 function make_occupied_house_empty!(house)
     town = hometown(house)
-    @assert house in hometown(house).occupiedHouses
-    make_occupied_house_empty!(town,findfirst(x -> x === house, town.occupiedHouses))
+    _make_occupied_house_empty!(town, findfirst(x -> x === house, town.occupiedHouses))
 end
 
 function verify_consistency(town::Town)
