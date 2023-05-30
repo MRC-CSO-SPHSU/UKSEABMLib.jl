@@ -47,7 +47,7 @@ end
 Town{H}(loc;density=0.0) where H = Town{H}(loc,density)
 
 location(town::Town) = town.loc
-undefined(town::Town{H}) where H =
+undefined(town::Town)  =
     location(town) == UNDEFINED_2DLOCATION
 
 isadjacent8(town1, town2) =
@@ -69,7 +69,7 @@ function has_empty_houses(towns::Vector)
     end
     return false
 end
-empty_houses(town::Town{H}) where H = town.emptyHouses
+empty_houses(town) = town.emptyHouses
 occupied_houses(town)    = town.occupiedHouses
 adjacent_inhabited_towns(town) = town.adjacentInhabitedTowns
 
