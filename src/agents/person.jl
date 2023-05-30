@@ -170,13 +170,7 @@ function move_to_house!(people::Vector{Person}, house)
 end
 
 "reset house of a person (e.g. became dead)"
-function reset_house!(person::Person)
-    if ! undefined(person.pos)
-        remove_occupant!(person.pos, person)
-    end
-    person.pos = UNDEFINED_HOUSE
-    nothing
-end
+reset_house!(person::Person) = remove_occupant!(person.pos, person)
 
 are_living_together(person1, person2) = person1.pos == person2.pos
 are_parent_child(person1, person2) =
