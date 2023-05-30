@@ -26,50 +26,50 @@ export declare_towns, declare_inhabited_towns, declare_inhabited_towns!,
     declare_many_newhouses!
 
 function _declare_towns(mappars)
-    uktowns = PersonTown[]
+    towns = PersonTown[]
     for y in 1:mappars.mapGridYDimension
         for x in 1:mappars.mapGridXDimension
             town = PersonTown((x,y),density=mappars.map[y,x])
-            push!(uktowns,town)
+            push!(towns,town)
         end
     end
 
-    for uktown in uktowns
-        if uktown.density == 0 continue end
-        for t in uktowns
-            if isadjacent8(uktown,t) && t.density > 0
-                push!(uktown.adjacentInhabitedTowns,t)
+    for town in towns
+        if town.density == 0 continue end
+        for t in towns
+            if isadjacent8(town,t) && t.density > 0
+                push!(town.adjacentInhabitedTowns,t)
             end
         end
     end
 
-    return uktowns
+    return towns
 end
 
 declare_towns(pars::DemographyPars) = _declare_towns(mapx(pars))
 
 function _declare_inhabited_towns(mappars)
-    uktowns = PersonTown[]
+    towns = PersonTown[]
     for y in 1:mappars.mapGridYDimension
         for x in 1:mappars.mapGridXDimension
             density = mappars.map[y,x]
             if density > 0
                 town = PersonTown((x,y),density=density)
-                push!(uktowns,town)
+                push!(towns,town)
             end
         end
     end
 
-    for uktown in uktowns
-        for t in uktowns
-            if isadjacent8(uktown,t)
-                push!(uktown.adjacentInhabitedTowns,t)
+    for town in towns
+        for t in towns
+            if isadjacent8(town,t)
+                push!(town.adjacentInhabitedTowns,t)
             end
         end
     end
 
-    @info "# of towns : $(length(uktowns))"
-    return uktowns
+    @info "# of towns : $(length(towns))"
+    return towns
 end
 
 declare_inhabited_towns(pars) = _declare_inhabited_towns(mapx(pars))
