@@ -25,14 +25,14 @@ mutable struct DemographyModel
     const towns :: Vector{PersonTown}
     const houses :: Vector{PersonHouse}
     const pop :: Vector{Person}
-    const pars :: DemographyPars
+    const parameters :: DemographyPars
     const data :: DemographyData
     time :: Rational{Int}
 end
 
 function declare_demographic_model(ips = 1000)
     simPars, dataPars, pars = load_parameters()
-    pars.poppars.initialPop = 1000
+    pars.poppars.initialPop = ips
 
     data = load_demography_data(dataPars)
 
