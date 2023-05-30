@@ -7,17 +7,12 @@ or within REPL
 julia> include("tests/runtests.jl")
 """
 
-using Test
-
-include("./libpaths.jl")
-include("./helpers.jl")
-
-using SocioEconomics.Specification.Declare
-
 @testset "Lone Parent Model Components Testing" begin
 
-    # basic components
-    @testset verbose=true "Basics" begin
+    include("./basictests.jl")
+
+    # basic model declaration
+    @testset verbose=true "Model Declaration" begin
 
         model = declare_demographic_model(1000)
 
@@ -40,24 +35,7 @@ using SocioEconomics.Specification.Declare
 
 
     #=
-    # List of towns
-    glasgow   = Town((10,10),name="Glasgow")
-    edinbrugh = Town((11,12),name="Edinbrugh")
-    sterling  = Town((12,10),name="Sterling")
-    aberdeen  = Town((20,12),name="Aberdeen")
 
-    # List of houses
-    house1 = House{Person}(edinbrugh,(1,2)::HouseLocation)
-    house2 = House{Person}(aberdeen,(5,10)::HouseLocation)
-    house3 = House{Person}(glasgow,(2,3)::HouseLocation)
-
-    # List of persons
-    person1 = Person(house1,25,gender=male)
-    person2 = person1
-    person3 = Person(house2,35,gender=female)
-    person4 = Person(house1,40,gender=female)
-    person5 = Person(house3,55,gender=unknown)
-    person6 = Person(house1,55,gender=male)
 
     @testset verbose=true "Basic declaration" begin
         @test_throws MethodError person4 = Person(1,house1,22)         # Default constructor is disallowed
