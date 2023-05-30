@@ -32,16 +32,17 @@ marriage_pars(model) = model.parameters.marriagepars
 work_pars(model) = model.parameters.workpars
 map_pars(model) = model.parameters.mappars
 
+data_of(model) = model.data
+currenttime(model)::Rational{Int} = model.t
+
 init!(model) = error("init!($(typeof(model))) not implemented")
 
 all_people(model) = error("all_people not implemeneted")
 alive_people(model)  = error("alive_people not implemented")
-data_of(model) = error("data_of not implemeneted")
 "all houses of a model"
 houses(model) = error("houses not implemented")
 # an extension could be thought houses(model,::Empty) , houses(model,::Occupied)
 towns(model)  = error("towns not implemented")
-currenttime(model)::Rational{Int} = error("currenttime not implemented")
 
 alive_people(model,::FullPopulation) =
     [ person for person in all_people(model)  if alive(person) ]
