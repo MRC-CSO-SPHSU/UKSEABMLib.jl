@@ -1,5 +1,5 @@
 export House, HouseLocation
-export hometown, location, undefined, town, num_occupants, occupants
+export hometown, location, undefined, town, num_occupants, occupants, remove_occupant!
 
 import Base.isempty
 using ....Utilities: removefirst!
