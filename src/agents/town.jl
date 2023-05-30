@@ -132,6 +132,17 @@ function verify_consistency(towns::Vector{Town{H}}) where H
     for town in towns
         if ! verify_consistency(town) return false end
     end
+    for town1 in towns
+        for town2 in towns
+            if town1 === town2 continue end
+            if isadjacent8(town1, town2)
+                if !(town1 in adjacent_inhabited_towns(town2)) ||
+                    !(town2 in adjacent_inhabited_towns(town1))
+                    return false
+                end
+            end
+        end
+    end
     return true
 end
 
