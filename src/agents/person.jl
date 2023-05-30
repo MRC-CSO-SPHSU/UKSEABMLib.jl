@@ -76,7 +76,7 @@ mutable struct Person <: AbstractXAgent
                 set_as_parent_child!(person,child)
             end
         end
-        person
+        return person
     end # Person Cor
 end # struct Person
 
@@ -157,7 +157,6 @@ function move_to_house!(person::Person,house)
     if ! undefined(person.pos)
         remove_occupant!(person.pos, person)
     end
-    person.pos = house
     add_occupant!(house, person)
 end
 

@@ -38,6 +38,7 @@ location(house::House) = house.pos
 
 "add an occupant to a house"
 function add_occupant!(house::House{P}, person::P) where {P}
+    person.pos = house
     @assert !(person in house.occupants)
     if isempty(house)
         push!(house.occupants, person)
