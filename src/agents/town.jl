@@ -1,5 +1,6 @@
 export Town, TownLocation, UNDEFINED_2DLOCATION
-export undefined, isadjacent8, adjacent8Towns, manhattan_distance
+export undefined, isadjacent8, adjacent8Towns, init_adjacent_ihabited_towns!,
+    manhattan_distance
 export add_empty_house!, make_empty_house_occupied!, make_occupied_house_empty!
 export has_empty_houses, empty_houses, occupied_houses
 
@@ -71,6 +72,18 @@ end
 empty_houses(town::Town{H}) where H = town.emptyHouses
 occupied_houses(town)    = town.occupiedHouses
 adjacent_inhabited_towns(town) = town.adjacentInhabitedTowns
+
+function init_adjacent_ihabited_towns!(towns)
+    for town in towns
+        @assert isempty(town.adjacentInhabitedTowns)
+        if town.density == 0 continue end
+        for t in towns
+            if isadjacent8(town,t) && t.density > 0
+                push!(town.adjacentInhabitedTowns,t)
+            end
+        end
+    end
+end
 
 function _make_empty_house_occupied!(town,idx::Int)
     house = town.emptyHouses[idx]

@@ -33,15 +33,7 @@ function _declare_towns(mappars)
             push!(towns,town)
         end
     end
-
-    for town in towns
-        if town.density == 0 continue end
-        for t in towns
-            if isadjacent8(town,t) && t.density > 0
-                push!(town.adjacentInhabitedTowns,t)
-            end
-        end
-    end
+    init_adjacent_ihabited_towns!(towns)
 
     return towns
 end
