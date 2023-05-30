@@ -66,16 +66,8 @@ function declare_inhabited_towns!(model)
     nothing
 end
 
-function declare_many_newhouses!(model)
-    cnt = 0
-    @assert sum(num_houses(towns(model))) == 0
-    popsize = length(alive_people(model))
-    while cnt < popsize
-        create_newhouse!(model)
-        cnt += 1
-    end
-    return nothing
-end
+declare_many_newhouses!(model) =
+    create_many_newhouses!(model,population_pars(model).iniitialPop)
 
 # TODO initialize
 function _declare_pyramid_population(pars)
