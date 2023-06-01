@@ -21,14 +21,7 @@ include("./helpers.jl")
 
     end
 
-    # model initialization
-    using SocioEconomics.API.Traits
-    using SocioEconomics.Specification.Initialize: init!
-
-    applycaching(::SimProcess) = false
-    applycaching(::Birth) = true
-    init!(model;verify=false,applycaching)
-
+    initialize_demographic_model!(model)
     @testset verbose=true "Initialization" begin
         @test verify_children_parents_consistency(model.pop)
         @test verify_partnership_consistency(model.pop)
@@ -39,4 +32,4 @@ include("./helpers.jl")
         @test verify_houses_consistency(model.pop,model.houses)
     end
 
-end
+end # Model creation

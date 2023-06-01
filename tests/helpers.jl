@@ -5,6 +5,10 @@ using SocioEconomics.XAgents
 using SocioEconomics.ParamTypes
 using SocioEconomics.Specification.Declare
 
+# model initialization
+using SocioEconomics.API.Traits
+using SocioEconomics.Specification.Initialize
+
 import SocioEconomics.ParamTypes: load_parameters
 import SocioEconomics.API.ModelFunc: all_people, alive_people
 
@@ -47,3 +51,7 @@ function declare_demographic_model(ips = 1000)
 
     return model
 end
+
+applycaching(::SimProcess) = false
+applycaching(::Birth) = true
+initialize_demographic_model!(model) = Initialize.init!(model;verify=false,applycaching)
