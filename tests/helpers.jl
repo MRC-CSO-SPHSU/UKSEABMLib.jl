@@ -9,6 +9,8 @@ using SocioEconomics.Specification.Declare
 using SocioEconomics.API.Traits
 using SocioEconomics.Specification.Initialize
 
+using StatsBase: sample
+
 import SocioEconomics.ParamTypes: load_parameters
 import SocioEconomics.API.ModelFunc: all_people, alive_people
 
@@ -39,6 +41,8 @@ all_people(model::DemographyModel) = model.pop
 alive_people(model::DemographyModel) = [ person for person in model.pop if alive(person) ]
 
 function declare_demographic_model(ips = 1000)
+    init_majl()  # reset agents id counter
+
     simPars, dataPars, pars = load_parameters()
     pars.poppars.initialPop = ips
 
@@ -55,3 +59,5 @@ end
 applycaching(::SimProcess) = false
 applycaching(::Birth) = true
 initialize_demographic_model!(model) = Initialize.init!(model;verify=false,applycaching)
+
+get_random_persons(model,n) = sample(model.pop,n;replace=false)
