@@ -93,6 +93,10 @@ end # struct Person
 @export_forward Person kinship [father, mother, partner, children]
 @delegate_onefield Person kinship [has_children, add_child!, issingle, parents,
     siblings, youngest_child, isnoperson, noperson]
+parents(::Nothing) = Person[]
+siblings(::Nothing) = Person[]
+father(::Nothing) = nothing
+mother(::Nothing) = nothing
 
 @delegate_onefield Person maternity [start_maternity!, step_maternity!, end_maternity!,
     is_in_maternity, maternity_duration]

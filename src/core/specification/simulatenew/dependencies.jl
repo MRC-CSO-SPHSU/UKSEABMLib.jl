@@ -14,19 +14,15 @@ selectedfor(person,pars,::AlivePopulation,::AssignGuardian) =
 selectedfor(person,pars,::FullPopulation,process::AssignGuardian) =
     alive(person) && selectedfor(person,pars,AlivePopulation(),process)
 
-_valid_guardian(g) = g!=nothing && alive(g)  && can_live_alone(g)
+_valid_guardian(::Nothing) = false
+_valid_guardian(g) = alive(g)  && can_live_alone(g)
 _valid_guardian(g,::AlivePopulation) = can_live_alone(g)
 _valid_guardian(g,::FullPopulation) = alive(g) && _valid_guardian(g,AlivePopulation())
 
-_parents(p) = isnoperson(p) ? Person[] : parents(p)
-_siblings(p) = isnoperson(p) ? Person[] : siblings(p)
-_father(p) = isnoperson(p) ? nothing : father(p)
-_mother(p) = isnoperson(p) ? nothing : mother(p)
-
 function _related_vaid_guardian(person)
-    if _valid_guardian(_father(person)) return father(person) end
-    if _valid_guardian(_mother(person)) return mother(person) end
-    for p in _siblings(person)
+    if _valid_guardian(father(person)) return father(person) end
+    if _valid_guardian(mother(person)) return mother(person) end
+    for p in siblings(person)
         if _valid_guardian(p) return p end
     end
     return nothing
