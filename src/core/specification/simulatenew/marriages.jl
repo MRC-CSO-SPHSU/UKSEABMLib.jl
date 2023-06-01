@@ -2,7 +2,8 @@ using ....XAgents
 
 export marriage!, domarriages!
 
-_age_class(person) = trunc(Int, age(person) * 0.1)
+#_age_class(person) = trunc(Int, age2years(age(person)) * 0.1)
+_age_class(person) = div(age2years(age(person)),10)
 
 _is_childless_man(person,ageclass::Int) =
     ismale(person) && !has_dependents(person) && _age_class(person) == ageclass
