@@ -186,13 +186,11 @@ function _marriage!(man, model, eligibleWomen, ageclass, shareChildlessMens, pop
     # remove from cached list
     remove_unsorted!(eligibleWomen, selectedIdx)
     _join_couple!(man, selectedWoman, model, marpars)
-    dep_man = dependents(man)
-    dep_woman = dependents(selectedWoman)
     # all dependents become joint dependents
-    for child in dep_man
+    for child in dependents(man)
         set_as_guardian_dependent!(selectedWoman, child)
     end
-    for child in dep_woman
+    for child in dependents(selectedWoman)
         set_as_guardian_dependent!(man, child)
     end
     verbose(man,Marriage())
