@@ -126,7 +126,7 @@ end
 
 verbosemsg(::Death) = "deads"
 function verbosemsg(person::Person,::Death)
-    y, = age2yearsmonths(age(person))
+    y = age2years(age(person))
     return "person $(person.id) died with age of $y"
 end
 

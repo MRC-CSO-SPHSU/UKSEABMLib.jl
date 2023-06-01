@@ -25,7 +25,7 @@ function _birth_probability(rWoman,birthpars,data,currstep,::UseCache)
 	if curryear < 1951
 		return _BIRTH_PROP_BEFORE_1951[]
 	end
-	yearsold,_ = age2yearsmonths(age(rWoman))
+	yearsold = age2years(age(rWoman))
 	return _BIRTH_PROP[yearsold-birthpars.minPregnancyAge+1,curryear-1950]
 end
 
@@ -44,7 +44,7 @@ function _birth_probability(rWoman,birthpars,data,currstep,::NoCaching)
     if curryear < 1951
 		return birthpars.growingPopBirthProb * birthpars.fertilityBias
 	end
-	yearold, = age2yearsmonths(age(rWoman))
+	yearold = age2years(age(rWoman))
 	#=
     a = 0
     for i in range(int(self.p['numberClasses'])):
@@ -291,7 +291,7 @@ end  # function doBirths!
 
 verbosemsg(::Birth) = "births"
 function verbosemsg(person::Person,::Birth)
-    y, = age2yearsmonths(age(person))
+    y = age2years(age(person))
     baby = youngest_child(person)
     @assert age(baby) == 0
     return "woman $(person.id) gave birth of $(baby.id) at age of $(y)"
