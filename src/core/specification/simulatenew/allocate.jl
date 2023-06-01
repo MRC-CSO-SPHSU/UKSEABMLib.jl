@@ -69,10 +69,9 @@ move_to_person_house!(peopleToMove::Vector{Person},personWithAHouse) =
 
 # people[1] determines centre of search radius
 function move_to_empty_house!(people::Vector{Person}, model,dmax)
-    head = people[1]
-    move_to_empty_house!(head,model,dmax)
-    others = people[2:end]
-    move_to_person_house!(others,head)
+    move_to_empty_house!(people[1],model,dmax)
+    others = @view people[2:end]
+    move_to_person_house!(others,people[1])
     nothing
 end
 
