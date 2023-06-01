@@ -4,12 +4,13 @@ include("./helpers.jl")
 @testset verbose=true "Basic components" begin
     # List of towns
     glasgow   = PersonTown((10,10),density=0.8)
-    edinbrugh = PersonTown((10,11),density=1.0)
+    edinburgh = PersonTown((10,11),density=1.0)
     sterling  = PersonTown((11,10),density=0.2)
     aberdeen  = PersonTown((20,12),density=0.5)
+    Scotland  = [glasgow, edinburgh, sterling, aberdeen]
     unknownTown = PersonTown(UNDEFINED_2DLOCATION)
 
-    towns = [aberdeen, glasgow, edinbrugh, sterling]
+    towns = [aberdeen, glasgow, edinburgh, sterling]
     _NH = 100
     for _ in 1:_NH
         town = select_random_town(towns)
@@ -21,7 +22,7 @@ include("./helpers.jl")
     @testset verbose=true "Town" begin
         @test undefined(unknownTown)
         @test !undefined(glasgow)
-        @test isadjacent8(edinbrugh,sterling)
+        @test isadjacent8(edinburgh,sterling)
         @test !isadjacent8(sterling,aberdeen)
         @test has_empty_houses(aberdeen)
         @test manhattan_distance(sterling,aberdeen) == 11
@@ -43,6 +44,12 @@ include("./helpers.jl")
     randhouse = home(randperson)
 
     @testset verbose=true "House" begin
+
+        @test location(randhouse) != UNDEFINED_2DLOCATION
+        @test hometown(randhouse) in Scotland
+        @test hometown(randhouse) === hometown(randperson)
+        @test randperson in occupants(randhouse)
+
         @test verify_consistency(randhouse)
         @test !isempty(randhouse)
         @test num_occupants(randhouse) == 1
