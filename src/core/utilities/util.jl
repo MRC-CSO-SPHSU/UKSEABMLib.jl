@@ -7,7 +7,7 @@ This source file is included within the Utilities module
 # Functions
 export notneeded, notimplemented
 export createTimeStampedFolder, p_yearly2monthly, remove_unsorted!
-export removefirst!, date2yearsmonths, age2yearsmonths, age2years
+export removefirst!, date2yearsmonths, date2years, age2yearsmonths, age2years
 export checkAssumptions!, ignoreAssumptions!, assumption, setDelay!, delay
 export setVerbose!, unsetVerbose!, verbose, verbosePrint, delayedVerbose
 export fuse
@@ -22,16 +22,17 @@ function removefirst!(list, e)
     nothing
 end
 
-age2years(a) = trunc(Int,a)
+date2years(d) = trunc(Int,d)
 "convert date in rational representation to (years, months) as tuple"
 function date2yearsmonths(date::Rational{Int})
     #date < 0 ? throw(ArgumentError("Negative age")) : nothing
     #12 % denominator(date) != 0 ? throw(ArgumentError("$(date) not in age format")) : nothing
-    years  = age2years(date)
+    years  = date2years(date)
     months = trunc(Int,12 *(date - years))
     # months = trunc(Int, numerator(date) % denominator(date) * 12 / denominator(date) )
     return (years , months)
 end
+age2years(a) = date2years(a)
 age2yearsmonths(a) = date2yearsmonths(a)
 
 p_yearly2monthly(p) = 1 - (1-p)^(1/12)

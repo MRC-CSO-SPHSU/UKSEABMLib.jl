@@ -21,7 +21,7 @@ function cache_computation(model,::Birth)
 end
 
 function _birth_probability(rWoman,birthpars,data,currstep,::UseCache)
-	curryear, = date2yearsmonths(currstep)
+	curryear = date2years(currstep)
 	if curryear < 1951
 		return _BIRTH_PROP_BEFORE_1951[]
 	end
@@ -30,7 +30,7 @@ function _birth_probability(rWoman,birthpars,data,currstep,::UseCache)
 end
 
 function _birth_probability(rWoman,birthpars,data,currstep,::NoCaching)
-    curryear, = date2yearsmonths(currstep)
+    curryear = date2years(currstep)
 
     #=
     womanClassShares = []
