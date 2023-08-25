@@ -16,7 +16,7 @@ const XAGENTS_GENERIC_PATH = SESRCPATH * "/generic"
 const XAGENTS_MA_PATH      = SESRCPATH * "/multiagents"
 
 # ensuring consistent version of ABMSim.jl library
-using ABMSim: MAVERSION
-@assert MAVERSION == v"0.5.1"  # integration of agents.jl basic types
+using ABMSim: ABMSIMVERSION
+@assert ABMSIMVERSION == v"0.5.1"  # integration of agents.jl basic types
 
 end # module Constants
