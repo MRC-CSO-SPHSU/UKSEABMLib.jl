@@ -17,7 +17,7 @@ import SocioEconomics.API.ModelFunc: all_people, alive_people
 @assert ABMSIMVERSION == v"0.6"
 init_abmsim()  # reset agents id counter
 
-@assert SEVERSION == v"0.5"  # Unit testing
+@assert SEVERSION == v"0.5"  # Unit testing + ABMSim.jl
 
 function load_parameters()
     simPars = SimulationPars()
