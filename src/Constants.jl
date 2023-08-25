@@ -11,7 +11,7 @@ module Constants
 
 const SESRCPATH = @__DIR__
 const SEPATH    = SESRCPATH * "/.."
-const SEVERSION = v"0.4.5"    # performance tuning + attempt of caching computations
+const SEVERSION = v"0.5"    # performance tuning + ABMSIM.jl
 const XAGENTS_GENERIC_PATH = SESRCPATH * "/generic"
 const XAGENTS_MA_PATH      = SESRCPATH * "/multiagents"
 
