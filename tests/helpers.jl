@@ -1,5 +1,5 @@
 using Test
-using ABMSim: ABMSIMVERSION, init_majl, verify_agentsjl
+using ABMSim: ABMSIMVERSION, init_abmsim, verify_agentsjl
 using SocioEconomics: SEVERSION
 using SocioEconomics.XAgents
 using SocioEconomics.ParamTypes
@@ -14,8 +14,8 @@ using StatsBase: sample
 import SocioEconomics.ParamTypes: load_parameters
 import SocioEconomics.API.ModelFunc: all_people, alive_people
 
-@assert ABMSIMVERSION == v"0.5.1"
-init_majl()  # reset agents id counter
+@assert ABMSIMVERSION == v"0.6"
+init_abmsim()  # reset agents id counter
 
 @assert SEVERSION == v"0.4.5"  # Unit testing
 
@@ -41,7 +41,7 @@ all_people(model::DemographyModel) = model.pop
 alive_people(model::DemographyModel) = [ person for person in model.pop if alive(person) ]
 
 function declare_demographic_model(ips = 1000)
-    init_majl()  # reset agents id counter
+    init_abmsim()  # reset agents id counter
 
     simPars, dataPars, pars = load_parameters()
     pars.poppars.initialPop = ips
