@@ -1,5 +1,6 @@
 export House, HouseLocation
-export hometown, location, undefined, town, num_occupants, occupants
+export hometown, location, undefined, town, num_occupants, occupants,
+    remove_occupant!, add_occupant!, verify_consistency
 
 import Base.isempty
 using ....Utilities: removefirst!
@@ -37,23 +38,22 @@ location(house::House) = house.pos
 
 "add an occupant to a house"
 function add_occupant!(house::House{P}, person::P) where {P}
+    person.pos = house
     @assert !(person in house.occupants)
     if isempty(house)
-	    push!(house.occupants, person)
-        @assert house in empty_houses(hometown(house))
+        push!(house.occupants, person)
         make_empty_house_occupied!(house)
-    else
-        push!(house.occupants,person)
+        return nothing
     end
+    push!(house.occupants, person)
 	nothing
 end
 
 "remove an occupant from a house"
 function remove_occupant!(house::House{P}, person::P) where {P}
     removefirst!(house.occupants, person)
-    @assert !(person in house.occupants)
+    person.pos = UNDEFINED_HOUSE
     if isempty(house)
-        @assert house in occupied_houses(hometown(house))
         make_occupied_house_empty!(house)
     end
     nothing
@@ -67,4 +67,18 @@ function Base.show(io::IO, house::House{P}) where P
     for person in house.occupants
         print("  $(person.id) ")
     end
+end
+
+function verify_consistency(house::House)
+    if isempty(house)
+        if !(house in empty_houses(hometown(house))) return false end
+        if house in occupied_houses(hometown(house)) return false end
+    else
+        if house in empty_houses(hometown(house)) return false end
+        if !(house in occupied_houses(hometown(house))) return false end
+    end
+    for person in occupants(house)
+        if !alive(person) return false end
+    end
+    return true
 end

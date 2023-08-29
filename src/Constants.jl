@@ -11,12 +11,12 @@ module Constants
 
 const SESRCPATH = @__DIR__
 const SEPATH    = SESRCPATH * "/.."
-const SEVERSION = v"0.4.4"    # performance tuning + attempt of caching computations
+const SEVERSION = v"0.5"    # performance tuning + ABMSIM.jl
 const XAGENTS_GENERIC_PATH = SESRCPATH * "/generic"
 const XAGENTS_MA_PATH      = SESRCPATH * "/multiagents"
 
-# ensuring consistent version of MultiAgents.jl library
-using MultiAgents: MAVERSION
-@assert MAVERSION == v"0.5.1"  # integration of agents.jl basic types
+# ensuring consistent version of ABMSim.jl library
+using ABMSim: ABMSIMVERSION
+@assert ABMSIMVERSION == v"0.6"  # integration of agents.jl basic types
 
 end # module Constants

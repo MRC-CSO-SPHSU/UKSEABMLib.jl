@@ -1,4 +1,4 @@
-using ....Utilities: age2yearsmonths
+using ....Utilities: age2years, age2yearsmonths
 
 export isfemale, ismale, ischild, isadult,
     agestep!, agestep_ifalive!, has_birthday, yearsold
@@ -39,8 +39,4 @@ function agestep_ifalive!(person::BasicInfoBlock, dt=1//12)
 end
 
 has_birthday(person::BasicInfoBlock) = person.age % 1 == 0
-
-function yearsold(person::BasicInfoBlock)
-    years, = age2yearsmonths(person.age)
-    return years
-end
+yearsold(person::BasicInfoBlock) = age2years(person.age)

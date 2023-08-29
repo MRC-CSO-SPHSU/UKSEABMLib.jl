@@ -7,7 +7,7 @@ selectedfor(p,pars,::FullPopulation,pr::WorkTransition) =
 
 verbosemsg(::WorkTransition) = "work transitions"
 function verbosemsg(person::Person,::WorkTransition)
-    y, = age2yearsmonths(age(person))
+    y = age2years(age(person))
     return "person $(person.id) of age $(y) changed work status to ..."
 end
 

@@ -19,19 +19,28 @@ export select_population, selectedfor
 export add_person!, add_house!, remove_person!
 export verbose_houses
 export share_childless_men, eligible_women
+export all_pars, population_pars, birth_pars, marriage_pars,
+		divorce_pars, map_pars, work_pars
 
 import Agents: add_agent_pos!, add_agent_to_space!, nagents, seed!
+
+all_pars(model) = model.parameters
+population_pars(model) = model.parameters.poppars
+birth_pars(model) = model.parameters.birthpars
+divorce_pars(model) = model.parameters.divorcepars
+marriage_pars(model) = model.parameters.marriagepars
+work_pars(model) = model.parameters.workpars
+map_pars(model) = model.parameters.mappars
+
+towns(model) = model.towns
+houses(model) = model.houses
+data_of(model) = model.data
+currenttime(model)::Rational{Int} = model.t
 
 init!(model) = error("init!($(typeof(model))) not implemented")
 
 all_people(model) = error("all_people not implemeneted")
 alive_people(model)  = error("alive_people not implemented")
-data_of(model) = error("data_of not implemeneted")
-"all houses of a model"
-houses(model) = error("houses not implemented")
-# an extension could be thought houses(model,::Empty) , houses(model,::Occupied)
-towns(model)  = error("towns not implemented")
-currenttime(model)::Rational{Int} = error("currenttime not implemented")
 
 alive_people(model,::FullPopulation) =
     [ person for person in all_people(model)  if alive(person) ]
