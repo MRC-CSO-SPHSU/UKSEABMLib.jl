@@ -1,5 +1,5 @@
 
-export dodeaths!, set_dead!, death!!
+export dodeaths!, death!
 
 function _death_probability(baseRate,person,poppars)
     #=
@@ -50,49 +50,6 @@ function _death_probability(baseRate,person,poppars)
     #   deathProb = higherUnmetNeed*math.pow(self.p['unmetCareNeedBias'], 1-shareUnmetNeed)
     return deathProb
 end # function deathProb
-
-# Atiyah: Does not this rather belong to person.jl?
-function set_dead!(person)
-    person.info.alive = false    # this statement is a sign that this function does not belong here!
-    house = home(person)
-    reset_house!(person)
-    if !issingle(person)
-        resolve_partnership!(partner(person),person)
-    end
-
-    #=
-    fa = father(person)
-    mo = mother(person)
-    gs = guardians(person)
-    =#
-
-    # dead persons are no longer dependents
-    set_as_independent!(person)
-
-    #=
-    if fa != nothing
-        @assert !(person in dependents(fa))
-    end
-    if mo != nothing
-        @assert mo != nothing && !(person in dependents(mo))
-    end
-    for g in gs
-        @assert !(person in dependents(g))
-    end
-    =#
-
-    # dead persons no longer have to be provided for
-    set_as_selfproviding!(person)
-
-    for p in providees(person)
-        provider!(p, nothing)
-        # TODO update provision/work status
-    end
-    empty!(providees(person))
-
-    # dependents are being taken care of by assignGuardian!
-    nothing
-end
 
 selectedfor(p,pars,::AlivePopulation,::Death) = true
 selectedfor(p,pars,::FullPopulation,::Death)  = alive(p)
@@ -169,7 +126,7 @@ end
 
 verbosemsg(::Death) = "deads"
 function verbosemsg(person::Person,::Death)
-    y, = age2yearsmonths(age(person))
+    y = age2years(age(person))
     return "person $(person.id) died with age of $y"
 end
 

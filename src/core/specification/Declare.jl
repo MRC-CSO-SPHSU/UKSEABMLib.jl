@@ -15,7 +15,6 @@ using Distributions
 using ....Utilities
 using ....XAgents
 using ....ParamTypes
-using ....API.ParamFunc
 using ....API.ModelFunc
 using ....API.ModelOp
 
@@ -26,50 +25,33 @@ export declare_towns, declare_inhabited_towns, declare_inhabited_towns!,
     declare_many_newhouses!
 
 function _declare_towns(mappars)
-    uktowns = PersonTown[]
+    towns = PersonTown[]
     for y in 1:mappars.mapGridYDimension
         for x in 1:mappars.mapGridXDimension
             town = PersonTown((x,y),density=mappars.map[y,x])
-            push!(uktowns,town)
+            push!(towns,town)
         end
     end
-
-    for uktown in uktowns
-        if uktown.density == 0 continue end
-        for t in uktowns
-            if isadjacent8(uktown,t) && t.density > 0
-                push!(uktown.adjacentInhabitedTowns,t)
-            end
-        end
-    end
-
-    return uktowns
+    init_adjacent_ihabited_towns!(towns)
+    return towns
 end
 
 declare_towns(pars::DemographyPars) = _declare_towns(mapx(pars))
 
 function _declare_inhabited_towns(mappars)
-    uktowns = PersonTown[]
+    towns = PersonTown[]
     for y in 1:mappars.mapGridYDimension
         for x in 1:mappars.mapGridXDimension
             density = mappars.map[y,x]
             if density > 0
                 town = PersonTown((x,y),density=density)
-                push!(uktowns,town)
+                push!(towns,town)
             end
         end
     end
-
-    for uktown in uktowns
-        for t in uktowns
-            if isadjacent8(uktown,t)
-                push!(uktown.adjacentInhabitedTowns,t)
-            end
-        end
-    end
-
-    @info "# of towns : $(length(uktowns))"
-    return uktowns
+    init_adjacent_ihabited_towns!(towns)
+    @info "# of towns : $(length(towns))"
+    return towns
 end
 
 declare_inhabited_towns(pars) = _declare_inhabited_towns(mapx(pars))
@@ -83,16 +65,8 @@ function declare_inhabited_towns!(model)
     nothing
 end
 
-function declare_many_newhouses!(model)
-    cnt = 0
-    @assert sum(num_houses(towns(model))) == 0
-    popsize = length(alive_people(model))
-    while cnt < popsize
-        create_newhouse!(model)
-        cnt += 1
-    end
-    return nothing
-end
+declare_many_newhouses!(model) =
+    create_many_newhouses!(model,population_pars(model).iniitialPop)
 
 # TODO initialize
 function _declare_pyramid_population(pars)

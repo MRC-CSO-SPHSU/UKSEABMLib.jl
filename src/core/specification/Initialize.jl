@@ -7,12 +7,10 @@ using ....XAgents
 using ....ParamTypes
 using ....API.ModelFunc
 using ....API.ModelOp
-using ....API.ParamFunc
 using ....API.Traits
 using ..Declare
 
 import ....API.ModelFunc: init!
-import ....API.ModelOp: create_many_newhouses!
 import ....API.Connection: AbsInitPort, AbsInitProcess, initial_connect!
 
 export InitHousesInTownsPort, InitCouplesToHousesPort
@@ -307,9 +305,9 @@ function _init_post_verification(model)
     @info "init!: verification of houses consistency conducted"
 end
 
-_apply_chaching(::SimProcess) = false 
+_apply_chaching(::SimProcess) = false
 
-function init!(model,::DefaultModelInit, applycaching ; verify)
+function init!(model,::DefaultModelInit, applycaching ; verify=false)
     if verify
         _init_pre_verification(model)
     end
@@ -326,14 +324,14 @@ function init!(model,::DefaultModelInit, applycaching ; verify)
         _init_post_verification(model)
     end
 
-	if applycaching(Birth()) 
+	if applycaching(Birth())
 		cache_computation(model,Birth())
 	end
 end
-init!(model;verify,applycaching=_apply_chaching ) = 
+init!(model;verify=false,applycaching=_apply_chaching ) =
 	init!(model,DefaultModelInit(),applycaching;verify)
 
-function init!(model, ::AgentsModelInit; verify)
+function init!(model, ::AgentsModelInit; verify=false)
     if verify
         _init_pre_verification(model)
     end

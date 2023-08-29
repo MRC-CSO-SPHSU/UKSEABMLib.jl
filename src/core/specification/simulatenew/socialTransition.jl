@@ -149,7 +149,7 @@ social_transition!(person, model, popfeature::PopulationFeature = FullPopulation
 
 verbosemsg(::SocialTransition) = "social transitions"
 function verbosemsg(person::Person,::SocialTransition)
-    y, = age2yearsmonths(age(person))
+    y = age2years(age(person))
     return "person $(person.id) of age $(y) changed social status to ..."
 end
 

@@ -1,7 +1,9 @@
 """
-SocioEconomics Library dependent on MultiAgents.jl
+SocioEconomics Library is dependent on ABMSim.jl
 
-pre-request: MultiAgents.jl should be loadable or within LOAD_PATH
+Note: MultiAgents.jl was renamed to ABMSim.jl begining from ABMSim Version 0.6
+    if MultiAgents.jl is desired (for executing older version), it is obtainable
+    from https://github.com/AtiyahElsheikh/MultiAgents.jl
 """
 
 module SocioEconomics

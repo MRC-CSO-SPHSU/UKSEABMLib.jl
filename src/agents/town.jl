@@ -1,5 +1,6 @@
-export Town, TownLocation
-export undefined, isadjacent8, adjacent8Towns, manhattan_distance
+export Town, TownLocation, UNDEFINED_2DLOCATION
+export undefined, isadjacent8, adjacent8Towns, init_adjacent_ihabited_towns!,
+    manhattan_distance
 export add_empty_house!, make_empty_house_occupied!, make_occupied_house_empty!
 export has_empty_houses, empty_houses, occupied_houses
 
@@ -46,7 +47,7 @@ end
 Town{H}(loc;density=0.0) where H = Town{H}(loc,density)
 
 location(town::Town) = town.loc
-undefined(town::Town{H}) where H =
+undefined(town::Town)  =
     location(town) == UNDEFINED_2DLOCATION
 
 isadjacent8(town1, town2) =
@@ -68,12 +69,23 @@ function has_empty_houses(towns::Vector)
     end
     return false
 end
-empty_houses(town::Town{H}) where H = town.emptyHouses
+empty_houses(town) = town.emptyHouses
 occupied_houses(town)    = town.occupiedHouses
 adjacent_inhabited_towns(town) = town.adjacentInhabitedTowns
 
+function init_adjacent_ihabited_towns!(towns)
+    for town in towns
+        @assert isempty(town.adjacentInhabitedTowns)
+        if town.density == 0 continue end
+        for t in towns
+            if isadjacent8(town,t) && t.density > 0
+                push!(town.adjacentInhabitedTowns,t)
+            end
+        end
+    end
+end
 
-function make_empty_house_occupied!(town,idx::Int)
+function _make_empty_house_occupied!(town,idx::Int)
     house = town.emptyHouses[idx]
     @assert !isempty(house)
     town.emptyHouses[idx] = town.emptyHouses[end]
@@ -83,15 +95,12 @@ function make_empty_house_occupied!(town,idx::Int)
 end
 
 function make_empty_house_occupied!(house)
-    # println("house $(house.id) become occupied")
     town = hometown(house)
-    @assert house in empty_houses(town)
-    make_empty_house_occupied!(town,findfirst(x -> x === house, town.emptyHouses))
+    _make_empty_house_occupied!(town, findfirst(x -> x === house, town.emptyHouses))
 end
 
-function make_occupied_house_empty!(town,idx::Int)
+function _make_occupied_house_empty!(town,idx::Int)
     house = town.occupiedHouses[idx]
-    #println("house $(house.id) become empty")
     @assert isempty(house)
     town.occupiedHouses[idx] = town.occupiedHouses[end]
     pop!(town.occupiedHouses)
@@ -101,15 +110,40 @@ end
 
 function make_occupied_house_empty!(house)
     town = hometown(house)
-    @assert house in hometown(house).occupiedHouses
-    make_occupied_house_empty!(town,findfirst(x -> x === house, town.occupiedHouses))
+    _make_occupied_house_empty!(town, findfirst(x -> x === house, town.occupiedHouses))
 end
 
 function verify_consistency(town::Town)
-    # check the empty houses are empty
-    # check that allocated houses are not empty
-    # check that occupants are alive verify_consistency(house)
-    error("not implemented")
+    for house in empty_houses(town)
+        if !verify_consistency(house) return false end
+    end
+    for house in occupied_houses(town)
+        if !verify_consistency(house) return false end
+    end
+    if town.density > 0
+        for atown in adjacent_inhabited_towns(town)
+            if !isadjacent8(atown,town) return false end
+        end
+    end
+    return true
+end
+
+function verify_consistency(towns::Vector{Town{H}}) where H
+    for town in towns
+        if ! verify_consistency(town) return false end
+    end
+    for town1 in towns
+        for town2 in towns
+            if town1 === town2 continue end
+            if isadjacent8(town1, town2)
+                if !(town1 in adjacent_inhabited_towns(town2)) ||
+                    !(town2 in adjacent_inhabited_towns(town1))
+                    return false
+                end
+            end
+        end
+    end
+    return true
 end
 
 ####

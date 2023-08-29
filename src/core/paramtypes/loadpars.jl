@@ -6,14 +6,12 @@ using ArgParse
 using ....Utilities.ParamUtils
 using YAML
 
-export loadParameters
-
 "extract name of parameter category from struct type name"
 nameOfParType(t) = replace(String(nameof(t)), "Pars" => "") |> Symbol
 
 
-function save_parameters_to_file(simPars::SimulationPars, 
-                                dataPars::DataPars, 
+function save_parameters_to_file(simPars::SimulationPars,
+                                dataPars::DataPars,
                                 pars::DemographyPars, fname)
     dict = Dict{Symbol, Any}()
     dict[:Simulation] = parToYaml(simPars)
@@ -30,7 +28,7 @@ function load_parameters_from_file(fname)
     yaml = fname == "" ? DT() : YAML.load_file(fname, dicttype=DT)
     simpars = parFromYaml(yaml, SimulationPars, :Simulation)
     datapars = parFromYaml(yaml, DataPars, :Data)
-    pars = [ parFromYaml(yaml, ft, nameOfParType(ft)) 
+    pars = [ parFromYaml(yaml, ft, nameOfParType(ft))
             for ft in fieldtypes(DemographyPars) ]
     simpars, datapars, DemographyPars(pars...)
 end
@@ -48,7 +46,7 @@ function load_parameters(argv, cmdl...)
     if ! isempty(cmdl)
         add_arg_table!(arg_settings, cmdl...)
     end
-    # setup command line arguments with docs 
+    # setup command line arguments with docs
 	add_arg_group!(arg_settings, "Simulation Parameters")
 	fieldsAsArgs!(arg_settings, SimulationPars)
     add_arg_group!(arg_settings, "Data Parameters")
@@ -74,6 +72,3 @@ function load_parameters(argv, cmdl...)
     save_parameters_to_file(simpars, datapars, pars, args[:par_out_file])
     return simpars, datapars, pars, args
 end
-
-
-

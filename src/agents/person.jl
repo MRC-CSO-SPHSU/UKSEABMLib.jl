@@ -15,6 +15,7 @@ export has_alive_child_at_home, has_children_at_home, is_lone_parent,
     are_parent_child, related_first_degree, aresiblings, arepartners
 export can_live_alone, isorphan, set_as_guardian_dependent!, set_as_provider_providee!,
     resolve_dependency!
+export set_dead!
 export set_as_independent!, set_as_selfproviding!
 export check_consistency_dependents
 export max_parent_rank
@@ -76,7 +77,7 @@ mutable struct Person <: AbstractXAgent
                 set_as_parent_child!(person,child)
             end
         end
-        person
+        return person
     end # Person Cor
 end # struct Person
 
@@ -92,6 +93,10 @@ end # struct Person
 @export_forward Person kinship [father, mother, partner, children]
 @delegate_onefield Person kinship [has_children, add_child!, issingle, parents,
     siblings, youngest_child, isnoperson, noperson]
+parents(::Nothing) = Person[]
+siblings(::Nothing) = Person[]
+father(::Nothing) = nothing
+mother(::Nothing) = nothing
 
 @delegate_onefield Person maternity [start_maternity!, step_maternity!, end_maternity!,
     is_in_maternity, maternity_duration]
@@ -157,7 +162,6 @@ function move_to_house!(person::Person,house)
     if ! undefined(person.pos)
         remove_occupant!(person.pos, person)
     end
-    person.pos = house
     add_occupant!(house, person)
 end
 
@@ -170,13 +174,7 @@ function move_to_house!(people::Vector{Person}, house)
 end
 
 "reset house of a person (e.g. became dead)"
-function reset_house!(person::Person)
-    if ! undefined(person.pos)
-        remove_occupant!(person.pos, person)
-    end
-    person.pos = UNDEFINED_HOUSE
-    nothing
-end
+reset_house!(person::Person) = remove_occupant!(person.pos, person)
 
 are_living_together(person1, person2) = person1.pos == person2.pos
 are_parent_child(person1, person2) =
@@ -358,4 +356,45 @@ function max_parent_rank(person)
     else
         return max(classRank(m), classRank(f))
     end
+end
+
+function set_dead!(person)
+    person.info.alive = false    # this statement is a sign that this function does not belong here!
+    reset_house!(person)
+    if !issingle(person)
+        resolve_partnership!(partner(person),person)
+    end
+
+    #=
+    fa = father(person)
+    mo = mother(person)
+    gs = guardians(person)
+    =#
+
+    # dead persons are no longer dependents
+    set_as_independent!(person)
+
+    #=
+    if fa != nothing
+        @assert !(person in dependents(fa))
+    end
+    if mo != nothing
+        @assert mo != nothing && !(person in dependents(mo))
+    end
+    for g in gs
+        @assert !(person in dependents(g))
+    end
+    =#
+
+    # dead persons no longer have to be provided for
+    set_as_selfproviding!(person)
+
+    for p in providees(person)
+        provider!(p, nothing)
+        # TODO update provision/work status
+    end
+    empty!(providees(person))
+
+    # dependents are being taken care of by assignGuardian!
+    nothing
 end

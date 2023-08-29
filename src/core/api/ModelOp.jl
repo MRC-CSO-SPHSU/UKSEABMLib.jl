@@ -13,8 +13,7 @@ module ModelOp
 
 using ..ModelFunc
 using ....XAgents
-using ..ParamFunc
-using ..Traits 
+using ..Traits
 
 import ....XAgents: create_newhouse!, add_town!
 export create_many_newhouses!, cache_computation
@@ -42,6 +41,6 @@ function add_town!(model,town)
     push!(model.space.towns,town) # TODO fix space(model)
 end
 
-cache_computation(model,process::SimProcess) = nothing 
+cache_computation(model,process::SimProcess) = nothing
 
 end # Models Operation
