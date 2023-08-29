@@ -68,8 +68,11 @@ This is a library with no internal examples. However, cf. [LPM.jl package](https
 ### References
 
 [1] George Datseris, Ali R. Vahdati, Timothy C. DuBois: Agents.jl: a performant and feature-full agent-based modeling software of minimal code complexity. SIMULATION. 2022. doi:10.1177/00375497211068820 
+
 [2] Umberto Gostoli and Eric Silverman Social and child care provision in kinship networks: An agent-based model. PLoS ONE 15(12): 2020 (https://doi.org/10.1371/journal.pone.0242779) 
+
 [3] [LoneParentsModel.jl V0.6.1](https://archive.softwareheritage.org/browse/origin/directory/?branch=refs/tags/V0.6.1&origin_url=https://github.com/MRC-CSO-SPHSU/LoneParentsModel.jl&snapshot=7b7095bbf44a61414ed6d1abec7861c162a10e60) 
+
 [4] [ABMSim.jl: An agent-based model simulator (V0.6.1). Zenodo. https://doi.org/10.5281/zenodo.8284009, 2023](https://github.com/MRC-CSO-SPHSU/ABMSim.jl/blob/master/README.md)
 
 ### Cite as 
