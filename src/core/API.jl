@@ -3,7 +3,7 @@
     be employed within simulation functions in any
     *Simulate module
 
-    This module is within the SocioEconomics[X] modules
+    This module is within the UKSEABMLib[X] modules
 """
 module API
 

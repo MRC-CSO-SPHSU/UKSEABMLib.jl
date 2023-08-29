@@ -1,7 +1,7 @@
 """
 Parameter types and values 
 
-This module is within the SocioEconomics[X] modules 
+This module is within the UKSEABMLib[X] modules 
 """
 
 module ParamTypes

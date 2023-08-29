@@ -5,7 +5,7 @@
 
     It is desired to keep the number of functions minimal
 
-    This module is within the SocioEconomics[X] modules
+    This module is within the UKSEABMLib[X] modules
 """
 module ModelFunc
 

@@ -1,7 +1,7 @@
 """
-SocioEconomicsX library independent from MultiAgents.jl
+UKSEABMLibX library independent from MultiAgents.jl
 """
-module SocioEconomicsX
+module UKSEABMLibX
 
 include("Constants.jl")
 using .Constants: SESRCPATH, SEPATH, SEVERSION
@@ -12,4 +12,4 @@ include("generic/XAgents.jl")
 
 include("semodules.jl")
 
-end  # module SocioEconomicsX
+end  # module UKSEABMLibX

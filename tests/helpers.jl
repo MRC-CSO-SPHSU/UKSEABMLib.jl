@@ -1,18 +1,18 @@
 using Test
 using ABMSim: ABMSIMVERSION, init_abmsim, verify_agentsjl
-using SocioEconomics: SEVERSION
-using SocioEconomics.XAgents
-using SocioEconomics.ParamTypes
-using SocioEconomics.Specification.Declare
+using UKSEABMLib: SEVERSION
+using UKSEABMLib.XAgents
+using UKSEABMLib.ParamTypes
+using UKSEABMLib.Specification.Declare
 
 # model initialization
-using SocioEconomics.API.Traits
-using SocioEconomics.Specification.Initialize
+using UKSEABMLib.API.Traits
+using UKSEABMLib.Specification.Initialize
 
 using StatsBase: sample
 
-import SocioEconomics.ParamTypes: load_parameters
-import SocioEconomics.API.ModelFunc: all_people, alive_people
+import UKSEABMLib.ParamTypes: load_parameters
+import UKSEABMLib.API.ModelFunc: all_people, alive_people
 
 @assert ABMSIMVERSION == v"0.6"
 init_abmsim()  # reset agents id counter

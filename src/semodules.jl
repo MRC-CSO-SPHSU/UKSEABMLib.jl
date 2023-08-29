@@ -1,7 +1,7 @@
 """
-Submodules within the SocioEconomics[X] libraries
+Submodules within the UKSEABMLib[X] libraries
 
-This file is included within the SocioEconomics[X] libraries
+This file is included within the UKSEABMLib[X] libraries
 """
 
 include("./core/API.jl")
