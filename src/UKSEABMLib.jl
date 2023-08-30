@@ -10,11 +10,11 @@ module UKSEABMLib
 
 include("Constants.jl")
 using .Constants: SESRCPATH, SEPATH, SEVERSION,
-                    XAGENTS_GENERIC_PATH, XAGENTS_MA_PATH
+                    XAGENTS_GENERIC_PATH, ABMSIM_PATH
 
 include("./core/Utilities.jl")
 
-include("multiagents/XAgents.jl")
+include("abmsim/XAgents.jl")
 
 include("semodules.jl")
 

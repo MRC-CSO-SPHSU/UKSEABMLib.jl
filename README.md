@@ -4,17 +4,17 @@
 
 ### Title 
 
-TODO 
+The UKSEABMLib.jl componants library for agent-based UK-oriented socioeconomics modelling applications   
 
 ### Description 
 
-A library of types, components and simulation functions for establishing external socio-economic models studies for the UK. Currently the economic part is not implemented. It replecates the model the Lone Parent Model implemented in Python, cf. Ref. #[2]. It has been started based on LoneParentModel.jl V0.6.1 [3]. The space concept is influenced from Agents.jl [1] and it makes uses of the builtin types within ABMSim.jl simulator [4]  
+A library of types, components and simulation functions for establishing external socioeconomic models studies for the UK. Currently the economic part is not implemented. It replecates the Lone Parent Model implemented in Python, cf. Ref. #[2]. The current implementation is extended from the LoneParentModel.jl V0.6.1 [3]. The space concept is influenced from Agents.jl [1] and it makes uses of the builtin types within ABMSim.jl simulator [4]  
 
 ### Author(s) 
 [Atiyah Elsheikh](https://www.gla.ac.uk/schools/healthwellbeing/staff/atiyahelsheikh/)
 
 ### Contributor(s)  
-Atiyah Elsheikh (V0.1-V0.5) 
+Atiyah Elsheikh (V0.1-V0.6) 
 
 ### Release Notes 
 - **V0** (22.11.2022): the state of the Lone parents model package in release V0.6.1
@@ -45,7 +45,8 @@ Atiyah Elsheikh (V0.1-V0.5)
    - V0.4.3 (19.5) : Full population as a default value for population feature across simulation functions 
    - V0.4.4 (23.5) : Attempting caching pre-computation, tiny low-level tuning
 
-- **V0.5** (29.8.2023): Initial set of unit tests, employing ABMSim.jl V0.6 instead of MulitiAgents.jl, minor simplifications and improvements  
+- **V0.5** (29.8.2023): Initial set of unit tests, employing ABMSim.jl V0.6 instead of MulitiAgents.jl, minor simplifications and improvements
+- **V0.6** (30.8.2023): Renaming to UKSEABMLib.jl 
  
  ### License
 MIT License
@@ -86,4 +87,4 @@ TODO
 For the purpose of open access, the author(s) has applied a Creative Commons Attribution (CC BY) licence to any Author Accepted Manuscript version arising from this submission.
 
 ### Fundings 
-[Dr. Atyiah Elsheikh](https://www.gla.ac.uk/schools/healthwellbeing/staff/atiyahelsheikh/), by the time of publishing Version 0.5 of this software, is a Research Software Engineer at MRC/CSO Social & Public Health Sciences Unit, School of Health and Wellbeing, University of Glasgow. He is in the Complexity in Health programme. He is supported  by the Medical Research Council (MC_UU_00022/1) and the Scottish Government Chief Scientist Office (SPHSU16). 
+[Dr. Atyiah Elsheikh](https://www.gla.ac.uk/schools/healthwellbeing/staff/atiyahelsheikh/), by the time of publishing Version 0.6 of this software, is a Research Software Engineer at MRC/CSO Social & Public Health Sciences Unit, School of Health and Wellbeing, University of Glasgow. He is in the Complexity in Health programme. He is supported  by the Medical Research Council (MC_UU_00022/1) and the Scottish Government Chief Scientist Office (SPHSU16). 

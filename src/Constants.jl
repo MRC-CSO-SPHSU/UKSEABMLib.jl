@@ -13,10 +13,10 @@ const SESRCPATH = @__DIR__
 const SEPATH    = SESRCPATH * "/.."
 const SEVERSION = v"0.6"    # Renaming to UKSEABMLib.jl 
 const XAGENTS_GENERIC_PATH = SESRCPATH * "/generic"
-const XAGENTS_MA_PATH      = SESRCPATH * "/multiagents"
+const ABMSIM_PATH      = SESRCPATH * "/abmsim"
 
 # ensuring consistent version of ABMSim.jl library
 using ABMSim: ABMSIMVERSION
-@assert ABMSIMVERSION == v"0.5"  # integration of agents.jl basic types
+@assert ABMSIMVERSION == v"0.6"  # ABMSim.jl
 
 end # module Constants
