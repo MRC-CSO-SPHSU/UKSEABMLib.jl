@@ -80,7 +80,22 @@ This is a library with no internal examples. However, cf. [LPM.jl package](https
 
 ### Cite as 
 
-TODO 
+Atiyah Elsheikh. (2023). The UKSEABMLib.jl componants library for agent-based UK-oriented socioeconomics modelling applications. Zenodo. https://doi.org/10.5281/zenodo.8301125
+
+#### bibtex
+
+@software{atiyah_elsheikh_2023_8301126,
+  author       = {Atiyah Elsheikh},
+  title        = {{The UKSEABMLib.jl componants library for agent- 
+                   based UK-oriented socioeconomics modelling
+                   applications}},
+  month        = aug,
+  year         = 2023,
+  publisher    = {Zenodo},
+  version      = {0.6},
+  doi          = {10.5281/zenodo.8301126},
+  url          = {https://doi.org/10.5281/zenodo.8301126}
+}
 
 ### Acknowledgments 
 
