@@ -77,7 +77,7 @@ This is a library with no internal examples. However, cf. [LPM.jl package](https
 
 [3] [LoneParentsModel.jl V0.6.1](https://archive.softwareheritage.org/browse/origin/directory/?branch=refs/tags/V0.6.1&origin_url=https://github.com/MRC-CSO-SPHSU/LoneParentsModel.jl&snapshot=7b7095bbf44a61414ed6d1abec7861c162a10e60) 
 
-[4] [ABMSim.jl: An agent-based model simulator (V0.6.1). Zenodo. https://doi.org/10.5281/zenodo.8284009, 2023](https://github.com/MRC-CSO-SPHSU/ABMSim.jl/blob/master/README.md)
+[4] [ABMSim.jl: An agent-based model simulator. Zenodo. https://doi.org/10.5281/zenodo.8284008, 2023](https://github.com/MRC-CSO-SPHSU/ABMSim.jl/blob/master/README.md)
 
 ### Cite as 
 
