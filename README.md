@@ -4,11 +4,11 @@
 
 ### Title 
 
-TODO 
+The UKSEABMLib.jl componants library for agent-based UK-oriented socioeconomics modelling applications   
 
 ### Description 
 
-A library of types, components and simulation functions for establishing external socio-economic models studies for the UK. Currently the economic part is not implemented. It replecates the model the Lone Parent Model implemented in Python, cf. Ref. #[2]. It has been started based on LoneParentModel.jl V0.6.1 [3]. The space concept is influenced from Agents.jl [1] and it makes uses of the builtin types within ABMSim.jl simulator [4]  
+A library of types, components and simulation functions for establishing external socioeconomic models studies for the UK. Currently the economic part is not implemented. It replecates the Lone Parent Model implemented in Python, cf. Ref. #[2]. The current implementation is extended from the LoneParentModel.jl V0.6.1 [3]. The space concept is influenced from Agents.jl [1] and it makes uses of the builtin types within ABMSim.jl simulator [4]  
 
 ### Author(s) 
 [Atiyah Elsheikh](https://www.gla.ac.uk/schools/healthwellbeing/staff/atiyahelsheikh/)
