@@ -118,6 +118,12 @@ specific version 0.6:
 
 ### Acknowledgments 
 
+This software was conducted based on the LoneParentsModel.jl package. The cited package was established based on collaborative efforts. Thus collegues are acknowledged 
+
+- [Dr. Martin Hinsch](https://www.gla.ac.uk/schools/healthwellbeing/staff/martinhinsch/)
+- [Dr. Umberto Gostoli](https://www.gla.ac.uk/schools/healthwellbeing/staff/umbertogostoli/)
+- [Dr. Eric Silverman](https://www.gla.ac.uk/schools/healthwellbeing/staff/ericsilverman/) 
+
 For the purpose of open access, the author(s) has applied a Creative Commons Attribution (CC BY) licence to any Author Accepted Manuscript version arising from this submission.
 
 ### Fundings 
