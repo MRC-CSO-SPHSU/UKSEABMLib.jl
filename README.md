@@ -63,11 +63,13 @@ This code was developed and experimented on
 
 ### Exeution 
 
-This is a library with no internal examples. However, cf. [LPM.jl package](https://github.com/MRC-CSO-SPHSU/LPM.jl) as an example. Execution of unit tests within REPL: 
+- The library is making use of the [ABMSim.jl package](https://github.com/MRC-CSO-SPHSU/ABMSim.jl) which needs to be internally installed (currently not registered). 
+- This is a library with no internal examples. However, cf. [UKDemographicABM.jl package](https://github.com/MRC-CSO-SPHSU/UKDemographicABM.jl) as an example. Execution of unit tests within REPL: 
 
 <code>  
   > include("tests/runtests")
 </code> 
+
 
 ### References
 
