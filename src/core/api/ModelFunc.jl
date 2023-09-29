@@ -13,7 +13,6 @@ using ..Traits
 using ....XAgents
 using ....Utilities
 
-export init!
 export all_people, alive_people, data_of, houses, towns, currenttime
 export select_population, selectedfor
 export add_person!, add_house!, remove_person!
@@ -36,8 +35,6 @@ towns(model) = model.towns
 houses(model) = model.houses
 data_of(model) = model.data
 currenttime(model)::Rational{Int} = model.t
-
-init!(model) = error("init!($(typeof(model))) not implemented")
 
 all_people(model) = error("all_people not implemeneted")
 alive_people(model)  = error("alive_people not implemented")
