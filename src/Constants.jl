@@ -17,6 +17,6 @@ const ABMSIM_PATH      = SESRCPATH * "/abmsim"
 
 # ensuring consistent version of ABMSim.jl library
 using ABMSim: ABMSIMVERSION
-@assert ABMSIMVERSION == v"0.6"  # ABMSim.jl
+@assert ABMSIMVERSION == v"0.7"  # Space concept
 
 end # module Constants
