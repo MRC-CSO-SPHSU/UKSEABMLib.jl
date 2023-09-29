@@ -4,11 +4,8 @@ Module for defining a supertype, AbstractAgent for all Agent types
 """
 module XAgents
 
-using ABMSim: AbstractAgent, AbstractXAgent, getIDCOUNTER, init_abmsim,
-    Agents.DiscreteSpace
-# for Town
-import ABMSim: positions, empty_positions, has_empty_positions,
-    random_position, random_empty, manhattan_distance
+using ABMSim: AbstractXAgent, getIDCOUNTER, init_abmsim
+using Agents: DiscreteSpace
 
 include("../agents/town.jl")
 include("../agents/house.jl")

@@ -1,3 +1,6 @@
+import Agents: positions, empty_positions, has_empty_positions, 
+    random_position, random_empty, manhattan_distance
+
 export Town, TownLocation, UNDEFINED_2DLOCATION
 export undefined, isadjacent8, adjacent8Towns, init_adjacent_ihabited_towns!,
     manhattan_distance
