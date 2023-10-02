@@ -1,3 +1,5 @@
+using Agents: nextid
+
 export dobirths!, birth!
 
 const _BIRTH_PROP_BEFORE_1951::Ref{Float64} = -1.0
@@ -120,14 +122,13 @@ function _subject_to_birth(woman, currstep, data, birthpars,caching::CachingOper
     return false
 end
 
-function _givesbirth!(woman)
+function _givesbirth!(woman,model)
     # parentsClassRank = max([woman.classRank, woman.partner.classRank])
     # baby = Person(woman, woman.partner, self.year, 0, 'random', woman.house, woman.sec, -1,
     #              parentsClassRank, 0, 0, 0, 0, 0, 0, 'child', False, 0, month)
-    baby = Person(0,pos=home(woman),
+    baby = Person(nextid(model),pos=home(woman),
                     father=partner(woman),mother=woman,
                     gender=rand([male,female]))
-
     # this goes first, so that we know material circumstances
     _effects_maternity!(woman)
 
@@ -151,10 +152,10 @@ selectedfor(woman, birthpars, ::AlivePopulation, process::Birth) =
 selectedfor(woman, birthpars, ::FullPopulation, process::Birth) =
     alive(woman) && _selectedfor(woman, birthpars, process)
 
-function _birth!(woman, currstep, data, birthpars, popfeature,caching)
+function _birth!(woman, model, currstep, data, birthpars, popfeature,caching)
     if !(selectedfor(woman, birthpars, popfeature, Birth())) return false end
     if _subject_to_birth(woman, currstep, data, birthpars,caching)
-        _givesbirth!(woman)
+        _givesbirth!(woman,model)
         verbose(woman, Birth())
         return true
     end
@@ -163,9 +164,8 @@ end
 
 function birth!(woman, model, popfeature::PopulationFeature = FullPopulation();
 	caching::CachingOperation = NoCache())
-    if _birth!(woman, currenttime(model), data_of(model), birth_pars(model), popfeature, caching)
+    if _birth!(woman, model, currenttime(model), data_of(model), birth_pars(model), popfeature, caching)
         add_person!(model,youngest_child(woman))
-        youngest_child(woman).id = nextid(model)
         return true
     end
     return false
@@ -307,7 +307,7 @@ function _dobirths!(ret, model, popfeature, caching::CachingOperation )
     currstep = currenttime(model)
     _assumption_dobirths(people, birthpars, currstep)
     for (ind,woman) in enumerate(Iterators.reverse(people))
-        if _birth!(woman, currenttime(model), data, birthpars, popfeature, caching)
+        if _birth!(woman, model, currenttime(model), data, birthpars, popfeature, caching)
            @assert people[len-ind+1] === woman
            add_person!(model,youngest_child(woman)::Person)
            ret = progress_return!(ret,(ind=len-ind+1,person=woman))

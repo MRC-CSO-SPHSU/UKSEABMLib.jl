@@ -17,6 +17,7 @@ using ....XAgents
 using ....ParamTypes
 using ....API.ModelFunc
 using ....API.ModelOp
+using Agents: nextid
 
 import ....XAgents: create_newhouse!
 export declare_towns, declare_inhabited_towns, declare_inhabited_towns!,
