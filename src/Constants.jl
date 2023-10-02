@@ -11,12 +11,6 @@ module Constants
 
 const SESRCPATH = @__DIR__
 const SEPATH    = SESRCPATH * "/.."
-const SEVERSION = v"0.6.1"    # Using ABMSim V0.7.1 
-const XAGENTS_GENERIC_PATH = SESRCPATH * "/generic"
-const ABMSIM_PATH      = SESRCPATH * "/abmsim"
-
-# ensuring consistent version of ABMSim.jl library
-using ABMSim: ABMSIMVERSION
-@assert ABMSIMVERSION == v"0.7.1"  # Space concept
+const SEVERSION = v"0.6.1"    # no usage of ABMSim
 
 end # module Constants

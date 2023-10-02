@@ -6,5 +6,4 @@ function add_to_loadpath!(paths...)
     end
 end
 
-add_to_loadpath!(pwd() * "/../ABMSim.jl")
 add_to_loadpath!(pwd() * "/src")
