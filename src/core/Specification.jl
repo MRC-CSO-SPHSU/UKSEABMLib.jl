@@ -1,6 +1,6 @@
 module Specification
 
-using ..XAgents: AbstractXAgent
+using ..XAgents: AbstractAgent
 
 include("./specification/Declare.jl")
 include("./specification/Initialize.jl")
