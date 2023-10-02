@@ -11,7 +11,7 @@ module Constants
 
 const SESRCPATH = @__DIR__
 const SEPATH    = SESRCPATH * "/.."
-const SEVERSION = v"0.6"    # Renaming to UKSEABMLib.jl 
+const SEVERSION = v"0.6.1"    # Using ABMSim V0.7.1 
 const XAGENTS_GENERIC_PATH = SESRCPATH * "/generic"
 const ABMSIM_PATH      = SESRCPATH * "/abmsim"
 
