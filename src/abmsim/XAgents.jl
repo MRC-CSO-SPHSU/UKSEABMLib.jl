@@ -4,7 +4,7 @@ Module for defining a supertype, AbstractAgent for all Agent types
 """
 module XAgents
 
-using ABMSim: AbstractXAgent, getIDCOUNTER, init_abmsim
+using ABMSim: AbstractXAgent, getIDCOUNTER
 using Agents: DiscreteSpace
 
 include("../agents/town.jl")
