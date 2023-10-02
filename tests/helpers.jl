@@ -17,7 +17,7 @@ import UKSEABMLib.API.ModelFunc: all_people, alive_people
 @assert ABMSIMVERSION == v"0.7.1"
 init_abmsim()  # reset agents id counter
 
-@assert SEVERSION == v"0.6"  # Unit testing + ABMSim.jl
+@assert SEVERSION == v"0.6.1"  # Unit testing + ABMSim.jl
 
 function load_parameters()
     simPars = SimulationPars()
