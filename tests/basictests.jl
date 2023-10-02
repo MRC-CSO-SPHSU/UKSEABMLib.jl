@@ -30,11 +30,13 @@ include("./helpers.jl")
         @test sterling in glasgow.adjacentInhabitedTowns
     end
 
+    id = 1 
     people = Person[]
     for town in towns
         for ehouse in empty_houses(town)
             if rand() > 0.5
-                person = Person(ehouse,rand(1:40),gender=rand((female,male)))
+                person = Person(id,ehouse,rand(1:40),gender=rand((female,male)))
+                id += 1
                 push!(people,person)
             end
         end

@@ -57,8 +57,8 @@ mutable struct Person <: AbstractAgent
 
     # Person(id,pos,age) = new(id,pos,age)
     "Internal constructor"
-    function Person(pos, info, kinship, maternity, work, care, class, dependencies)
-        person = new(getIDCOUNTER(),pos,info,kinship, maternity, work, care, class, dependencies)
+    function Person(id, pos, info, kinship, maternity, work, care, class, dependencies)
+        person = new(id, pos,info,kinship, maternity, work, care, class, dependencies)
         if !undefined(pos)
             add_occupant!(pos, person)
         end
@@ -131,10 +131,10 @@ const UNDEFINED_TOWN = Town{House}(UNDEFINED_2DLOCATION, 0.0)
 const UNDEFINED_HOUSE = PersonHouse(UNDEFINED_TOWN, UNDEFINED_2DLOCATION)
 
 "Constructor with default values"
-Person(pos,age; gender=unknown,
+Person(id,pos,age; gender=unknown,
     father=nothing,mother=nothing,
     partner=nothing,children=Person[]) =
-        Person(pos,BasicInfoBlock(;age, gender),
+        Person(id,pos,BasicInfoBlock(;age, gender),
                KinshipBlock{Person}(father,mother,partner,children),
             MaternityBlock(false, 0),
             WorkBlock(),
@@ -143,11 +143,11 @@ Person(pos,age; gender=unknown,
 
 
 "Constructor with default values"
-Person(;pos=UNDEFINED_HOUSE,age=0,
+Person(id;pos=UNDEFINED_HOUSE,age=0,
         gender=unknown,
         father=nothing,mother=nothing,
         partner=nothing,children=Person[]) =
-            Person(pos,BasicInfoBlock(;age,gender),
+            Person(id,pos,BasicInfoBlock(;age,gender),
                    KinshipBlock{Person}(father,mother,partner,children),
                 MaternityBlock(false, 0),
                 WorkBlock(),
