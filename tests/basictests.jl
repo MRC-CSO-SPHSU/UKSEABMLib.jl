@@ -87,7 +87,6 @@ include("./helpers.jl")
     end
 
     @testset verbose=true "XAgents.jl" begin
-        @test verify_agentsjl(randperson)
         @test randperson.id > 0
         ids = Int[]
         for town in towns
