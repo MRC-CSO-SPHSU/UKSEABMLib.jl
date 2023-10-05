@@ -10,13 +10,13 @@ using ....API.ModelOp
 using ....API.Traits
 using ..Declare
 
-import ....API.ModelFunc: init!
 import ....API.Connection: AbsInitPort, AbsInitProcess, initial_connect!
 
 export InitHousesInTownsPort, InitCouplesToHousesPort
 export InitClassesProcess, InitWorkProcess, InitHousesInTownsProcess, InitPeopleInHouses,
     InitKinshipProcess
 export DefaultModelInit, AgentsModelInit
+export init!
 
 struct DefaultModelInit <: AbsInitPort end
 struct AgentsModelInit <: AbsInitPort end

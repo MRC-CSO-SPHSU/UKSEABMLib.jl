@@ -30,11 +30,13 @@ include("./helpers.jl")
         @test sterling in glasgow.adjacentInhabitedTowns
     end
 
+    id = 1 
     people = Person[]
     for town in towns
         for ehouse in empty_houses(town)
             if rand() > 0.5
-                person = Person(ehouse,rand(1:40),gender=rand((female,male)))
+                person = Person(id,ehouse,rand(1:40),gender=rand((female,male)))
+                id += 1
                 push!(people,person)
             end
         end
@@ -85,7 +87,6 @@ include("./helpers.jl")
     end
 
     @testset verbose=true "XAgents.jl" begin
-        @test verify_agentsjl(randperson)
         @test randperson.id > 0
         ids = Int[]
         for town in towns

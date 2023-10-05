@@ -47,7 +47,8 @@ Atiyah Elsheikh (V0.1-V0.6)
    - V0.4.4 (23.5) : Attempting caching pre-computation, tiny low-level tuning
 
 - **V0.5** (29.8.2023): Initial set of unit tests, employing ABMSim.jl V0.6 instead of MulitiAgents.jl, minor simplifications and improvements
-- **V0.6** (30.8.2023): Renaming to UKSEABMLib.jl 
+- **V0.6** (30.8.2023): Renaming to UKSEABMLib.jl
+   - V0.6.1 (5.10.2023) : get rid of any dependency on ABMSim 
  
  ### License
 MIT License
@@ -63,7 +64,6 @@ This code was developed and experimented on
 
 ### Exeution 
 
-- The library is making use of the [ABMSim.jl package](https://github.com/MRC-CSO-SPHSU/ABMSim.jl) which needs to be internally installed (currently not registered). 
 - This is a library with no internal examples. However, cf. [UKDemographicABM.jl package](https://github.com/MRC-CSO-SPHSU/UKDemographicABM.jl) as an example. Execution of unit tests within REPL: 
 
 <code>  

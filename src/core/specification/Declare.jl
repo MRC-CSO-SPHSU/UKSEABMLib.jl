@@ -69,7 +69,7 @@ declare_many_newhouses!(model) =
     create_many_newhouses!(model,population_pars(model).iniitialPop)
 
 # TODO initialize
-function _declare_pyramid_population(pars)
+function _declare_pyramid_population(pars,id=1)
     population = Person[]
     men = Person[]
     women = Person[]
@@ -87,7 +87,7 @@ function _declare_pyramid_population(pars)
 
         gender = Bool(rand(0:1)) ? male : female
 
-        person = Person(UNDEFINED_HOUSE, personAge; gender)
+        person = Person(id+i-1,UNDEFINED_HOUSE, personAge; gender)
         #=if ischild(person)
             push!(population, person)
         else
@@ -100,13 +100,13 @@ function _declare_pyramid_population(pars)
     return population
 end
 
-declare_pyramid_population(pars::DemographyPars) =
-	_declare_pyramid_population(population(pars))
+declare_pyramid_population(pars::DemographyPars,id=1) =
+	_declare_pyramid_population(population(pars),id)
 
 # TODO no Kinship initialization
-function _declare_population(pars)
+function _declare_population(pars,id=1)
     population = Person[]
-    for _ in 1 : pars.initialPop
+    for i in 1 : pars.initialPop / 2
         ageMale = rand(pars.minStartAge:pars.maxStartAge)
         ageFemale = ageMale - rand(-2:5)
         ageFemale = ageFemale < 24 ? 24 : ageFemale
@@ -121,8 +121,8 @@ function _declare_population(pars)
         #    birthYear = properties[:startYear]  - ageMale/Female
         #    birthMonth = rand((1:12))
 
-        newMan = Person(UNDEFINED_HOUSE,rageMale,gender=male)
-        newWoman = Person(UNDEFINED_HOUSE,rageFemale,gender=female)
+        newMan = Person(id+i*2-2,UNDEFINED_HOUSE,rageMale,gender=male)
+        newWoman = Person(id+i*2-1,UNDEFINED_HOUSE,rageFemale,gender=female)
         set_as_partners!(newMan,newWoman)
 
         push!(population,newMan);  push!(population,newWoman)
@@ -132,15 +132,16 @@ function _declare_population(pars)
     return population
 end # createPopulation
 
-function declare_population(pars::DemographyPars)
+function declare_population(pars::DemographyPars,id=1)
     poppars = population(pars)
-    return _declare_population(poppars)
+    return _declare_population(poppars,id)
 end
 
 function declare_population!(model)
     pop = declare_population(all_pars(model))
     for person in pop
         add_person!(model,person)
+        nextid(model) # Hack
     end
     nothing
 end
@@ -149,6 +150,7 @@ function declare_pyramid_population!(model)
     pop = declare_pyramid_population(all_pars(model))
     for person in pop
         add_person!(model,person)
+        nextid(model)
     end
     nothing
 end

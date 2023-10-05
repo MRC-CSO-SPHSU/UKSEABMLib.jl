@@ -1,3 +1,6 @@
+import Agents: positions, empty_positions, has_empty_positions, 
+    random_position, random_empty, manhattan_distance
+
 export Town, TownLocation, UNDEFINED_2DLOCATION
 export undefined, isadjacent8, adjacent8Towns, init_adjacent_ihabited_towns!,
     manhattan_distance
@@ -161,7 +164,7 @@ const Towns = Union{Town,Vector} # One town or list of towns
 positions(towns::Towns) = notneeded("")
 empty_positions(town::Town) = empty_houses(town)
 has_empty_positions(towns::Towns) = has_empty_houses(towns)
-random_position(towns) = notneeded("")
+random_position(towns::Towns) = notneeded("")
 random_empty(town::Town) = rand(empty_positions(town))
 manhattan_distance(town1,town2) =
     abs(town1.loc[1] - town2.loc[1]) + abs(town1.loc[2] - town2.loc[2])

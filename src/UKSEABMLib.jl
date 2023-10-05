@@ -9,8 +9,7 @@ Note: MultiAgents.jl was renamed to ABMSim.jl begining from ABMSim Version 0.6
 module UKSEABMLib
 
 include("Constants.jl")
-using .Constants: SESRCPATH, SEPATH, SEVERSION,
-                    XAGENTS_GENERIC_PATH, ABMSIM_PATH
+using .Constants: SESRCPATH, SEPATH, SEVERSION 
 
 include("./core/Utilities.jl")
 
