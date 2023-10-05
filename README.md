@@ -48,7 +48,7 @@ Atiyah Elsheikh (V0.1-V0.6)
 
 - **V0.5** (29.8.2023): Initial set of unit tests, employing ABMSim.jl V0.6 instead of MulitiAgents.jl, minor simplifications and improvements
 - **V0.6** (30.8.2023): Renaming to UKSEABMLib.jl
-   - **V0.6.1** (5.10.2023) : get rid of any dependency on ABMSim 
+   - V0.6.1 (5.10.2023) : get rid of any dependency on ABMSim 
  
  ### License
 MIT License
