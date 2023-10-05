@@ -19,9 +19,9 @@ export add_person!, add_house!, remove_person!
 export verbose_houses
 export share_childless_men, eligible_women
 export all_pars, population_pars, birth_pars, marriage_pars,
-		divorce_pars, map_pars, work_pars
+		divorce_pars, map_pars, work_pars, nextid 
 
-import Agents: add_agent_pos!, add_agent_to_space!, nagents, seed!
+import Agents: add_agent_pos!, add_agent_to_space!, nagents, seed!, nextid
 
 all_pars(model) = model.parameters
 population_pars(model) = model.parameters.poppars

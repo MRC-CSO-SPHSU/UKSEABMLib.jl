@@ -1,5 +1,3 @@
-using Agents: nextid
-
 export dobirths!, birth!
 
 const _BIRTH_PROP_BEFORE_1951::Ref{Float64} = -1.0
